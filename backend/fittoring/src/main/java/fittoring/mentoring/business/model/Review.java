@@ -46,12 +46,15 @@ public class Review {
     @JoinColumn(nullable = false, unique = true)
     private Reservation reservation;
 
-    @Getter
     @ManyToOne
     @JoinColumn(nullable = false)
     private Member mentee;
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {
         this(null, rating, content, null, reservation, mentee);
+    }
+
+    public String getMenteeName() {
+        return mentee.getName();
     }
 }

@@ -78,7 +78,7 @@ public class ReviewService {
         return reviews.stream()
             .map(review -> new MentoringReviewGetResponse(
                 review.getId(),
-                review.getMentee().getName(),
+                review.getMenteeName(),
                 review.getCreatedAt().toLocalDate(),
                 review.getRating(),
                 review.getContent()
