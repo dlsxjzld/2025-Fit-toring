@@ -77,9 +77,9 @@ class ReviewServiceTest {
         Reservation reservation = entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         int rating = 5;
@@ -129,9 +129,9 @@ class ReviewServiceTest {
         entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
@@ -177,9 +177,9 @@ class ReviewServiceTest {
         Reservation reservation = entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         Member anotherMember = entityManager.persist(new Member(
@@ -234,9 +234,9 @@ class ReviewServiceTest {
         Reservation reservation = entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         int rating = 5;

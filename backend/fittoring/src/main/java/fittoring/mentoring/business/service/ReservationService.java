@@ -49,9 +49,9 @@ public class ReservationService {
         Member mentee = getMember(dto.menteeId());
         return new Reservation(
                 dto.content(),
+                Status.PENDING,
                 mentoring,
-                mentee,
-                Status.PENDING
+                mentee
         );
     }
 

@@ -83,9 +83,9 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         int rating = 4;
@@ -141,9 +141,9 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         int rating = 4;
@@ -197,9 +197,9 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         int rating = 4;
@@ -261,9 +261,9 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
+                        Status.PENDING,
                         mentoring,
-                        mentee,
-                        Status.PENDING
+                        mentee
                 )
         );
         int rating = 4;
