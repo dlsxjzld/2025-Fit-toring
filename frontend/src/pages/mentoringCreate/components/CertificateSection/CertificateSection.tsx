@@ -25,7 +25,7 @@ function CertificateSection({
       ...prev,
       {
         id: crypto.randomUUID(),
-        title: '',
+        title: null,
         type: 'LICENSE',
         file: undefined,
       },

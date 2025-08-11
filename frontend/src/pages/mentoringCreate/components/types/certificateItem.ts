@@ -1,6 +1,6 @@
 export interface CertificateItem {
   id: string;
-  title: string;
-  type: string;
-  file?: File;
+  title: string | null;
+  type: string | null;
+  file?: File | null;
 }

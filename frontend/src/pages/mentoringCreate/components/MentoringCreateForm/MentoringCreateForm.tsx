@@ -28,12 +28,12 @@ function MentoringCreateForm() {
     content: '',
     certificateInfos: [
       {
-        type: '',
-        title: '',
+        type: null,
+        title: null,
       },
       {
-        type: '',
-        title: '',
+        type: null,
+        title: null,
       },
     ],
   });
