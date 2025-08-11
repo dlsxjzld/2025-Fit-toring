@@ -76,8 +76,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-                && categoryTitle2 == null
-                && categoryTitle3 == null;
+               && categoryTitle2 == null
+               && categoryTitle3 == null;
     }
 
     private List<MentoringResponse> getMentoringResponses(List<Mentoring> mentorings) {

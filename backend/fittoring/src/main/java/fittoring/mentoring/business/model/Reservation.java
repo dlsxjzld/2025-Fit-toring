@@ -29,11 +29,14 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String context;
+    private String content;
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private Status status;
 
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -43,23 +46,36 @@ public class Reservation {
     @JoinColumn(nullable = false)
     private Member mentee;
 
-    public Reservation(String context, Mentoring mentoring, Member mentee) {
-        this(null, context, null, mentoring, mentee);
+    public Reservation(String content, Status status, Mentoring mentoring, Member mentee) {
+        this(null, content, null, status, mentoring, mentee);
+    }
+
+    public void changeStatus(Status updateStatus) {
+        this.status.validateReservation(updateStatus);
+        this.status = updateStatus;
+    }
+
+    public boolean isPending() {
+        return this.status.isPending();
     }
 
     public String getMenteeName() {
         return mentee.getName();
     }
 
-    public String getMenteePhone() {
-        return mentee.getPhoneNumber();
-    }
-
     public String getMentorName() {
         return mentoring.getMentorName();
     }
 
+    public String getMenteePhone() {
+        return mentee.getPhoneNumber();
+    }
+
     public String getMentorPhone() {
-        return mentoring.getMentorPhone();
+        return mentoring.getMentor().getPhoneNumber();
+    }
+
+    public String getStatus() {
+        return status.name();
     }
 }
