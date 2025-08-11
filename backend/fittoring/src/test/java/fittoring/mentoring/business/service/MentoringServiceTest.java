@@ -110,7 +110,7 @@ class MentoringServiceTest {
             String categoryTitle3 = null;
 
             MentoringSummaryResponse expected = MentoringSummaryResponse.from(
-                    MentoringResponse.from(
+                    MentoringResponse.of(
                             mentoring1,
                             List.of(categoryMentoring1_1.getCategoryTitle()),
                             image1)
@@ -182,7 +182,7 @@ class MentoringServiceTest {
             String categoryTitle3 = null;
 
             MentoringSummaryResponse expected = MentoringSummaryResponse.from(
-                    MentoringResponse.from(
+                    MentoringResponse.of(
                             mentoring1,
                             List.of(categoryMentoring1_1.getCategoryTitle(),
                                     categoryMentoring2_1.getCategoryTitle()),
@@ -191,7 +191,7 @@ class MentoringServiceTest {
             );
 
             MentoringSummaryResponse expected2 = MentoringSummaryResponse.from(
-                    MentoringResponse.from(
+                    MentoringResponse.of(
                             mentoring3,
                             List.of(categoryMentoring1_3.getCategoryTitle(),
                                     categoryMentoring2_3.getCategoryTitle(),
@@ -325,7 +325,7 @@ class MentoringServiceTest {
             Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
-            MentoringResponse expected = MentoringResponse.from(
+            MentoringResponse expected = MentoringResponse.of(
                     mentoring1,
                     List.of(category1.getTitle()),
                     image1

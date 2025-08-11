@@ -6,16 +6,19 @@ import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Certificate;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.presentation.dto.CertificateMentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import java.util.ArrayList;
@@ -76,8 +79,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-               && categoryTitle2 == null
-               && categoryTitle3 == null;
+                && categoryTitle2 == null
+                && categoryTitle3 == null;
     }
 
     private List<MentoringResponse> getMentoringResponses(List<Mentoring> mentorings) {
@@ -87,7 +90,7 @@ public class MentoringService {
             imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                     .ifPresentOrElse(
                             image -> mentoringResponses.add(
-                                    MentoringResponse.from(mentoring, categoryTitles, image)),
+                                    MentoringResponse.of(mentoring, categoryTitles, image)),
                             () -> mentoringResponses.add(MentoringResponse.from(mentoring, categoryTitles))
                     );
         }
@@ -122,14 +125,35 @@ public class MentoringService {
         Mentoring mentoring = mentoringRepository.findById(id)
                 .orElseThrow(
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
-
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
+        List<Certificate> certificates = certificateRepository.findByMentoringIdAndCertificateStatus(
+                id,
+                Status.APPROVED
+        );
+        List<CertificateMentoringResponse> certificateDetails = getApprovedCertificates(certificates);
         Image image = imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
         if (image == null) {
-            return MentoringResponse.from(mentoring, categoryTitles);
+            return MentoringResponse.of(mentoring, categoryTitles, certificateDetails);
         }
-        return MentoringResponse.from(mentoring, categoryTitles, image);
+        return MentoringResponse.of(mentoring, categoryTitles, image, certificateDetails);
+    }
+
+    private List<CertificateMentoringResponse> getApprovedCertificates(List<Certificate> certificates) {
+        return certificates.stream()
+                .filter(certificate -> imageService.findByImageTypeAndRelationId(
+                                ImageType.CERTIFICATE,
+                                certificate.getId()
+                        )
+                        .isPresent())
+                .map(certificate -> {
+                    Image certificateImage = imageService.findByImageTypeAndRelationId(
+                            ImageType.CERTIFICATE,
+                            certificate.getId()
+                    ).get();
+                    return CertificateMentoringResponse.of(certificate, certificateImage.getUrl());
+                })
+                .toList();
     }
 
     @Transactional
@@ -152,7 +176,7 @@ public class MentoringService {
 
         certificateService.certificateMapping(dto, savedMentoring);
         member.registerAsMentor();
-        return MentoringResponse.from(savedMentoring, categoryTitles, profileImage);
+        return MentoringResponse.of(savedMentoring, categoryTitles, profileImage);
     }
 
     private void categoryMapping(List<String> categoryTitles, Mentoring savedMentoring) {
