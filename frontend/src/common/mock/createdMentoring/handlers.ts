@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 
 import { MENTORING_APPLICATIONS } from './data';
 
-import type { MentoringApplicationStatus } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../types/mentoringApplicationStatus';
 
 export const testStateStore = {
   shouldFail: false,

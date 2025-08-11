@@ -1,4 +1,4 @@
-import type { MentoringApplicationStatus } from './mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../../common/types/mentoringApplicationStatus';
 import type { StatusType } from '../../../common/types/statusType';
 
 interface BaseMentoringApplication {

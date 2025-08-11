@@ -1,7 +1,7 @@
 import { apiClient } from '../../../common/apis/apiClient';
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
-import type { MentoringApplicationStatus } from '../types/mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../../common/types/mentoringApplicationStatus';
 
 export const patchReservationStatus = async (
   reservationId: number,

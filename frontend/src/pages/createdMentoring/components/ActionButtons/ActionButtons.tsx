@@ -6,9 +6,9 @@ import {
 } from '../../../../common/types/statusType';
 import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
-import { MentoringApplicationStatusEnum } from '../../types/mentoringApplicationStatus';
+import { MentoringApplicationStatusEnum } from '../../../../common/types/mentoringApplicationStatus';
 
-import type { MentoringApplicationStatus } from '../../types/mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../../../common/types/mentoringApplicationStatus';
 
 interface ActionButtonsProps {
   reservationId: number;

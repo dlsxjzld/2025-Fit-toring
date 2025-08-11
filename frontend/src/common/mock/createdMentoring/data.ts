@@ -1,4 +1,4 @@
-import { MentoringApplicationStatusEnum } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
+import { MentoringApplicationStatusEnum } from '../../types/mentoringApplicationStatus';
 
 import type { ServerMentoringApplicationResponse } from '../../../pages/createdMentoring/types/mentoringApplication';
 
