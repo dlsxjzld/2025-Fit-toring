@@ -29,6 +29,8 @@ public enum BusinessErrorMessage {
     RESERVATION_STATUS_ALREADY_UPDATE("이미 처리된 예약은 상태 변경이 불가합니다."),
     RESERVATION_STATUS_ALREADY_EQUAL("동일한 상태로는 변경할 수 없습니다."),
     STATUS_NOT_FOUND("존재하지 않는 상태입니다."),
+    REVIEW_NOT_FOUND("존재하지 않는 리뷰입니다."),
+    REVIEWER_NOT_SAME("자신이 남긴 리뷰가 아닙니다."),
     ;
 
     private final String message;

@@ -3,19 +3,20 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.ReviewService;
-import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
-import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,8 +46,7 @@ public class ReviewController {
     public ResponseEntity<List<MemberReviewGetResponse>> findMyReviews(
         @Login LoginInfo loginInfo
     ) {
-        MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(loginInfo.memberId());
-        List<MemberReviewGetResponse> responseBody = reviewService.findMemberReviews(memberReviewGetDto);
+        List<MemberReviewGetResponse> responseBody = reviewService.findMemberReviews(loginInfo.memberId());
         return ResponseEntity.status(HttpStatus.OK)
             .body(responseBody);
     }
@@ -55,9 +55,24 @@ public class ReviewController {
     public ResponseEntity<List<MentoringReviewGetResponse>> findMentoringReviews(
         @PathVariable("mentoringId") Long mentoringId
     ) {
-        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoringId);
-        List<MentoringReviewGetResponse> responseBody = reviewService.findMentoringReviews(mentoringReviewGetDto);
+        List<MentoringReviewGetResponse> responseBody = reviewService.findMentoringReviews(mentoringId);
         return ResponseEntity.status(HttpStatus.OK)
             .body(responseBody);
+    }
+
+    @PatchMapping("reviews/{reviewId}")
+    public ResponseEntity<Void> modifyReview(
+        @Login LoginInfo loginInfo,
+        @PathVariable("reviewId") Long reviewId,
+        @Valid @RequestBody ReviewModifyRequest requestBody
+    ) {
+        ReviewModifyDto reviewModifyDto = ReviewModifyDto.of(
+            loginInfo.memberId(),
+            reviewId,
+            requestBody
+        );
+        reviewService.modifyReview(reviewModifyDto);
+        return ResponseEntity.status(HttpStatus.OK)
+            .build();
     }
 }

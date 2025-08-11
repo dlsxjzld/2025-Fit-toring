@@ -4,15 +4,16 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
+import fittoring.mentoring.business.exception.ReviewNotFoundException;
+import fittoring.mentoring.business.exception.ReviewerNotSameException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
-import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
-import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
@@ -56,13 +57,13 @@ public class ReviewService {
     }
 
     private void validateReviewNotDuplicated(Reservation reservation, Long menteeId) {
-        if (reviewRepository.existsByReservationIdAndMenteeId(reservation.getId(), menteeId)) {
+        if (reviewRepository.existsByReservationIdAndMentee_Id(reservation.getId(), menteeId)) {
             throw new ReviewAlreadyExistsException(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
         }
     }
 
-    public List<MemberReviewGetResponse> findMemberReviews(MemberReviewGetDto dto) {
-        List<Review> reviews = reviewRepository.findAlLByMenteeId(dto.memberId());
+    public List<MemberReviewGetResponse> findMemberReviews(Long memberId) {
+        List<Review> reviews = reviewRepository.findAlLByMentee_Id(memberId);
         return reviews.stream()
             .map(review -> new MemberReviewGetResponse(
                 review.getId(),
@@ -74,8 +75,8 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<MentoringReviewGetResponse> findMentoringReviews(MentoringReviewGetDto dto) {
-        List<Review> reviews = findReviewsByMentoringId(dto.mentoringId());
+    public List<MentoringReviewGetResponse> findMentoringReviews(Long mentoringId) {
+        List<Review> reviews = findReviewsByMentoringId(mentoringId);
         return reviews.stream()
             .map(review -> new MentoringReviewGetResponse(
                 review.getId(),
@@ -95,5 +96,20 @@ public class ReviewService {
             review.ifPresent(reviews::add);
         }
         return reviews;
+    }
+
+    @Transactional
+    public void modifyReview(ReviewModifyDto reviewModifyDto) {
+        Review review = reviewRepository.findById(reviewModifyDto.reviewId())
+            .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        validateReviewer(review, reviewModifyDto.menteeId());
+        review.modify(reviewModifyDto.rating(), reviewModifyDto.content());
+    }
+
+    private void validateReviewer(Review review, Long reviewerId) {
+        if (review.getMenteeId().equals(reviewerId)) {
+            return;
+        }
+        throw new ReviewerNotSameException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }
 }

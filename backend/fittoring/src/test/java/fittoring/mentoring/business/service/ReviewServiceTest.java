@@ -15,8 +15,6 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
-import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
@@ -326,7 +324,6 @@ class ReviewServiceTest {
             reservation2,
             mentee
         ));
-        MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(mentee.getId());
         List<MemberReviewGetResponse> expected = List.of(
             new MemberReviewGetResponse(
                 review1.getId(),
@@ -344,7 +341,7 @@ class ReviewServiceTest {
 
         // when
         List<MemberReviewGetResponse> memberReviewGetResponses =
-            reviewService.findMemberReviews(memberReviewGetDto);
+            reviewService.findMemberReviews(mentee.getId());
 
         // then
         assertThat(memberReviewGetResponses).containsExactlyInAnyOrderElementsOf(expected);
@@ -406,11 +403,10 @@ class ReviewServiceTest {
             reservation2,
             mentee2
         ));
-        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoring.getId());
 
         // when
         List<MentoringReviewGetResponse> mentoringReviewGetResponses
-            = reviewService.findMentoringReviews(mentoringReviewGetDto);
+            = reviewService.findMentoringReviews(mentoring.getId());
 
         // then
         assertThat(mentoringReviewGetResponses).containsExactlyInAnyOrder(
