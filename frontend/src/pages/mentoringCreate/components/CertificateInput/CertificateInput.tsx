@@ -226,6 +226,11 @@ const StyledImageInputLabel = styled.label`
 `;
 
 const StyledHiddenInput = styled.input`
+  opacity: 0;
+
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 `;
 
 const StyledUploadDescription = styled.div`
