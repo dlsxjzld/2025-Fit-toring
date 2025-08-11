@@ -1,6 +1,7 @@
 import type { StatusType } from '../../../common/types/statusType';
+import type { MENTORING_APPLICATION_STATUS } from '../../createdMentoring/types/mentoringApplicationStatus';
 
-export interface ParticipatedMentoringType {
+export interface BaseParticipatedMentoringType {
   reservationId: number;
   mentorName: string;
   mentorProfileImage: string;
@@ -8,5 +9,15 @@ export interface ParticipatedMentoringType {
   reservedAt: string;
   categories: string[];
   isReviewed: boolean;
+  status: StatusType | MENTORING_APPLICATION_STATUS;
+}
+
+export interface ClientParticipatedMentoringType
+  extends BaseParticipatedMentoringType {
   status: StatusType;
+}
+
+export interface ServerParticipatedMentoringResponse
+  extends BaseParticipatedMentoringType {
+  status: MENTORING_APPLICATION_STATUS;
 }

@@ -1,6 +1,6 @@
-import type { ParticipatedMentoringType } from '../../../pages/participatedMentoring/types/participatedMentoring';
+import type { ClientParticipatedMentoringType } from '../../../pages/participatedMentoring/types/participatedMentoring';
 
-export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
+export const PARTICIPATED_MENTORING_LIST: ClientParticipatedMentoringType[] = [
   {
     reservationId: 1,
     mentorName: '이수업',

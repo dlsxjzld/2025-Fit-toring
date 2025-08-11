@@ -4,9 +4,9 @@ import defaultImage from '../../../common/assets/images/profileImg.svg';
 import MentoringApplicationStatus from '../../../common/components/MentoringApplicationStatus/MentoringApplicationStatus';
 import ReviewButton from '../ReviewButton/ReviewButton';
 
-import type { ParticipatedMentoringType } from '../types/participatedMentoring';
+import type { ClientParticipatedMentoringType } from '../types/participatedMentoring';
 interface MentoringItemProps {
-  mentoring: ParticipatedMentoringType;
+  mentoring: ClientParticipatedMentoringType;
 }
 
 const TIME = '15';

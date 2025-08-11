@@ -6,11 +6,11 @@ import { getParticipatedMentoringList } from './apis/getParticipatedMentoring';
 import MentoringItem from './MentoringItem/MentoringItem';
 import MentoringList from './MentoringList/MentoringList';
 
-import type { ParticipatedMentoringType } from './types/participatedMentoring';
+import type { ClientParticipatedMentoringType } from './types/participatedMentoring';
 
 function ParticipatedMentoring() {
   const [participatedMentoringList, setParticipatedMentoringList] = useState<
-    ParticipatedMentoringType[]
+    ClientParticipatedMentoringType[]
   >([]);
 
   useEffect(() => {
