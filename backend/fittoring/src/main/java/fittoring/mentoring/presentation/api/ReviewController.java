@@ -4,6 +4,7 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.ReviewService;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
@@ -15,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,6 +75,17 @@ public class ReviewController {
         );
         reviewService.modifyReview(reviewModifyDto);
         return ResponseEntity.status(HttpStatus.OK)
+            .build();
+    }
+
+    @DeleteMapping("reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(
+        @Login LoginInfo loginInfo,
+        @PathVariable("reviewId") Long reviewId
+    ) {
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(loginInfo.memberId(), reviewId);
+        reviewService.deleteReview(reviewDeleteDto);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
             .build();
     }
 }

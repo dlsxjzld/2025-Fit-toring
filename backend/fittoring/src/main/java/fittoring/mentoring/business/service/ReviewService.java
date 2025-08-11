@@ -13,6 +13,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
@@ -102,14 +103,22 @@ public class ReviewService {
     public void modifyReview(ReviewModifyDto reviewModifyDto) {
         Review review = reviewRepository.findById(reviewModifyDto.reviewId())
             .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateReviewer(review, reviewModifyDto.menteeId());
+        validateMenteeMatches(review, reviewModifyDto.menteeId());
         review.modify(reviewModifyDto.rating(), reviewModifyDto.content());
     }
 
-    private void validateReviewer(Review review, Long reviewerId) {
-        if (review.getMenteeId().equals(reviewerId)) {
+    private void validateMenteeMatches(Review review, Long menteeId) {
+        if (review.getMenteeId().equals(menteeId)) {
             return;
         }
         throw new ReviewerNotSameException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+    }
+
+    @Transactional
+    public void deleteReview(ReviewDeleteDto reviewDeleteDto) {
+        Review review = reviewRepository.findById((reviewDeleteDto.reviewId()))
+            .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
+        validateMenteeMatches(review, reviewDeleteDto.menteeId());
+        reviewRepository.delete(review);
     }
 }
