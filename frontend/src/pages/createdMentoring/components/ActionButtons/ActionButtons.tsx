@@ -40,9 +40,9 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
       }
 
       if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVED) {
-        await fetchPhoneNumber(StatusTypeEnum.approved);
+        await fetchPhoneNumber(StatusTypeEnum.APPROVED);
       } else {
-        onClick(StatusTypeEnum.rejected, '');
+        onClick(StatusTypeEnum.REJECTED, '');
       }
     } catch (error) {
       console.error(`Error ${newStatus} reservation:`, error);
@@ -50,7 +50,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
     }
   };
 
-  return status === StatusTypeEnum.pending ? (
+  return status === StatusTypeEnum.PENDING ? (
     <StyledContainer>
       <StyledPrimaryButton
         onClick={() =>

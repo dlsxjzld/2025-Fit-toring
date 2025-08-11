@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    status: StatusTypeEnum.pending,
+    status: StatusTypeEnum.PENDING,
   },
   parameters: {
     docs: {
@@ -39,7 +39,7 @@ export const Default: Story = {
 
 export const Approved: Story = {
   args: {
-    status: StatusTypeEnum.approved,
+    status: StatusTypeEnum.APPROVED,
   },
   parameters: {
     docs: {
@@ -53,7 +53,7 @@ export const Approved: Story = {
 
 export const Completed: Story = {
   args: {
-    status: StatusTypeEnum.completed,
+    status: StatusTypeEnum.COMPLETE,
   },
   parameters: {
     docs: {

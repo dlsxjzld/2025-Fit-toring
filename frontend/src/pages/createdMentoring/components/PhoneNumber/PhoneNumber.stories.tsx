@@ -25,7 +25,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    status: StatusTypeEnum.approved,
+    status: StatusTypeEnum.APPROVED,
     phoneNumber: '010-1234-5678',
   },
   parameters: {

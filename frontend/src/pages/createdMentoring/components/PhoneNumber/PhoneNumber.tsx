@@ -12,8 +12,8 @@ interface PhoneNumberProps {
 
 function PhoneNumber({ status, phoneNumber }: PhoneNumberProps) {
   const canShowPhoneNumber =
-    (status === StatusTypeEnum.approved ||
-      status === StatusTypeEnum.completed) &&
+    (status === StatusTypeEnum.APPROVED ||
+      status === StatusTypeEnum.COMPLETE) &&
     phoneNumber;
 
   return canShowPhoneNumber ? (

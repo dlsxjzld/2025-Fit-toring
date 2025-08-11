@@ -11,13 +11,13 @@ interface MentoringApplicationStatusProps {
 function StatusEmoticon({ status }: MentoringApplicationStatusProps) {
   const getEmoticon = (status: StatusType) => {
     switch (status) {
-      case StatusTypeEnum.pending:
+      case StatusTypeEnum.PENDING:
         return '⏳';
-      case StatusTypeEnum.approved:
+      case StatusTypeEnum.APPROVED:
         return '✅';
-      case StatusTypeEnum.completed:
+      case StatusTypeEnum.COMPLETE:
         return '🎉';
-      case StatusTypeEnum.rejected:
+      case StatusTypeEnum.REJECTED:
         return '❌';
       default:
         return null;

@@ -26,7 +26,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     isReviewed: false,
-    status: StatusTypeEnum.completed,
+    status: StatusTypeEnum.COMPLETE,
   },
   parameters: {
     docs: {
@@ -41,7 +41,7 @@ export const Default: Story = {
 export const CanReview: Story = {
   args: {
     isReviewed: false,
-    status: StatusTypeEnum.completed,
+    status: StatusTypeEnum.COMPLETE,
   },
   parameters: {
     docs: {
@@ -56,7 +56,7 @@ export const CanReview: Story = {
 export const ReviewCompleted: Story = {
   args: {
     isReviewed: true,
-    status: StatusTypeEnum.completed,
+    status: StatusTypeEnum.COMPLETE,
   },
   parameters: {
     docs: {
@@ -71,7 +71,7 @@ export const ReviewCompleted: Story = {
 export const CanNotReview: Story = {
   args: {
     isReviewed: false,
-    status: StatusTypeEnum.pending,
+    status: StatusTypeEnum.PENDING,
   },
   parameters: {
     docs: {
