@@ -10,7 +10,7 @@ public enum CertificateType {
     ETC,
     ;
 
-    public static boolean isValidCertificateType(CertificateType certificateType) {
-        return Arrays.asList(CertificateType.values()).contains(certificateType);
+    public static boolean inValidCertificateType(CertificateType certificateType) {
+        return !Arrays.asList(CertificateType.values()).contains(certificateType);
     }
 }

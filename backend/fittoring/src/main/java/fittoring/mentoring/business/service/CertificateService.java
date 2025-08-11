@@ -48,12 +48,12 @@ public class CertificateService {
         if (certificateInfos == null || certificateImageFiles == null) {
             return false;
         }
-        if(certificateInfos.size() == certificateImageFiles.size()){
+        if(certificateInfos.size() != certificateImageFiles.size()){
             throw new InvalidCertificateException(BusinessErrorMessage.CERTIFICATE_INFO_IMAGE_MISMATCH.getMessage());
         }
         for (CertificateInfo info : certificateInfos) {
-            if (!info.title().isEmpty() || !CertificateType.isValidCertificateType(info.type())) {
-                throw new InvalidCertificateException(BusinessErrorMessage.INVALID_CERTIFICATE_INFO.getMessage());
+            if (info.title().isEmpty() || CertificateType.inValidCertificateType(info.type())) {
+                throw new InvalidCertificateException(BusinessErrorMessage.INVALID_CERTIFICATE_INFO.getMessage() + info.type().name() + " " + info.title());
             }
         }
         return true;
