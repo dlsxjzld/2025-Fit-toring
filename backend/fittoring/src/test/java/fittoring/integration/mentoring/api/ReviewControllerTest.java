@@ -7,6 +7,7 @@ import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.MemberRepository;
@@ -342,11 +343,13 @@ class ReviewControllerTest {
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring1,
             mentee
         ));
         Reservation reservation2 = reservationRepository.save(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring2,
             mentee
         ));
@@ -410,11 +413,13 @@ class ReviewControllerTest {
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring,
             mentee1
         ));
         Reservation reservation2 = reservationRepository.save(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring,
             mentee2
         ));

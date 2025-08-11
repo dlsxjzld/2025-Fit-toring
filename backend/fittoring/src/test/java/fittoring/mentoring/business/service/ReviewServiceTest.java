@@ -304,11 +304,13 @@ class ReviewServiceTest {
         ));
         Reservation reservation1 = entityManager.persist(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring1,
             mentee
         ));
         Reservation reservation2 = entityManager.persist(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring2,
             mentee
         ));
@@ -382,11 +384,13 @@ class ReviewServiceTest {
         ));
         Reservation reservation1 = entityManager.persist(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring,
             mentee1
         ));
         Reservation reservation2 = entityManager.persist(new Reservation(
             "예약합니다.",
+            Status.COMPLETE,
             mentoring,
             mentee2
         ));
