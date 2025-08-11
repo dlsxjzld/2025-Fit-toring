@@ -10,7 +10,4 @@ export interface MentoringApplication {
   createdAt: string;
 }
 
-export interface MentoringApplicationResponse {
-  data: MentoringApplication[];
-  statusCode: number;
-}
+export type MentoringApplicationResponse = MentoringApplication[];

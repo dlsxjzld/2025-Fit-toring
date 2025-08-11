@@ -24,7 +24,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",
                         "https://localhost:3000",
-                        "https://dab0meo43dsq7.cloudfront.net"
+                        "https://dab0meo43dsq7.cloudfront.net",
+                        "http://3.36.244.167",
+                        "http://3.36.244.167:80"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

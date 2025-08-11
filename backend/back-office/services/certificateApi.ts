@@ -85,7 +85,8 @@ const fetchWithTokenRefresh = async (url: string, options: RequestInit): Promise
                 credentials: 'include',
             });
         } else {
-            window.location.href = '/login';
+            alert("eeee :(href로 login 페이지로 이동)");
+            window.location.href = '/web-admin/login';
             throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
         }
     }

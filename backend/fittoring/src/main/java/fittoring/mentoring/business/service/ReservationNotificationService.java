@@ -23,7 +23,7 @@ public class ReservationNotificationService {
                 reservation.getContent()
         );
         smsRestClientService.sendSms(
-                new Phone(reservation.getMentee().getPhoneNumber()),
+                new Phone(reservation.getMentorPhone()),
                 smsMessage,
                 RESERVATION_SUBJECT
         );
