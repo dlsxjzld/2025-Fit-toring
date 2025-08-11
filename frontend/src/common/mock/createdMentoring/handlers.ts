@@ -4,7 +4,7 @@ import { API_ENDPOINTS } from '../../constants/apiEndpoints';
 
 import { MENTORING_APPLICATIONS } from './data';
 
-import type { MENTORING_APPLICATION_STATUS } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
 
 export const testStateStore = {
   shouldFail: false,
@@ -33,7 +33,7 @@ const getCreatedMentoringList = http.get(CREATED_MENTORING_URL, () => {
 });
 
 interface PatchReservationStatusBody {
-  status: MENTORING_APPLICATION_STATUS;
+  status: MentoringApplicationStatus;
 }
 
 const PATCH_MENTORING_STATUS_URL = `${BASE_URL}${API_ENDPOINTS.RESERVATION}/:reservationId${API_ENDPOINTS.PATCH_MENTORING_STATUS}`;

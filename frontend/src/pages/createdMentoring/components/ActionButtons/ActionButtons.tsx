@@ -6,9 +6,9 @@ import {
 } from '../../../../common/types/statusType';
 import { getMenteePhoneNumber } from '../../apis/getMenteePhoneNumber';
 import { patchReservationStatus } from '../../apis/patchReservationStatus';
-import { MENTORING_APPLICATION_STATUS_ENUM } from '../../types/mentoringApplicationStatus';
+import { MentoringApplicationStatusEnum } from '../../types/mentoringApplicationStatus';
 
-import type { MENTORING_APPLICATION_STATUS } from '../../types/mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../types/mentoringApplicationStatus';
 
 interface ActionButtonsProps {
   reservationId: number;
@@ -28,7 +28,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
   };
 
   const handleActionButtonClick = async (
-    newStatus: MENTORING_APPLICATION_STATUS,
+    newStatus: MentoringApplicationStatus,
   ) => {
     try {
       const response = await patchReservationStatus(reservationId, {
@@ -39,7 +39,7 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         throw new Error(`Failed to update reservation status to ${newStatus}.`);
       }
 
-      if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVED) {
+      if (newStatus === MentoringApplicationStatusEnum.APPROVED) {
         await fetchPhoneNumber(StatusTypeEnum.APPROVED);
       } else {
         onClick(StatusTypeEnum.REJECTED, '');
@@ -54,14 +54,14 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
     <StyledContainer>
       <StyledPrimaryButton
         onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED)
+          handleActionButtonClick(MentoringApplicationStatusEnum.APPROVED)
         }
       >
         승인
       </StyledPrimaryButton>
       <StyledSecondaryButton
         onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.REJECTED)
+          handleActionButtonClick(MentoringApplicationStatusEnum.REJECTED)
         }
       >
         거절

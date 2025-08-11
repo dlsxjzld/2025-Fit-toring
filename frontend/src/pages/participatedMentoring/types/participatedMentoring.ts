@@ -1,5 +1,5 @@
 import type { StatusType } from '../../../common/types/statusType';
-import type { MENTORING_APPLICATION_STATUS } from '../../createdMentoring/types/mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from '../../createdMentoring/types/mentoringApplicationStatus';
 
 interface BaseParticipatedMentoringType {
   reservationId: number;
@@ -9,7 +9,7 @@ interface BaseParticipatedMentoringType {
   reservedAt: string;
   categories: string[];
   isReviewed: boolean;
-  status: StatusType | MENTORING_APPLICATION_STATUS;
+  status: StatusType | MentoringApplicationStatus;
 }
 
 export interface ClientParticipatedMentoringType
@@ -19,5 +19,5 @@ export interface ClientParticipatedMentoringType
 
 export interface ServerParticipatedMentoringResponse
   extends BaseParticipatedMentoringType {
-  status: MENTORING_APPLICATION_STATUS;
+  status: MentoringApplicationStatus;
 }

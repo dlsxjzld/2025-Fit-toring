@@ -1,4 +1,4 @@
-import { MENTORING_APPLICATION_STATUS_ENUM } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
+import { MentoringApplicationStatusEnum } from '../../../pages/createdMentoring/types/mentoringApplicationStatus';
 
 import type { ServerParticipatedMentoringResponse } from '../../../pages/participatedMentoring/types/participatedMentoring';
 
@@ -13,7 +13,7 @@ export const PARTICIPATED_MENTORING_LIST: ServerParticipatedMentoringResponse[] 
       reservedAt: '2024-01-09',
       categories: ['근력 증진', '다이어트', '요가'],
       isReviewed: true,
-      status: MENTORING_APPLICATION_STATUS_ENUM.COMPLETE,
+      status: MentoringApplicationStatusEnum.COMPLETE,
     },
     {
       reservationId: 2,
@@ -24,7 +24,7 @@ export const PARTICIPATED_MENTORING_LIST: ServerParticipatedMentoringResponse[] 
       reservedAt: '2024-01-10',
       categories: ['근력 증진'],
       isReviewed: false,
-      status: MENTORING_APPLICATION_STATUS_ENUM.COMPLETE,
+      status: MentoringApplicationStatusEnum.COMPLETE,
     },
     {
       reservationId: 3,
@@ -35,7 +35,7 @@ export const PARTICIPATED_MENTORING_LIST: ServerParticipatedMentoringResponse[] 
       reservedAt: '2024-01-12',
       categories: ['요가', '필라테스'],
       isReviewed: false,
-      status: MENTORING_APPLICATION_STATUS_ENUM.APPROVED,
+      status: MentoringApplicationStatusEnum.APPROVED,
     },
     {
       reservationId: 4,
@@ -46,6 +46,6 @@ export const PARTICIPATED_MENTORING_LIST: ServerParticipatedMentoringResponse[] 
       reservedAt: '2024-01-15',
       categories: ['재활 운동', '스트레칭'],
       isReviewed: false,
-      status: MENTORING_APPLICATION_STATUS_ENUM.PENDING,
+      status: MentoringApplicationStatusEnum.PENDING,
     },
   ];

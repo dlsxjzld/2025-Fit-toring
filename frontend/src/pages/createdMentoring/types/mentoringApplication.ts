@@ -1,4 +1,4 @@
-import type { MENTORING_APPLICATION_STATUS } from './mentoringApplicationStatus';
+import type { MentoringApplicationStatus } from './mentoringApplicationStatus';
 import type { StatusType } from '../../../common/types/statusType';
 
 interface BaseMentoringApplication {
@@ -7,7 +7,7 @@ interface BaseMentoringApplication {
   phoneNumber: string | null;
   price: number;
   content: string;
-  status: StatusType | MENTORING_APPLICATION_STATUS;
+  status: StatusType | MentoringApplicationStatus;
   createdAt: string;
 }
 export interface ClientMentoringApplication extends BaseMentoringApplication {
@@ -16,5 +16,5 @@ export interface ClientMentoringApplication extends BaseMentoringApplication {
 
 export interface ServerMentoringApplicationResponse
   extends BaseMentoringApplication {
-  status: MENTORING_APPLICATION_STATUS;
+  status: MentoringApplicationStatus;
 }

@@ -1,10 +1,10 @@
-export type MENTORING_APPLICATION_STATUS =
+export type MentoringApplicationStatus =
   | 'APPROVED'
   | 'REJECTED'
   | 'PENDING'
   | 'COMPLETE';
 
-export enum MENTORING_APPLICATION_STATUS_ENUM {
+export enum MentoringApplicationStatusEnum {
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
   PENDING = 'PENDING',
