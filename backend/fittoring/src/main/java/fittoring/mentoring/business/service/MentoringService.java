@@ -36,7 +36,6 @@ public class MentoringService {
     private final MentoringRepository mentoringRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
-    private final CertificateRepository certificateRepository;
     private final MemberRepository memberRepository;
 
     public List<MentoringSummaryResponse> findMentoringSummaries(
