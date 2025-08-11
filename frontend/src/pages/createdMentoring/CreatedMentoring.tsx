@@ -6,12 +6,12 @@ import { getMentoringApplicationList } from './apis/getMentoringApplicationList'
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
 import MentoringApplicationList from './components/MentoringApplicationList/MentoringApplicationList';
 
-import type { MentoringApplication } from './types/mentoringApplication';
+import type { ClientMentoringApplication } from './types/mentoringApplication';
 import type { StatusType } from '../../common/types/statusType';
 
 function CreatedMentoring() {
   const [mentoringApplicationList, setMentoringApplicationList] = useState<
-    MentoringApplication[]
+    ClientMentoringApplication[]
   >([]);
 
   useEffect(() => {
@@ -49,6 +49,8 @@ function CreatedMentoring() {
       });
     });
   };
+
+  console.log('mentoringApplicationList', mentoringApplicationList);
 
   return (
     <StyledContainer>

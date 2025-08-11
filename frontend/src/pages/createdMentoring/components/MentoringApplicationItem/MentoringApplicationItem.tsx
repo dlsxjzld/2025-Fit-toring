@@ -5,10 +5,10 @@ import { type StatusType } from '../../../../common/types/statusType';
 import ActionButtons from '../ActionButtons/ActionButtons';
 import PhoneNumber from '../PhoneNumber/PhoneNumber';
 
-import type { MentoringApplication } from '../../types/mentoringApplication';
+import type { ClientMentoringApplication } from '../../types/mentoringApplication';
 
 interface MentoringApplicationItemProps {
-  mentoringApplication: MentoringApplication;
+  mentoringApplication: ClientMentoringApplication;
   onActionButtonsClick: (params: {
     reservationId: number;
     status: StatusType;
