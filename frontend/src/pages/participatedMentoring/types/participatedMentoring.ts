@@ -1,5 +1,5 @@
-import type { StatusType } from '../../../common/types/statusType';
 import type { MentoringApplicationStatus } from '../../../common/types/mentoringApplicationStatus';
+import type { StatusType } from '../../../common/types/statusType';
 
 interface BaseParticipatedMentoringType {
   reservationId: number;
