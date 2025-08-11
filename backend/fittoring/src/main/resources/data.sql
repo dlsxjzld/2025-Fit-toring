@@ -1,73 +1,44 @@
 -- MEMBER
 INSERT INTO member (login_id, gender, name, phone_number, password, role)
-VALUES ('logan', 'MALE', '로건', '010-5360-9558', 'logan123', 'MENTOR'),
-       ('dogi', 'MALE', '도기', '010-5483-0455', 'dogi1234', 'MENTOR'),
-       ('bumtae', 'MALE', '범태', '010-9390-1250', 'bt2024', 'MENTOR'),
-       ('ttyong', 'MALE', '띠용', '010-3378-9048', 'tt0904', 'MENTOR'),
-       ('daisy', 'FEMALE', '데이지', '010-2542-4986', 'daisy12', 'MENTOR'),
-       ('admin', 'FEMALE', '관리자', '010-0000-0000', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN');
-
--- MENTORING
-INSERT INTO mentoring (price, career, content, introduction, mentor_id)
-VALUES (5000, 5,
-        '❌ 헬스장 갑질 논란\n✅ PT 결제 후 트레이너 태도가 변했어요.\n❗ 강압적인 트레이너의 수업 방식이 불편해요.\n\n※ 이상탁 트레이너는 다릅니다.\n\n1️⃣ 회원 만족 서비스 제공\n회원님의 귀한 시간과 돈을 투자하여 ‘고용’하는 트레이너로서\n회원님의 운동 목적 달성과 서비스 만족을 최우선으로 생각합니다.\n\n✓ 운동 관리는 물론, 신체의 움직임 원리를 기반으로\n수업하기에 혼자서도 운동을 잘할 수 있게 만들어 드립니다.\n\n✓ 일률적인 수업이 아닌 회원님의 운동 경력, 부상 경험\n개인 성향 등 회원님보다 더 회원님 몸에 대해 고민하고\n연구하여 최적의 수업을 제공합니다.\n\n2️⃣ 전문적인 수업 스펙트럼\n기계 체조, 육상 엘리트 선수를 준비하며 다양한 트레이닝을 경험하였고,\n움직임 원리에 기반한 트레이닝으로 응용하고 있습니다.\n\n또한, 발목 인대와 슬관절 부상, 허리 디스크까지 수많은 부상을 직접 겪었고 극복했기에\n부상을 방지할 수 있는 운동, 재활 운동에 대한 자신이 있습니다.',
-        '체형 교정 전문가', 1),
-       (5000, 3,
-        '❌ 헬스장 갑질 논란\n✅ PT 결제 후 트레이너 태도가 변했어요.\n❗ 강압적인 트레이너의 수업 방식이 불편해요.\n\n※ 이상탁 트레이너는 다릅니다.\n\n1️⃣ 회원 만족 서비스 제공\n회원님의 귀한 시간과 돈을 투자하여 ‘고용’하는 트레이너로서\n회원님의 운동 목적 달성과 서비스 만족을 최우선으로 생각합니다.\n\n✓ 운동 관리는 물론, 신체의 움직임 원리를 기반으로\n수업하기에 혼자서도 운동을 잘할 수 있게 만들어 드립니다.\n\n✓ 일률적인 수업이 아닌 회원님의 운동 경력, 부상 경험\n개인 성향 등 회원님보다 더 회원님 몸에 대해 고민하고\n연구하여 최적의 수업을 제공합니다.\n\n2️⃣ 전문적인 수업 스펙트럼\n기계 체조, 육상 엘리트 선수를 준비하며 다양한 트레이닝을 경험하였고,\n움직임 원리에 기반한 트레이닝으로 응용하고 있습니다.\n\n또한, 발목 인대와 슬관절 부상, 허리 디스크까지 수많은 부상을 직접 겪었고 극복했기에\n부상을 방지할 수 있는 운동, 재활 운동에 대한 자신이 있습니다.',
-        '근비대 프로그램 제공', 2),
-       (4500, 4,
-        '❌ 헬스장 갑질 논란\n✅ PT 결제 후 트레이너 태도가 변했어요.\n❗ 강압적인 트레이너의 수업 방식이 불편해요.\n\n※ 이상탁 트레이너는 다릅니다.\n\n1️⃣ 회원 만족 서비스 제공\n회원님의 귀한 시간과 돈을 투자하여 ‘고용’하는 트레이너로서\n회원님의 운동 목적 달성과 서비스 만족을 최우선으로 생각합니다.\n\n✓ 운동 관리는 물론, 신체의 움직임 원리를 기반으로\n수업하기에 혼자서도 운동을 잘할 수 있게 만들어 드립니다.\n\n✓ 일률적인 수업이 아닌 회원님의 운동 경력, 부상 경험\n개인 성향 등 회원님보다 더 회원님 몸에 대해 고민하고\n연구하여 최적의 수업을 제공합니다.\n\n2️⃣ 전문적인 수업 스펙트럼\n기계 체조, 육상 엘리트 선수를 준비하며 다양한 트레이닝을 경험하였고,\n움직임 원리에 기반한 트레이닝으로 응용하고 있습니다.\n\n또한, 발목 인대와 슬관절 부상, 허리 디스크까지 수많은 부상을 직접 겪었고 극복했기에\n부상을 방지할 수 있는 운동, 재활 운동에 대한 자신이 있습니다.',
-        '식단 중심의 다이어트', 3),
-       (5000, 2,
-        '❌ 헬스장 갑질 논란\n✅ PT 결제 후 트레이너 태도가 변했어요.\n❗ 강압적인 트레이너의 수업 방식이 불편해요.\n\n※ 이상탁 트레이너는 다릅니다.\n\n1️⃣ 회원 만족 서비스 제공\n회원님의 귀한 시간과 돈을 투자하여 ‘고용’하는 트레이너로서\n회원님의 운동 목적 달성과 서비스 만족을 최우선으로 생각합니다.\n\n✓ 운동 관리는 물론, 신체의 움직임 원리를 기반으로\n수업하기에 혼자서도 운동을 잘할 수 있게 만들어 드립니다.\n\n✓ 일률적인 수업이 아닌 회원님의 운동 경력, 부상 경험\n개인 성향 등 회원님보다 더 회원님 몸에 대해 고민하고\n연구하여 최적의 수업을 제공합니다.\n\n2️⃣ 전문적인 수업 스펙트럼\n기계 체조, 육상 엘리트 선수를 준비하며 다양한 트레이닝을 경험하였고,\n움직임 원리에 기반한 트레이닝으로 응용하고 있습니다.\n\n또한, 발목 인대와 슬관절 부상, 허리 디스크까지 수많은 부상을 직접 겪었고 극복했기에\n부상을 방지할 수 있는 운동, 재활 운동에 대한 자신이 있습니다.',
-        '홈트레이닝 입문', 4),
-       (5000, 6,
-        '❌ 헬스장 갑질 논란\n✅ PT 결제 후 트레이너 태도가 변했어요.\n❗ 강압적인 트레이너의 수업 방식이 불편해요.\n\n※ 이상탁 트레이너는 다릅니다.\n\n1️⃣ 회원 만족 서비스 제공\n회원님의 귀한 시간과 돈을 투자하여 ‘고용’하는 트레이너로서\n회원님의 운동 목적 달성과 서비스 만족을 최우선으로 생각합니다.\n\n✓ 운동 관리는 물론, 신체의 움직임 원리를 기반으로\n수업하기에 혼자서도 운동을 잘할 수 있게 만들어 드립니다.\n\n✓ 일률적인 수업이 아닌 회원님의 운동 경력, 부상 경험\n개인 성향 등 회원님보다 더 회원님 몸에 대해 고민하고\n연구하여 최적의 수업을 제공합니다.\n\n2️⃣ 전문적인 수업 스펙트럼\n기계 체조, 육상 엘리트 선수를 준비하며 다양한 트레이닝을 경험하였고,\n움직임 원리에 기반한 트레이닝으로 응용하고 있습니다.\n\n또한, 발목 인대와 슬관절 부상, 허리 디스크까지 수많은 부상을 직접 겪었고 극복했기에\n부상을 방지할 수 있는 운동, 재활 운동에 대한 자신이 있습니다.',
-        ' 전문 선수 출신', 5);
+VALUES ('admin', 'FEMALE', '관리자', '010-0000-0000', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'ADMIN');
 
 -- CATEGORY
 INSERT INTO category (title)
-VALUES ('체형교정'),
-       ('근육증가'),
+VALUES ('체형 교정'),
        ('다이어트'),
-       ('홈트레이닝'),
-       ('고강도 훈련');
+       ('벌크업'),
+       ('식단 관리'),
+       ('근력 강화'),
+       ('홈 트레이닝'),
+       ('유연성·스트레칭'),
+       ('부상 상담'),
+       ('재활 운동'),
+       ('자세 교정');
+
+-- MENTORING
+-- INSERT INTO mentoring (price, career, content, introduction, mentor_id)
+-- VALUES (5000, 5,
+--         '❌ 헬스장 갑질 논란\n✅ PT 결제 후 트레이너 태도가 변했어요.\n❗ 강압적인 트레이너의 수업 방식이 불편해요.\n\n※ 이상탁 트레이너는 다릅니다.\n\n1️⃣ 회원 만족 서비스 제공\n회원님의 귀한 시간과 돈을 투자하여 ‘고용’하는 트레이너로서\n회원님의 운동 목적 달성과 서비스 만족을 최우선으로 생각합니다.\n\n✓ 운동 관리는 물론, 신체의 움직임 원리를 기반으로\n수업하기에 혼자서도 운동을 잘할 수 있게 만들어 드립니다.\n\n✓ 일률적인 수업이 아닌 회원님의 운동 경력, 부상 경험\n개인 성향 등 회원님보다 더 회원님 몸에 대해 고민하고\n연구하여 최적의 수업을 제공합니다.\n\n2️⃣ 전문적인 수업 스펙트럼\n기계 체조, 육상 엘리트 선수를 준비하며 다양한 트레이닝을 경험하였고,\n움직임 원리에 기반한 트레이닝으로 응용하고 있습니다.\n\n또한, 발목 인대와 슬관절 부상, 허리 디스크까지 수많은 부상을 직접 겪었고 극복했기에\n부상을 방지할 수 있는 운동, 재활 운동에 대한 자신이 있습니다.',
+--         '체형 교정 전문가', 1);
 
 -- CATEGORY_MENTORING (연결 테이블)
-INSERT INTO category_mentoring (mentoring_id, category_id)
-VALUES (1, 1),
-       (2, 2),
-       (3, 3),
-       (4, 4),
-       (5, 5);
+-- INSERT INTO category_mentoring (mentoring_id, category_id)
+-- VALUES (1, 1),
+--        (1, 2),
 
 -- CERTIFICATE (멘토당 하나씩 자격증)
-INSERT INTO certificate (mentoring_id, type, title, verification_status, created_at)
-VALUES
-    (1, 'LICENSE', 'NASM CPT', 'PENDING', NOW()),
-    (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING', NOW()),
-    (3, 'LICENSE', '건강운동관리사', 'PENDING', NOW()),
-    (4, 'LICENSE', '홈트레이너 자격증', 'PENDING', NOW()),
-    (5, 'LICENSE', 'NSCA CSCS', 'PENDING', NOW());
+-- INSERT INTO certificate (mentoring_id, type, title, verification_status, created_at)
+-- VALUES
+--     (1, 'LICENSE', 'NASM CPT', 'PENDING', NOW()),
+--     (2, 'LICENSE', '생활스포츠지도사 2급', 'PENDING', NOW());
 
 -- OFFERING (멘토링 제공 서비스 설명)
-INSERT INTO offering (mentoring_id, content)
-VALUES (1, '체형 분석 및 1:1 맞춤 운동'),
-       (2, '3개월 근비대 루틴 제공'),
-       (3, '식단 컨설팅 및 체중 관리'),
-       (4, '매일 10분 홈트 챌린지'),
-       (5, '웨이트 고강도 코칭');
+-- INSERT INTO offering (mentoring_id, content)
+-- VALUES (1, '체형 분석 및 1:1 맞춤 운동'),
+--        (2, '3개월 근비대 루틴 제공'),
 
-INSERT INTO image (url, image_type, relation_id)
-VALUES ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'MENTORING_PROFILE', 1),
-       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'CERTIFICATE', 1),
-       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'CERTIFICATE', 2),
-       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'CERTIFICATE', 3),
-       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'CERTIFICATE', 4),
-       ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
-       , 'CERTIFICATE', 5);
+-- INSERT INTO image (url, image_type, relation_id)
+-- VALUES ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+--        , 'MENTORING_PROFILE', 1),
+--        ( 'https://www.google.com/imgres?q=%ED%97%AC%EC%8A%A4&imgurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Ffiles%2Fview%3Fid%3D2fac6016-a968-4e73-833c-d3097045390e%26seq%3D1&imgrefurl=https%3A%2F%2Fwww.ksponco.or.kr%2Fsports%2Fcourses%2F140%3Fmid%3Da90101000000&docid=G8P9PUkT98VZKM&tbnid=OoN80IRMs2RweM&vet=12ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA..i&w=880&h=539&hcb=2&ved=2ahUKEwjn8f2J58COAxWtglYBHUDWBaAQM3oECA0QAA'
+--        , 'CERTIFICATE', 1);
