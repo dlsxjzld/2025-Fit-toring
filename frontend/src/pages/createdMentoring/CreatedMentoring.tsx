@@ -50,8 +50,6 @@ function CreatedMentoring() {
     });
   };
 
-  console.log('mentoringApplicationList', mentoringApplicationList);
-
   return (
     <StyledContainer>
       <StyledTitle>개설한 멘토링</StyledTitle>
