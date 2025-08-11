@@ -2,6 +2,7 @@ package fittoring.exception;
 
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.DuplicatePhoneException;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.InvalidPhoneVerificationException;
 import fittoring.mentoring.business.exception.InvalidStatusException;
@@ -61,6 +62,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateLoginIdException.class)
     public ResponseEntity<ErrorResponse> handle(DuplicateLoginIdException e) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(DuplicatePhoneException.class)
+    public ResponseEntity<ErrorResponse> handle(DuplicatePhoneException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 

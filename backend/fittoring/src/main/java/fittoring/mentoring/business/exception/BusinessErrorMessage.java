@@ -12,6 +12,7 @@ public enum BusinessErrorMessage {
     PASSWORD_ENCRYPTION_FAILED("비밀번호 암호화에 실패했습니다."),
     MIS_MATCH_PASSWORD("비밀번호가 일치하지 않습니다."),
     DUPLICATE_LOGIN_ID("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요."),
+    DUPLICATE_PHONE("이미 사용 중인 전화번호입니다. 다른 전화번호를 입력해주세요."),
     LOGIN_ID_NOT_FOUND("존재하지 않는 아이디입니다."),
     EXPIRED_TOKEN("유효시간이 만료된 토큰입니다."),
     INVALID_TOKEN("유효하지 않은 토큰입니다."),

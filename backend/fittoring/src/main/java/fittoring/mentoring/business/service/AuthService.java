@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.DuplicateLoginIdException;
+import fittoring.mentoring.business.exception.DuplicatePhoneException;
 import fittoring.mentoring.business.exception.InvalidTokenException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Member;
@@ -28,6 +29,7 @@ public class AuthService {
     @Transactional
     public void register(SignUpRequest request) {
         validateDuplicateLoginId(request.loginId());
+        validateDuplicatePhone(request.phone());
         Member member = createMember(request);
         memberRepository.save(member);
     }
@@ -35,6 +37,12 @@ public class AuthService {
     public void validateDuplicateLoginId(String loginId) {
         if (memberRepository.existsByLoginId(loginId)) {
             throw new DuplicateLoginIdException(BusinessErrorMessage.DUPLICATE_LOGIN_ID.getMessage());
+        }
+    }
+
+    private void validateDuplicatePhone(String phone) {
+        if (memberRepository.existsByPhone_Number(phone)) {
+            throw new DuplicatePhoneException(BusinessErrorMessage.DUPLICATE_PHONE.getMessage());
         }
     }
 
