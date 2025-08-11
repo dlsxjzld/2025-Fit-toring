@@ -1,7 +1,7 @@
 import type { StatusType } from '../../../common/types/statusType';
 import type { MENTORING_APPLICATION_STATUS } from '../../createdMentoring/types/mentoringApplicationStatus';
 
-export interface BaseParticipatedMentoringType {
+interface BaseParticipatedMentoringType {
   reservationId: number;
   mentorName: string;
   mentorProfileImage: string;
