@@ -15,6 +15,9 @@ public record MentoringSummaryResponse(
 ) {
 
     public static MentoringSummaryResponse of(Mentoring mentoring, List<String> categories, Image image) {
+        if (image == null) {
+            return MentoringSummaryResponse.of(mentoring, categories);
+        }
         return new MentoringSummaryResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
@@ -27,6 +30,14 @@ public record MentoringSummaryResponse(
     }
 
     public static MentoringSummaryResponse of(Mentoring mentoring, List<String> categories) {
-        return MentoringSummaryResponse.of(mentoring, categories, null);
+        return new MentoringSummaryResponse(
+                mentoring.getId(),
+                mentoring.getMentorName(),
+                categories,
+                mentoring.getPrice(),
+                mentoring.getCareer(),
+                null,
+                mentoring.getIntroduction()
+        );
     }
 }
