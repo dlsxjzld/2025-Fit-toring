@@ -14,8 +14,10 @@ interface ReviewCompleteButtonProps {
 }
 
 interface ReviewButtonProps {
+  reservationId: number;
   isReviewed: boolean;
   status: StatusType;
+  onReviewButtonClick: () => void;
 }
 
 function ReviewWriteButton({ onClick, disabled }: ReviewWriteButtonProps) {
@@ -34,14 +36,24 @@ function ReviewCompleteButton({ onClick }: ReviewCompleteButtonProps) {
   );
 }
 
-function ReviewButton({ isReviewed, status }: ReviewButtonProps) {
+function ReviewButton({
+  reservationId,
+  isReviewed,
+  status,
+  onReviewButtonClick,
+}: ReviewButtonProps) {
   const canWriteReview = !isReviewed && status === StatusTypeEnum.COMPLETE;
 
   if (isReviewed) {
     return <ReviewCompleteButton onClick={() => {}} />;
   }
 
-  return <ReviewWriteButton onClick={() => {}} disabled={!canWriteReview} />;
+  return (
+    <ReviewWriteButton
+      onClick={() => onReviewButtonClick()}
+      disabled={!canWriteReview}
+    />
+  );
 }
 
 export default ReviewButton;

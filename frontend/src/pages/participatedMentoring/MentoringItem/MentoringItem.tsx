@@ -5,6 +5,8 @@ import MentoringApplicationStatus from '../../../common/components/MentoringAppl
 import ReviewButton from '../ReviewButton/ReviewButton';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
+import ReviewModal from '../ReviewModal/ReviewModal';
+import { useState } from 'react';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
 }
@@ -13,6 +15,7 @@ const TIME = '15';
 
 function MentoringItem({
   mentoring: {
+    reservationId,
     mentorName,
     mentorProfileImage,
     price,
@@ -22,8 +25,14 @@ function MentoringItem({
     status,
   },
 }: MentoringItemProps) {
+  const [opened, setOpened] = useState(false);
+
+  const handleReviewModalToggle = () => {
+    setOpened((prev) => !prev);
+  };
+
   return (
-    <StyledContainer key={mentorName}>
+    <StyledContainer key={reservationId}>
       <StyledMentorInfoWrapper>
         <StyledProfileImage
           src={mentorProfileImage || defaultImage}
@@ -49,8 +58,20 @@ function MentoringItem({
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
-        <ReviewButton isReviewed={isReviewed} status={status} />
+        <ReviewButton
+          reservationId={reservationId}
+          isReviewed={isReviewed}
+          status={status}
+          onReviewButtonClick={handleReviewModalToggle}
+        />
       </StyledApplicationInfoWrapper>
+      <ReviewModal
+        key={reservationId}
+        reservationId={reservationId}
+        mentorName={mentorName}
+        opened={opened}
+        onCloseClick={handleReviewModalToggle}
+      />
     </StyledContainer>
   );
 }
