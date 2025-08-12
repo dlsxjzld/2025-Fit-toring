@@ -117,7 +117,7 @@ const StyledTap = styled.p<{ selected?: boolean }>`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B};
 `;
 
-const StyledTapIndicator = styled.div<{ selected?: 'detail' | 'review' }>`
+const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
   position: absolute;
   bottom: 0;
   left: 0;
