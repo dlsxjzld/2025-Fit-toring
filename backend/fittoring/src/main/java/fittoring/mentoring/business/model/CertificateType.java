@@ -12,6 +12,6 @@ public enum CertificateType {
 
     public static boolean inValidCertificateType(String certificateTypeName) {
         return Arrays.stream(CertificateType.values())
-                .anyMatch(certificateType -> certificateType.name().equalsIgnoreCase(certificateTypeName));
+                .noneMatch(certificateType -> certificateType.name().equalsIgnoreCase(certificateTypeName));
     }
 }
