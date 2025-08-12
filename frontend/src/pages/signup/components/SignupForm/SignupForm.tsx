@@ -218,7 +218,7 @@ function SignupForm() {
           onVerificationCodeChange={handleVerificationCodeChange}
           onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
           onAuthCodeClick={handleAuthCodeClick}
-          isVerificationButtonEnabled={getVerificationButtonEnabled()}
+          verificationButtonEnabled={getVerificationButtonEnabled()}
           verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
       </StyledFormFields>
