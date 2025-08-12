@@ -15,6 +15,7 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
+import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
@@ -40,6 +41,7 @@ public class MentoringService {
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final MemberRepository memberRepository;
+    private final CertificateRepository certificateRepository;
 
     public List<MentoringSummaryResponse> findMentoringSummaries(
             String categoryTitle1,
@@ -163,7 +165,7 @@ public class MentoringService {
     }
 
     private void validateAlreadyRegistered(Member member) {
-        if(mentoringRepository.existsByMentor(member)){
+        if (mentoringRepository.existsByMentor(member)) {
             throw new MentoringAlreadyExistException(BusinessErrorMessage.MENTORING_ALREADY_EXIST.getMessage());
         }
     }
