@@ -26,16 +26,7 @@ function MentoringCreateForm() {
     introduction: '',
     career: 0,
     content: '',
-    certificateInfos: [
-      {
-        type: null,
-        title: null,
-      },
-      {
-        type: null,
-        title: null,
-      },
-    ],
+    certificateInfos: [],
   });
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
   const [certificateImageFiles, setCertificateImageFiles] = useState<File[]>(
@@ -70,6 +61,7 @@ function MentoringCreateForm() {
         profileImageFile,
         certificateImageFiles,
       );
+
       if (response.status === 201) {
         alert('멘토링 등록 성공');
       }
