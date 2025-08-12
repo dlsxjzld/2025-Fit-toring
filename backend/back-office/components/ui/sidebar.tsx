@@ -229,16 +229,29 @@ function Sidebar({
       <div
         data-slot="sidebar-container"
         className={cn(
-          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
+          "fixed inset-y-0 z-10 hidden h-svh transition-[left,right,width] duration-200 ease-linear md:flex",
+          // 명시적인 너비와 위치 설정
+          "w-64", // 16rem = 256px
+          state === "collapsed" && collapsible === "icon" && "w-12", // 3rem = 48px
           side === "left"
-            ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
-            : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+            ? "left-0"
+            : "right-0",
+          // offcanvas 모드에서는 화면 밖으로 이동
+          collapsible === "offcanvas" && state === "collapsed" && (
+            side === "left" ? "-left-64" : "-right-64"
+          ),
           // Adjust the padding for floating and inset variants.
           variant === "floating" || variant === "inset"
-            ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4))+2px)]"
-            : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+            ? "p-2"
+            : "group-data-[side=left]:border-r group-data-[side=right]:border-l",
           className,
         )}
+        style={{
+          // CSS 변수에 의존하지 않는 명시적 스타일
+          width: state === "collapsed" && collapsible === "icon" ? "3rem" : "16rem",
+          left: side === "left" ? (collapsible === "offcanvas" && state === "collapsed" ? "-16rem" : "0") : "auto",
+          right: side === "right" ? (collapsible === "offcanvas" && state === "collapsed" ? "-16rem" : "0") : "auto",
+        }}
         {...props}
       >
         <div
@@ -305,14 +318,23 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
 }
 
 function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
+  const { state, isMobile } = useSidebar();
+  
   return (
     <main
       data-slot="sidebar-inset"
       className={cn(
         "bg-background relative flex w-full flex-1 flex-col",
+        // 명시적인 margin-left 추가 for 정적 배포 환경
+        "md:ml-64", // 256px = 16rem = w-64
+        "md:peer-data-[state=collapsed]:ml-12", // 48px = 3rem = collapsed width
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         className,
       )}
+      style={{
+        // CSS 변수 fallback을 위한 명시적 스타일
+        marginLeft: isMobile ? '0' : state === 'collapsed' ? '3rem' : '16rem',
+      }}
       {...props}
     />
   );
