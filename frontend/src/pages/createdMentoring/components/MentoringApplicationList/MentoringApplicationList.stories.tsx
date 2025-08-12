@@ -37,7 +37,10 @@ export const Default: Story = {
     children: (
       <>
         {MENTORING_APPLICATIONS.map((item) => (
-          <MentoringApplicationItem mentoringApplication={item} />
+          <MentoringApplicationItem
+            mentoringApplication={item}
+            onActionButtonsClick={() => {}}
+          />
         ))}
       </>
     ),

@@ -8,32 +8,32 @@ interface MentoringApplicationStatusProps {
   status: StatusType;
 }
 
-function StatusEmoticon({ status }: MentoringApplicationStatusProps) {
-  const getEmoticon = (status: StatusType) => {
-    switch (status) {
-      case StatusTypeEnum.pending:
-        return '⏳';
-      case StatusTypeEnum.approved:
-        return '✅';
-      case StatusTypeEnum.completed:
-        return '🎉';
-      case StatusTypeEnum.rejected:
-        return '❌';
-      default:
-        return null;
-    }
-  };
-
-  return <span>{getEmoticon(status)}</span>;
-}
+const STATUS_DESCRIPTION = {
+  [StatusTypeEnum.PENDING]: {
+    VALUE: '승인대기',
+    EMOTICON: '⏳',
+  },
+  [StatusTypeEnum.APPROVED]: {
+    VALUE: '승인됨',
+    EMOTICON: '✅',
+  },
+  [StatusTypeEnum.COMPLETE]: {
+    VALUE: '완료됨',
+    EMOTICON: '🎉',
+  },
+  [StatusTypeEnum.REJECTED]: {
+    VALUE: '거절됨',
+    EMOTICON: '❌',
+  },
+} as const;
 
 function MentoringApplicationStatus({
   status,
 }: MentoringApplicationStatusProps) {
   return (
     <StyledContainer status={status}>
-      <StatusEmoticon status={status} />
-      <span>{status}</span>
+      <span>{STATUS_DESCRIPTION[status].EMOTICON}</span>
+      <span>{STATUS_DESCRIPTION[status].VALUE}</span>
     </StyledContainer>
   );
 }
@@ -48,22 +48,22 @@ const statusStyles: Record<
     color: (theme: myTheme) => string;
   }
 > = {
-  승인대기: {
+  PENDING: {
     border: (theme) => theme.OUTLINE.YELLOW,
     background: (theme) => theme.BG.YELLOW,
     color: (theme) => theme.FONT.Y01,
   },
-  승인됨: {
+  APPROVED: {
     border: (theme) => theme.SYSTEM.MAIN300,
     background: (theme) => theme.SYSTEM.MAIN100,
     color: (theme) => theme.SYSTEM.MAIN800,
   },
-  완료됨: {
+  COMPLETE: {
     border: (theme) => theme.SYSTEM.MAIN500,
     background: (theme) => theme.SYSTEM.MAIN200,
     color: (theme) => theme.SYSTEM.MAIN900,
   },
-  거절됨: {
+  REJECTED: {
     border: (theme) => theme.FONT.ERROR,
     background: (theme) => theme.BG.RED,
     color: (theme) => theme.FONT.W01,
