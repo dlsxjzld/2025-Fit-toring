@@ -14,7 +14,6 @@ interface ReviewCompleteButtonProps {
 }
 
 interface ReviewButtonProps {
-  reservationId: number;
   isReviewed: boolean;
   status: StatusType;
   onReviewButtonClick: () => void;
@@ -37,7 +36,6 @@ function ReviewCompleteButton({ onClick }: ReviewCompleteButtonProps) {
 }
 
 function ReviewButton({
-  reservationId,
   isReviewed,
   status,
   onReviewButtonClick,

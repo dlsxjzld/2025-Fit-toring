@@ -61,7 +61,6 @@ function MentoringItem({
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
         <ReviewButton
-          reservationId={reservationId}
           isReviewed={isReviewed}
           status={status}
           onReviewButtonClick={handleReviewModalToggle}
