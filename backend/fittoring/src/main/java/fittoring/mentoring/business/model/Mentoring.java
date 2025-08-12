@@ -51,6 +51,22 @@ public class Mentoring {
         this(null, price, career, content, introduction, member);
     }
 
+    public void modify(
+        int price,
+        Integer career,
+        String content,
+        String introduction
+    ) {
+        this.price = price;
+        this.career = career;
+        this.content = content;
+        this.introduction = introduction;
+    }
+
+    public boolean isSameMentorId(Long mentorId) {
+        return this.mentor.getId().equals(mentorId);
+    }
+
     public String getMentorName() {
         return this.mentor.getName();
     }

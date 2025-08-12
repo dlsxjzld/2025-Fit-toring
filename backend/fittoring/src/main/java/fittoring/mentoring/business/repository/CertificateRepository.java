@@ -9,5 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CertificateRepository extends ListCrudRepository<Certificate, Long> {
 
-    List<Certificate> findByVerificationStatus(Status statu);
+    List<Certificate> findByVerificationStatus(Status status);
+
+    List<Certificate> findAllByMentoringId(Long mentoringId);
 }

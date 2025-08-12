@@ -16,7 +16,6 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
-import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateInfo;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
@@ -34,10 +33,11 @@ public class CertificateService {
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
 
-    public void certificateMapping(RegisterMentoringDto dto, Mentoring savedMentoring) {
-        List<CertificateInfo> certificateInfos = dto.certificateInfos();
-        List<MultipartFile> certificateImageFiles = dto.certificateImages();
-
+    public void certificateMapping(
+        List<CertificateInfo> certificateInfos,
+        List<MultipartFile> certificateImageFiles,
+        Mentoring savedMentoring
+    ) {
         if (validateCertificateRequestData(certificateInfos, certificateImageFiles)) {
             saveAllCertificates(certificateInfos, certificateImageFiles, savedMentoring);
         }
@@ -119,6 +119,10 @@ public class CertificateService {
                 ));
     }
 
+    public List<Certificate> findAllByMentoringId(Long mentoringId) {
+        return certificateRepository.findAllByMentoringId(mentoringId);
+    }
+
     @Transactional
     public void approveCertificate(Long memberId, Long certificateId) {
         checkAdminAuthority(memberId);
@@ -131,5 +135,9 @@ public class CertificateService {
         checkAdminAuthority(memberId);
         Certificate certificate = getCertificateOne(certificateId);
         certificate.reject();
+    }
+
+    public void deleteAll(List<Certificate> certificates) {
+        certificateRepository.deleteAll(certificates);
     }
 }

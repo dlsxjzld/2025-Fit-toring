@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface ImageRepository extends ListCrudRepository<Image, Long> {
 
     Optional<Image> findByImageTypeAndRelationId(ImageType imageType, Long relationId);
+
+    void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId);
 }
