@@ -33,13 +33,13 @@ public class CertificateService {
     private final CertificateRepository certificateRepository;
     private final ImageService imageService;
 
-    public void certificateMapping(
+    public void mapCertificatesToMentoring(
         List<CertificateInfo> certificateInfos,
         List<MultipartFile> certificateImageFiles,
-        Mentoring savedMentoring
+        Mentoring mentoring
     ) {
         if (validateCertificateRequestData(certificateInfos, certificateImageFiles)) {
-            saveAllCertificates(certificateInfos, certificateImageFiles, savedMentoring);
+            saveAllCertificates(certificateInfos, certificateImageFiles, mentoring);
         }
     }
 

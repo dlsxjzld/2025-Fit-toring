@@ -60,7 +60,7 @@ public class MentoringService {
 
         Image profileImage = saveProfileImage(dto.profileImage(), savedMentoring);
 
-        certificateService.certificateMapping(dto.certificateInfos(), dto.certificateImages(), savedMentoring);
+        certificateService.mapCertificatesToMentoring(dto.certificateInfos(), dto.certificateImages(), savedMentoring);
         member.registerAsMentor();
         return MentoringResponse.from(savedMentoring, categoryTitles, profileImage);
     }
@@ -191,7 +191,7 @@ public class MentoringService {
         List<String> categoryTitles = dto.category();
         mapCategoriesToMentoring(categoryTitles, mentoring);
         Image profileImage = saveProfileImage(dto.profileImage(), mentoring);
-        certificateService.certificateMapping(dto.certificateInfos(), dto.certificateImages(), mentoring);
+        certificateService.mapCertificatesToMentoring(dto.certificateInfos(), dto.certificateImages(), mentoring);
         mentoring.modify(dto.price(), dto.career(), dto.content(), dto.introduction());
 
         return MentoringResponse.from(mentoring, categoryTitles, profileImage);
