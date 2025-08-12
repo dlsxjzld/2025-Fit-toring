@@ -13,6 +13,16 @@ function ParticipatedMentoring() {
     ParticipatedMentoringType[]
   >([]);
 
+  const handleReviewSubmitButtonClick = (reservationId: number) => {
+    setParticipatedMentoringList((prevList) =>
+      prevList.map((item) =>
+        item.reservationId === reservationId
+          ? { ...item, isReviewed: true }
+          : item,
+      ),
+    );
+  };
+
   useEffect(() => {
     const fetchParticipatedMentoringList = async () => {
       const data = await getParticipatedMentoringList();
