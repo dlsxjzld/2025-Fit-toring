@@ -50,24 +50,61 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
     }
   };
 
-  return status === StatusTypeEnum.PENDING ? (
-    <StyledContainer>
-      <StyledPrimaryButton
-        onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED)
-        }
-      >
-        승인
-      </StyledPrimaryButton>
-      <StyledSecondaryButton
-        onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.REJECTED)
-        }
-      >
-        거절
-      </StyledSecondaryButton>
-    </StyledContainer>
-  ) : null;
+  const handleCompleteButtonClick = async (
+    newStatus: MENTORING_APPLICATION_STATUS,
+  ) => {
+    try {
+      const response = await patchReservationStatus(reservationId, {
+        status: newStatus,
+      });
+
+      if (response.status !== 200) {
+        throw new Error(`Failed to update reservation status to ${newStatus}.`);
+      }
+      if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.COMPLETE) {
+        onClick(StatusTypeEnum.COMPLETE, '');
+      }
+    } catch (error) {
+      console.error(`Error ${newStatus} reservation:`, error);
+      return;
+    }
+  };
+
+  if (status === StatusTypeEnum.PENDING) {
+    return (
+      <StyledContainer>
+        <StyledPrimaryButton
+          onClick={() =>
+            handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED)
+          }
+        >
+          승인
+        </StyledPrimaryButton>
+        <StyledSecondaryButton
+          onClick={() =>
+            handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.REJECTED)
+          }
+        >
+          거절
+        </StyledSecondaryButton>
+      </StyledContainer>
+    );
+  }
+  if (status === StatusTypeEnum.APPROVED) {
+    return (
+      <StyledContainer>
+        <StyledPrimaryButton
+          onClick={() =>
+            handleCompleteButtonClick(
+              MENTORING_APPLICATION_STATUS_ENUM.COMPLETE,
+            )
+          }
+        >
+          완료
+        </StyledPrimaryButton>
+      </StyledContainer>
+    );
+  }
 }
 
 export default ActionButtons;
