@@ -6,14 +6,19 @@ import { postAuthCodeVerify } from '../apis/postAuthCodeVerify';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
+import type { VerificationStep } from '../components/SignupForm/SignupForm';
+
 interface useVerificationCodeConfirmParams {
   verificationCode: string;
   verificationCodeErrorMessage: string;
+  successVerification: () => void;
+  verificationStep: VerificationStep;
 }
 
 const useVerificationCodeConfirm = ({
   verificationCode,
   verificationCodeErrorMessage,
+  successVerification,
 }: useVerificationCodeConfirmParams) => {
   const {
     confirm: confrimVerificationCode,
@@ -30,6 +35,7 @@ const useVerificationCodeConfirm = ({
       if (response.status === 200) {
         alert('인증 성공');
         confrimVerificationCode();
+        successVerification();
       }
     } catch (error) {
       setVerificationCodeError(true);
@@ -48,6 +54,7 @@ const useVerificationCodeConfirm = ({
     if (!verificationCodeMatchConfirmed) {
       return '인증을 해주세요';
     }
+
     if (verificationCodeError) {
       return '인증 실패';
     }
@@ -58,6 +65,7 @@ const useVerificationCodeConfirm = ({
   return {
     verificationCodeError,
     handleAuthCodeVerifyClick,
+    verificationCodeMatchConfirmed,
     getFinalVerificationCodeErrorMessage,
     shouldBlockSubmitByVerificationCode,
   };
