@@ -22,6 +22,8 @@ function LoginForm() {
   const { userId, handleUserIdChange } = useUserIdInput();
   const { password, handlePasswordChange } = usePasswordInput();
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   const navigate = useNavigate();
 
   const { setAuthenticated } = useAuth();
@@ -35,6 +37,10 @@ function LoginForm() {
       }
     } catch (error) {
       console.error('로그인 실패', error);
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+      }
+
       Sentry.captureException(error, {
         level: 'warning',
         tags: {
@@ -84,21 +90,24 @@ function LoginForm() {
           </StyledInputWithIconWrapper>
         </FormField>
       </StyledFields>
-      <Button
-        type="submit"
-        size="full"
-        customStyle={css`
-          height: 4.3rem;
-          box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
-          box-shadow: 0 4px 12px 0
-            ${loginFormValidated ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
+      {errorMessage && <StyledErrorText>{errorMessage}</StyledErrorText>}
+      <StyledButtonWrapper>
+        <Button
+          type="submit"
+          size="full"
+          customStyle={css`
+            height: 4.3rem;
+            box-shadow: 0 4px 12px 0 rgb(0 120 111 / 30%);
+            box-shadow: 0 4px 12px 0
+              ${loginFormValidated ? 'rgb(0 120 111 / 30%)' : 'rgb(0 0 0 / 8%)'};
 
-          font-size: 1.6rem;
-        `}
-        variant={loginFormValidated ? 'primary' : 'disabled'}
-      >
-        로그인
-      </Button>
+            font-size: 1.6rem;
+          `}
+          variant={loginFormValidated ? 'primary' : 'disabled'}
+        >
+          로그인
+        </Button>
+      </StyledButtonWrapper>
     </StyledContainer>
   );
 }
@@ -108,7 +117,6 @@ export default LoginForm;
 const StyledContainer = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 3.5rem;
 `;
 
 const StyledFields = styled.div`
@@ -159,4 +167,16 @@ const StyledImg = styled.img`
   cursor: pointer;
 
   margin-right: 1rem;
+`;
+
+const StyledButtonWrapper = styled.div`
+  margin-top: 3rem;
+`;
+
+const StyledErrorText = styled.span`
+  margin-top: 1rem;
+
+  color: ${({ theme }) => theme.FONT.ERROR};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
