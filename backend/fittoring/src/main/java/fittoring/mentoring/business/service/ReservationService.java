@@ -133,6 +133,7 @@ public class ReservationService {
                 mentoring.getPrice(),
                 reservation.getCreatedAt().toLocalDate(),
                 categoryTitles,
+                reservation.getStatus(),
                 isReviewed
         );
     }
