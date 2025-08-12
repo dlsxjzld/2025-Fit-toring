@@ -9,6 +9,7 @@ import ReviewModal from '../ReviewModal/ReviewModal';
 import { useState } from 'react';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
+  handleReviewSubmitButtonClick: (reservationId: number) => void;
 }
 
 const TIME = '15';
@@ -24,6 +25,7 @@ function MentoringItem({
     isReviewed,
     status,
   },
+  handleReviewSubmitButtonClick,
 }: MentoringItemProps) {
   const [opened, setOpened] = useState(false);
 
@@ -71,6 +73,7 @@ function MentoringItem({
         mentorName={mentorName}
         opened={opened}
         onCloseClick={handleReviewModalToggle}
+        onReviewSubmitButtonClick={handleReviewSubmitButtonClick}
       />
     </StyledContainer>
   );

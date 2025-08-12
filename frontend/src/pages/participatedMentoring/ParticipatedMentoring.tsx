@@ -7,6 +7,7 @@ import MentoringItem from './MentoringItem/MentoringItem';
 import MentoringList from './MentoringList/MentoringList';
 
 import type { ParticipatedMentoringType } from './types/participatedMentoring';
+import { StatusTypeEnum } from '../../common/types/statusType';
 
 function ParticipatedMentoring() {
   const [participatedMentoringList, setParticipatedMentoringList] = useState<
@@ -17,7 +18,7 @@ function ParticipatedMentoring() {
     setParticipatedMentoringList((prevList) =>
       prevList.map((item) =>
         item.reservationId === reservationId
-          ? { ...item, isReviewed: true }
+          ? { ...item, isReviewed: true, status: StatusTypeEnum.COMPLETE }
           : item,
       ),
     );
@@ -49,7 +50,11 @@ function ParticipatedMentoring() {
         {participatedMentoringList.length > 0 ? (
           <MentoringList>
             {participatedMentoringList.map((item) => (
-              <MentoringItem key={item.reservationId} mentoring={item} />
+              <MentoringItem
+                key={item.reservationId}
+                mentoring={item}
+                handleReviewSubmitButtonClick={handleReviewSubmitButtonClick}
+              />
             ))}
           </MentoringList>
         ) : (
