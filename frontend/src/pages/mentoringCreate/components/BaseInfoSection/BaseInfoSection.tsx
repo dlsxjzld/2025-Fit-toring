@@ -46,7 +46,7 @@ function BaseInfoSection({
       <TitleSeparator>기본 정보</TitleSeparator>
       <StyledFormFieldWrapper>
         <FormField label="이름 *">
-          <Input value={userInfo.name} id="name" readOnly />
+          <Input value={userInfo.name} id="name" disabled />
         </FormField>
         <FormField label="15분 상담료 (원) *" errorMessage={priceErrorMessage}>
           <Input
@@ -58,7 +58,7 @@ function BaseInfoSection({
           />
         </FormField>
         <FormField label="전화번호 *">
-          <Input value={userInfo.phoneNumber} id="phone" readOnly />
+          <Input value={userInfo.phoneNumber} id="phone" disabled />
         </FormField>
       </StyledFormFieldWrapper>
     </section>
@@ -72,7 +72,7 @@ const StyledFormFieldWrapper = styled.div`
   flex-direction: column;
   gap: 2rem;
 
-  & > div > input {
+  & input {
     &:hover {
       border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
     }

@@ -28,7 +28,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (!isAuthenticated) {
     console.log('❌ ProtectedRoute - Not authenticated, redirecting to login');
     // 현재 위치를 state로 저장하여 로그인 후 원래 페이지로 돌아갈 수 있게 함
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/web-admin/login" state={{ from: location }} replace />;
   }
 
   console.log('✅ ProtectedRoute - Authenticated, rendering protected content');

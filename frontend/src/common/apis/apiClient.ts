@@ -57,10 +57,12 @@ class ApiClient {
     };
 
     const response = await fetch(url, options);
-    if (!response.ok) {
-      throw new Error('데이터를 GET하는 데 실패했습니다.');
-    }
 
+    if (!response.ok) {
+      const data = await response.json();
+      throw new Error(data.message);
+    }
+    // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
     return response.json();
   }
 
@@ -80,9 +82,10 @@ class ApiClient {
     const response = await fetch(url, options);
 
     if (!response.ok) {
-      throw new Error('데이터를 POST하는 데 실패했습니다.');
+      // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
+      const data = await response.json();
+      throw new Error(data.message);
     }
-
     return response;
   }
 
@@ -97,8 +100,11 @@ class ApiClient {
     };
 
     const response = await fetch(url, options);
+
     if (!response.ok) {
-      throw new Error('데이터를 DELETE하는 데 실패했습니다.');
+      // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
+      const data = await response.json();
+      throw new Error(data.message);
     }
   }
 
@@ -117,8 +123,11 @@ class ApiClient {
     };
 
     const response = await fetch(url, options);
+
     if (!response.ok) {
-      throw new Error('데이터를 PATCH하는 데 실패했습니다.');
+      // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
+      const data = await response.json();
+      throw new Error(data.message);
     }
     return response;
   }

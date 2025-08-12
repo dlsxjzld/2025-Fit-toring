@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
+import fittoring.mentoring.business.exception.MentoringAlreadyExistException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
@@ -34,6 +35,7 @@ import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -525,6 +527,42 @@ class MentoringServiceTest {
                 softAssertions.assertThat(certificateImage1.getUrl()).isEqualTo(certificateImageS3Url1);
                 softAssertions.assertThat(certificateImage2.getUrl()).isEqualTo(certificateImageS3Url2);
             });
+        }
+
+        @DisplayName("멘토링은 한 번만 등록 가능하다.")
+        @Test
+        void register2Mentoring() throws IOException {
+            //given
+            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-1234-9048"), Password.from("pw"));
+            Member savedMentor = memberRepository.save(member1);
+
+            MentoringRequest request = new MentoringRequest(
+                    5000,
+                    List.of("근육증가", "다이어트"),
+                    "자기소개",
+                    3,
+                    "컨텐츠컨텐츠",
+                    List.of()
+            );
+
+            Category category1 = new Category("근육증가");
+            Category category2 = new Category("다이어트");
+
+            categoryRepository.save(category1);
+            categoryRepository.save(category2);
+
+            when(s3Uploader.upload(any(), any())).thenReturn(null);
+
+            // when
+            mentoringService.registerMentoring(
+                    RegisterMentoringDto.of(savedMentor.getId(), request, null, null));
+
+            // then
+            Assertions.assertThatThrownBy(
+                    () -> mentoringService.registerMentoring(
+                            RegisterMentoringDto.of(savedMentor.getId(), request, null, null)))
+                    .isInstanceOf(MentoringAlreadyExistException.class)
+                    .hasMessage(BusinessErrorMessage.MENTORING_ALREADY_EXIST.getMessage());
         }
     }
 }

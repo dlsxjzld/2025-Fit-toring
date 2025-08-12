@@ -56,7 +56,7 @@ const StyledFormFieldWrapper = styled.div`
   flex-direction: column;
   gap: 2rem;
 
-  & > div > input {
+  & input {
     &:hover {
       border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
     }

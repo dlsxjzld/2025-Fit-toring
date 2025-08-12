@@ -35,7 +35,7 @@ function ReviewCompleteButton({ onClick }: ReviewCompleteButtonProps) {
 }
 
 function ReviewButton({ isReviewed, status }: ReviewButtonProps) {
-  const canWriteReview = !isReviewed && status === StatusTypeEnum.completed;
+  const canWriteReview = !isReviewed && status === StatusTypeEnum.COMPLETE;
 
   if (isReviewed) {
     return <ReviewCompleteButton onClick={() => {}} />;

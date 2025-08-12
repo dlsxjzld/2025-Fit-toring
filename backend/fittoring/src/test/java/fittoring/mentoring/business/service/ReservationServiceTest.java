@@ -353,6 +353,7 @@ class ReservationServiceTest {
                         mentoring1.getPrice(),
                         reservation1.getCreatedAt().toLocalDate(),
                         List.of(category1OfMentoring1.getCategoryTitle(), category2OfMentoring1.getCategoryTitle()),
+                        Status.PENDING.name(),
                         false
                 ),
                 new ParticipatedReservationResponse(
@@ -363,6 +364,7 @@ class ReservationServiceTest {
                         mentoring2.getPrice(),
                         reservation2.getCreatedAt().toLocalDate(),
                         List.of(category1OfMentoring2.getCategoryTitle()),
+                        Status.PENDING.name(),
                         true
                 )
         );

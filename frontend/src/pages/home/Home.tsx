@@ -16,6 +16,7 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
+import { useLocation } from 'react-router-dom';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],
@@ -59,21 +60,28 @@ function Home() {
 
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
 
+  const location = useLocation();
+
+  const fetchMentorData = async () => {
+    try {
+      const data = await getMentorList({
+        params: convertSelectedSpecialtiesToParams(selectedSpecialties),
+      });
+      setMentorList(data);
+    } catch (error) {
+      console.error('멘토 데이터 가져오기 실패:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchMentorData = async () => {
-      try {
-        const data = await getMentorList({
-          params: convertSelectedSpecialtiesToParams(selectedSpecialties),
-        });
-
-        setMentorList(data);
-      } catch (error) {
-        console.error('멘토 데이터 가져오기 실패:', error);
-      }
-    };
-
     fetchMentorData();
   }, [selectedSpecialties]);
+
+  useEffect(() => {
+    if (location.state?.refetch) {
+      fetchMentorData();
+    }
+  }, [location.state]);
 
   return (
     <StyledContainer>

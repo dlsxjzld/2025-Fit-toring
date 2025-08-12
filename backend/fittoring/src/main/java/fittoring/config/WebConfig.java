@@ -25,8 +25,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:3000",
                         "https://localhost:3000",
                         "https://dab0meo43dsq7.cloudfront.net",
-                        "http://3.36.244.167",
-                        "http://3.36.244.167:80"
+                        "http://fittoring.store",
+                        "https://www.fittoring.store"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")

@@ -3,6 +3,7 @@ package fittoring.aspect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -15,10 +16,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+@RequiredArgsConstructor
 @Slf4j
 @Aspect
 @Component
 public class LogAspect {
+
+    private final ObjectMapper objectMapper;
 
     @Pointcut("execution(* fittoring..*Controller.*(..))")
     public void controller() {
@@ -67,7 +71,7 @@ public class LogAspect {
     public void logAfterApiCall(Object result) {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        ObjectMapper objectMapper = new ObjectMapper();
+
         try {
             logHttpInfo(attributes, "RESPONSE", objectMapper.writeValueAsString(result));
         } catch (Exception e) {

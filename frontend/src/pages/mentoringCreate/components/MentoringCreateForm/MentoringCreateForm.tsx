@@ -94,7 +94,7 @@ function MentoringCreateForm() {
       return;
     }
     submitMentoringForm();
-    navigate(PAGE_URL.HOME);
+    navigate(PAGE_URL.HOME, { state: { refetch: true } });
   };
 
   const handleCancelButtonClick = () => {

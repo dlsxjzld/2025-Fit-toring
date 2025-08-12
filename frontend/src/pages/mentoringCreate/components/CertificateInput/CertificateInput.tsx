@@ -56,7 +56,7 @@ function CertificateInput({
         </StyledSelect>
       </StyledContentWrapper>
       <StyledContentWrapper>
-        <p>이름</p>
+        <p>이름 *</p>
         <input
           type="text"
           placeholder="생활체육지도자 자격증 1급"
@@ -226,7 +226,11 @@ const StyledImageInputLabel = styled.label`
 `;
 
 const StyledHiddenInput = styled.input`
-  display: none;
+  opacity: 0;
+
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 `;
 
 const StyledUploadDescription = styled.div`

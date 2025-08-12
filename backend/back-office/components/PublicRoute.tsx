@@ -24,7 +24,7 @@ export function PublicRoute({ children }: PublicRouteProps) {
   // 이미 인증된 경우 대시보드로 리다이렉트
   if (isAuthenticated) {
     // 로그인하기 전에 방문하려 했던 페이지가 있다면 그곳으로, 없다면 대시보드로
-    const from = location.state?.from?.pathname || '/dashboard';
+    const from = location.state?.from?.pathname || '/web-admin/dashboard';
     return <Navigate to={from} replace />;
   }
 

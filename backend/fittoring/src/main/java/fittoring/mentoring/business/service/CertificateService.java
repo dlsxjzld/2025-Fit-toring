@@ -4,8 +4,10 @@ import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CertificateNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.ImageNotFoundException;
+import fittoring.mentoring.business.exception.InvalidCertificateException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Certificate;
+import fittoring.mentoring.business.model.CertificateType;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
@@ -43,8 +45,20 @@ public class CertificateService {
 
     private boolean validateCertificateRequestData(List<CertificateInfo> certificateInfos,
                                                    List<MultipartFile> certificateImageFiles) {
-        return (certificateInfos != null && certificateImageFiles != null)
-                && (certificateInfos.size() == certificateImageFiles.size());
+        if (certificateInfos == null || certificateImageFiles == null) {
+            return false;
+        }
+        if (certificateInfos.size() != certificateImageFiles.size()) {
+            throw new InvalidCertificateException(BusinessErrorMessage.CERTIFICATE_INFO_IMAGE_MISMATCH.getMessage());
+        }
+        for (CertificateInfo info : certificateInfos) {
+            if (info.title().isEmpty() || CertificateType.inValidCertificateType(info.type().name())) {
+                throw new InvalidCertificateException(
+                        BusinessErrorMessage.INVALID_CERTIFICATE_INFO.getMessage() + info.type().name() + " "
+                                + info.title());
+            }
+        }
+        return true;
     }
 
     private void saveAllCertificates(List<CertificateInfo> certificateInfos, List<MultipartFile> certificateImageFiles,

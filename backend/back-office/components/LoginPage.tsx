@@ -3,41 +3,79 @@ import {useNavigate} from "react-router-dom";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
 import {Label} from "./ui/label";
-import {Card, CardContent, CardHeader, CardTitle,} from "./ui/card";
+import {Card, CardContent, CardHeader, CardTitle} from "./ui/card";
 import {Alert, AlertDescription} from "./ui/alert";
 import {ImageWithFallback} from "./figma/ImageWithFallback";
 import {useAuth} from "./AuthContext";
 
 const API_BASE_URL = "";
 
-const setCookie = (name: string, value: string, days = 7) => {
-    if (typeof document === "undefined") return;
+// 쿠키 유틸
+type SameSite = "Lax" | "Strict" | "None";
+type CookieOptions = {
+    days?: number;
+    path?: string;
+    domain?: string;
+    sameSite?: SameSite;
+    secure?: boolean;
+};
 
+const buildCookieString = (
+    name: string,
+    value: string,
+    {
+        days = 7,
+        path = "/",
+        domain,
+        sameSite = "None",
+        secure = typeof window !== "undefined" && window.location.protocol === "https:",
+    }: CookieOptions = {}
+) => {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
 
-    const cookieString = `${name}=${value};expires=${expires.toUTCString()};path=/;SameSite=Lax`;
-    document.cookie = cookieString;
-    console.log(`🍪 Set cookie '${name}':`, value);
+    const parts = [
+        `${name}=${value}`,
+        `Expires=${expires.toUTCString()}`,
+        `Path=${path}`,
+        `SameSite=${sameSite}`,
+    ];
+
+    if (domain) parts.push(`Domain=${domain}`);
+    if (secure) parts.push(`Secure`);
+
+    return parts.join("; ");
+};
+
+const setCookie = (name: string, value: string, options?: CookieOptions) => {
+    if (typeof document === "undefined") return;
+    document.cookie = buildCookieString(name, value, options);
 };
 
 export const getCookie = (name: string) => {
     if (typeof document === "undefined") return null;
-
     const nameEQ = name + "=";
     const cookies = document.cookie.split(";");
-
     for (let c of cookies) {
         while (c.charAt(0) === " ") c = c.substring(1);
         if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length);
     }
-
     return null;
 };
 
-export const deleteCookie = (name: string) => {
+export const deleteCookie = (name: string, options?: Omit<CookieOptions, "days">) => {
     if (typeof document === "undefined") return;
-    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/;SameSite=Lax`;
+    // 삭제 시 과거로 만료 설정. Path/Domain/SameSite/Secure는 생성 때와 동일해야 확실히 삭제됨.
+    const parts = [
+        `${name}=`,
+        `Expires=Thu, 01 Jan 1970 00:00:00 GMT`,
+        `Path=${options?.path ?? "/"}`,
+        `SameSite=${options?.sameSite ?? "None"}`,
+    ];
+    if (options?.domain) parts.push(`Domain=${options.domain}`);
+    const secure = options?.secure ?? (typeof window !== "undefined" && window.location.protocol === "https:");
+    if (secure) parts.push("Secure");
+    document.cookie = parts.join("; ");
 };
 
 export const reissueToken = async () => {
@@ -55,7 +93,7 @@ export const reissueToken = async () => {
 };
 
 export const isLoggedIn = () => {
-    const token = getCookie("accessToken");
+    const token = getCookie("accessToken"); // 참고: HttpOnly 쿠키면 JS에서 읽히지 않음
     return token !== null;
 };
 
@@ -88,7 +126,7 @@ export function LoginPage() {
             const response = await fetch(`${API_BASE_URL}/login`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
-                credentials: "include",
+                credentials: "include", // 크로스사이트 쿠키 전송
                 body: JSON.stringify({loginId, password}),
             });
 
@@ -103,7 +141,13 @@ export function LoginPage() {
                 setCookie(
                     "userData",
                     encodeURIComponent(JSON.stringify(userData)),
-                    7
+                    {
+                        days: 7,
+                        path: "/",
+                        sameSite: "None",
+                        secure: typeof window !== "undefined" && window.location.protocol === "https:",
+                        // domain: "fittoring.store", // 필요한 경우에만 사용. __Host- 규칙을 쓰려면 설정하지 말 것.
+                    }
                 );
 
                 login(userData);
@@ -133,7 +177,8 @@ export function LoginPage() {
                     <CardTitle className="text-2xl">관리자 로그인</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <form onSubmit={(e) => handleSubmit} className="space-y-4">
+                    {/* onSubmit 버그 수정 */}
+                    <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="loginId">아이디</Label>
                             <Input
@@ -141,7 +186,7 @@ export function LoginPage() {
                                 type="text"
                                 placeholder="아이디를 입력하세요"
                                 value={loginId}
-                                onChange={(e) => setLoginId(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLoginId(e.target.value)}
                                 required
                             />
                         </div>
@@ -152,7 +197,7 @@ export function LoginPage() {
                                 type="password"
                                 placeholder="비밀번호를 입력하세요"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                                 required
                             />
                         </div>
@@ -161,11 +206,7 @@ export function LoginPage() {
                                 <AlertDescription>{error}</AlertDescription>
                             </Alert>
                         )}
-                        <Button
-                            type="submit"
-                            className="w-full h-11"
-                            disabled={loading}
-                        >
+                        <Button type="submit" className="w-full h-11" disabled={loading}>
                             {loading ? "로그인 중..." : "로그인"}
                         </Button>
                     </form>

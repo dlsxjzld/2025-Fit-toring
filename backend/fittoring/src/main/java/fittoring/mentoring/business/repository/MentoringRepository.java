@@ -36,4 +36,6 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
     );
 
     List<Mentoring> findAllByMentorId(Long mentorId);
+
+    boolean existsByMentor(Member member);
 }

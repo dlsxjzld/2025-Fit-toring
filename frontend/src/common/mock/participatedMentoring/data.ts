@@ -1,3 +1,5 @@
+import { StatusTypeEnum } from '../../types/statusType';
+
 import type { ParticipatedMentoringType } from '../../../pages/participatedMentoring/types/participatedMentoring';
 
 export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
@@ -10,7 +12,7 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-09',
     categories: ['근력 증진', '다이어트', '요가'],
     isReviewed: true,
-    status: '완료됨',
+    status: StatusTypeEnum.COMPLETE,
   },
   {
     reservationId: 2,
@@ -21,7 +23,7 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-10',
     categories: ['근력 증진'],
     isReviewed: false,
-    status: '완료됨',
+    status: StatusTypeEnum.COMPLETE,
   },
   {
     reservationId: 3,
@@ -32,7 +34,7 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-12',
     categories: ['요가', '필라테스'],
     isReviewed: false,
-    status: '승인됨',
+    status: StatusTypeEnum.APPROVED,
   },
   {
     reservationId: 4,
@@ -43,6 +45,6 @@ export const PARTICIPATED_MENTORING_LIST: ParticipatedMentoringType[] = [
     reservedAt: '2024-01-15',
     categories: ['재활 운동', '스트레칭'],
     isReviewed: false,
-    status: '승인대기',
+    status: StatusTypeEnum.PENDING,
   },
 ];

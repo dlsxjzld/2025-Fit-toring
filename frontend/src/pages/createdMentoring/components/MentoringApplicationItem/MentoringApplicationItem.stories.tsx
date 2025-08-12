@@ -26,6 +26,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     mentoringApplication: MENTORING_APPLICATIONS[0],
+    onActionButtonsClick: () => {},
   },
   parameters: {
     docs: {
@@ -40,6 +41,7 @@ export const Default: Story = {
 export const Pending: Story = {
   args: {
     mentoringApplication: MENTORING_APPLICATIONS[0],
+    onActionButtonsClick: () => {},
   },
   parameters: {
     docs: {
@@ -54,6 +56,7 @@ export const Pending: Story = {
 export const Approved: Story = {
   args: {
     mentoringApplication: MENTORING_APPLICATIONS[1],
+    onActionButtonsClick: () => {},
   },
   parameters: {
     docs: {
@@ -67,6 +70,7 @@ export const Approved: Story = {
 export const Completed: Story = {
   args: {
     mentoringApplication: MENTORING_APPLICATIONS[2],
+    onActionButtonsClick: () => {},
   },
   parameters: {
     docs: {

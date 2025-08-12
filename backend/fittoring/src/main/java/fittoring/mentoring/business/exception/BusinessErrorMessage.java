@@ -12,6 +12,7 @@ public enum BusinessErrorMessage {
     PASSWORD_ENCRYPTION_FAILED("비밀번호 암호화에 실패했습니다."),
     MIS_MATCH_PASSWORD("비밀번호가 일치하지 않습니다."),
     DUPLICATE_LOGIN_ID("이미 사용 중인 아이디입니다. 다른 아이디를 입력해주세요."),
+    DUPLICATE_PHONE("이미 사용 중인 전화번호입니다. 다른 전화번호를 입력해주세요."),
     LOGIN_ID_NOT_FOUND("존재하지 않는 아이디입니다."),
     EXPIRED_TOKEN("유효시간이 만료된 토큰입니다."),
     INVALID_TOKEN("유효하지 않은 토큰입니다."),
@@ -29,6 +30,9 @@ public enum BusinessErrorMessage {
     RESERVATION_STATUS_ALREADY_UPDATE("이미 처리된 예약은 상태 변경이 불가합니다."),
     RESERVATION_STATUS_ALREADY_EQUAL("동일한 상태로는 변경할 수 없습니다."),
     STATUS_NOT_FOUND("존재하지 않는 상태입니다."),
+    MENTORING_ALREADY_EXIST("이미 멘토링을 개설한 회원입니다."),
+    CERTIFICATE_INFO_IMAGE_MISMATCH("자격증 정보와 자격증 이미지의 수가 일치하지 않습니다."),
+    INVALID_CERTIFICATE_INFO("올바르지 않은 자격증 정보입니다."),
     ;
 
     private final String message;

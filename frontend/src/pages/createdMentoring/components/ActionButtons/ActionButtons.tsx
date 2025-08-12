@@ -39,10 +39,10 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
         throw new Error(`Failed to update reservation status to ${newStatus}.`);
       }
 
-      if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVE) {
-        await fetchPhoneNumber(StatusTypeEnum.approved);
+      if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVED) {
+        await fetchPhoneNumber(StatusTypeEnum.APPROVED);
       } else {
-        onClick(StatusTypeEnum.rejected, '');
+        onClick(StatusTypeEnum.REJECTED, '');
       }
     } catch (error) {
       console.error(`Error ${newStatus} reservation:`, error);
@@ -50,18 +50,18 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
     }
   };
 
-  return status === StatusTypeEnum.pending ? (
+  return status === StatusTypeEnum.PENDING ? (
     <StyledContainer>
       <StyledPrimaryButton
         onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVE)
+          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED)
         }
       >
         승인
       </StyledPrimaryButton>
       <StyledSecondaryButton
         onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.REJECT)
+          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.REJECTED)
         }
       >
         거절
