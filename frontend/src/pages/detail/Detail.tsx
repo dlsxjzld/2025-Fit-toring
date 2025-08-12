@@ -89,7 +89,7 @@ function Detail() {
         <StyledLineWrapper>
           <StyledLine />
         </StyledLineWrapper>
-        <Certificates />
+        <Certificates certificates={data.certificates} />
       </StyledContainer>
     </>
   );
