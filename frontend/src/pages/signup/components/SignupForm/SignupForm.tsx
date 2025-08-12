@@ -132,7 +132,6 @@ function SignupForm() {
     verificationCode,
     verificationCodeErrorMessage,
     successVerification,
-    verificationStep,
   });
 
   const getDisplayedVerificationErrorMessage = () => {

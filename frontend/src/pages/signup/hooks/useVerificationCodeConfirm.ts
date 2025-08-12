@@ -6,13 +6,10 @@ import { postAuthCodeVerify } from '../apis/postAuthCodeVerify';
 
 import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 
-import type { VerificationStep } from '../components/SignupForm/SignupForm';
-
 interface useVerificationCodeConfirmParams {
   verificationCode: string;
   verificationCodeErrorMessage: string;
   successVerification: () => void;
-  verificationStep: VerificationStep;
 }
 
 const useVerificationCodeConfirm = ({
