@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 import ReactGA from 'react-ga4';
+import { useLocation } from 'react-router-dom';
 
 import Footer from '../../common/components/Footer/Footer';
 
@@ -16,7 +17,6 @@ import SpecialtyFilterModal from './components/SpecialtyFilterModal/SpecialtyFil
 import SpecialtyFilterModalButton from './components/SpecialtyFilterModalButton/SpecialtyFilterModalButton';
 
 import type { MentorInformation } from './types/MentorInformation';
-import { useLocation } from 'react-router-dom';
 
 const convertSelectedSpecialtiesToParams = (
   selectedSpecialties: string[],
@@ -62,7 +62,7 @@ function Home() {
 
   const location = useLocation();
 
-  const fetchMentorData = async () => {
+  const fetchMentorData = useCallback(async () => {
     try {
       const data = await getMentorList({
         params: convertSelectedSpecialtiesToParams(selectedSpecialties),
@@ -71,17 +71,17 @@ function Home() {
     } catch (error) {
       console.error('멘토 데이터 가져오기 실패:', error);
     }
-  };
+  }, [selectedSpecialties]);
 
   useEffect(() => {
     fetchMentorData();
-  }, [selectedSpecialties]);
+  }, [fetchMentorData, selectedSpecialties]);
 
   useEffect(() => {
     if (location.state?.refetch) {
       fetchMentorData();
     }
-  }, [location.state]);
+  }, [fetchMentorData, location.state]);
 
   return (
     <StyledContainer>

@@ -25,7 +25,7 @@ public enum Status {
     }
 
     public void validateReservation(Status updateStatus) {
-        if (this == APPROVED || this == REJECTED || this == COMPLETE) {
+        if (this == REJECTED || this == COMPLETE) {
             throw new InvalidStatusException(BusinessErrorMessage.RESERVATION_STATUS_ALREADY_UPDATE.getMessage());
         }
         if (this.equals(updateStatus)) {

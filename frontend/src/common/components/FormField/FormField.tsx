@@ -35,6 +35,8 @@ const StyledField = styled.div`
 
 const StyledErrorText = styled.span`
   color: ${({ theme }) => theme.FONT.ERROR};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
 `;
 
 const StyledLabel = styled.label`
