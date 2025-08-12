@@ -114,7 +114,7 @@ const StyledTapWrapper = styled.div`
   padding: 1rem;
 `;
 
-const StyledTap = styled.p<{ selected?: boolean }>`
+const StyledTap = styled.p<{ selected: boolean }>`
   width: 50%;
   cursor: pointer;
 
