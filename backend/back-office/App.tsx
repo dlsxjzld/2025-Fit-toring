@@ -6,11 +6,11 @@ import { LoginPage } from './components/LoginPage';
 import { Dashboard } from './components/Dashboard';
 import { MentoringDetailPage } from './components/MentoringDetailPage';
 import { Toaster } from './components/ui/sonner';
-import { ROUTES } from './constants/routes';
+import { ROUTES, BASE_PATH } from './constants/routes';
 
 export default function App() {
   return (
-    <Router>
+    <Router basename={BASE_PATH}>
       <AuthProvider>
         <Routes>
           {/* Public Routes - 로그인 불필요 */}
@@ -62,7 +62,12 @@ export default function App() {
             element={<Navigate to={ROUTES.ROOT} replace />} 
           />
         </Routes>
-        <Toaster />
+        <Toaster 
+          position="bottom-right"
+          visibleToasts={5}
+          duration={4000}
+          gap={12}
+        />
       </AuthProvider>
     </Router>
   );

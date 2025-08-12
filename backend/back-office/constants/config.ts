@@ -6,7 +6,7 @@
  */
 
 // 기본 서버 URL (변경 가능)
-export const BASE_URL = 'http://localhost:8080';
+export const BASE_URL = '';
 
 // 개발 환경에서 다른 서버를 사용하고 싶을 때
 // export const BASE_URL = 'http://localhost:3000';
@@ -50,18 +50,13 @@ export const DEFAULT_FETCH_OPTIONS: RequestInit = {
  */
 const isDev = (): boolean => {
   try {
-    // Vite 환경변수 체크
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      return import.meta.env.DEV === true || import.meta.env.MODE === 'development';
-    }
-    // 브라우저 환경에서 hostname으로 판단 (fallback)
+    // 브라우저 환경에서 hostname으로 판단
     if (typeof window !== 'undefined' && window.location) {
       return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     }
-    // 기본값: 개발 환경으로 가정 (안전한 기본값)
+    // 기본값: 개발 환경으로 가정
     return true;
   } catch {
-    // 에러 발생 시 개발 환경으로 가정 (디버그 로그 활성화)
     return true;
   }
 };
