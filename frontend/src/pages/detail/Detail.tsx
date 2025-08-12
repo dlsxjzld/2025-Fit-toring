@@ -134,7 +134,6 @@ const StyledTapIndicator = styled.div<{ selected?: 'detail' | 'review' }>`
 const StyledContentWrapper = styled.div`
   display: flex;
   width: 100%;
-  transition: transform 0.3s ease-in-out;
   padding-top: 2rem;
 `;
 
