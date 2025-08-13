@@ -143,10 +143,6 @@ class ApiClient {
     };
 
     try {
-      if (refreshPromise) {
-        await refreshPromise;
-      }
-
       return await sendRequest();
     } catch (error) {
       if (
@@ -188,10 +184,6 @@ class ApiClient {
     };
 
     try {
-      if (refreshPromise) {
-        await refreshPromise;
-      }
-
       return await sendRequest();
     } catch (error) {
       if (
@@ -239,10 +231,6 @@ class ApiClient {
     };
 
     try {
-      if (refreshPromise) {
-        await refreshPromise;
-      }
-
       return await sendRequest();
     } catch (error) {
       if (
