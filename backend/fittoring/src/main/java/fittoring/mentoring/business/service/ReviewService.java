@@ -27,8 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ReviewService {
 
-    public static final String NAME_MASKING_UNIT = "*";
-
     private final ReviewRepository reviewRepository;
     private final ReservationRepository reservationRepository;
     private final MemberRepository memberRepository;
@@ -83,7 +81,7 @@ public class ReviewService {
         List<ReviewGetResponse> reviewGetResponses = reviews.stream()
             .map(review -> new ReviewGetResponse(
                 review.getId(),
-                maskMemberName(review.getMenteeName()),
+                review.getMenteeName(),
                 review.getCreatedAt().toLocalDate(),
                 review.getRating(),
                 review.getContent()
@@ -111,12 +109,5 @@ public class ReviewService {
             .mapToInt(Review::getRating)
             .average()
             .orElse(0);
-    }
-
-    private String maskMemberName(String rawName) {
-        if (rawName.length() == 2) {
-            return rawName.substring(0, rawName.length() - 1) + NAME_MASKING_UNIT;
-        }
-        return rawName.substring(0, rawName.length() - 2) + NAME_MASKING_UNIT + NAME_MASKING_UNIT;
     }
 }

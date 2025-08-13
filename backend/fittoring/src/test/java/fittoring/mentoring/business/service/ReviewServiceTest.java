@@ -418,14 +418,14 @@ class ReviewServiceTest {
             assertThat(responseBody.reviews()).containsExactlyInAnyOrder(
                 new ReviewGetResponse(
                     review1.getId(),
-                    "세**",
+                    review1.getMenteeName(),
                     review1.getCreatedAt().toLocalDate(),
                     review1.getRating(),
                     review1.getContent()
                 ),
                 new ReviewGetResponse(
                     review2.getId(),
-                    "두*",
+                    review2.getMenteeName(),
                     review2.getCreatedAt().toLocalDate(),
                     review2.getRating(),
                     review2.getContent()
