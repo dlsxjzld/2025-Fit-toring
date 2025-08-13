@@ -18,6 +18,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
+import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
@@ -94,22 +95,6 @@ public class ReservationService {
                 .toList();
     }
 
-    @Transactional
-    public Reservation updateStatus(Long reservationId, String updateStatus) {
-        Reservation reservation = getReservation(reservationId);
-        Status status = Status.of(updateStatus);
-        reservation.changeStatus(status);
-        return reservation;
-    }
-
-    private Reservation getReservation(Long reservationId) {
-        return reservationRepository.findById(reservationId)
-                .orElseThrow(
-                        () -> new ReservationNotFoundException(
-                                BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
-                );
-    }
-
     @Transactional(readOnly = true)
     public PhoneNumberResponse getPhone(Long reservationId) {
         Reservation reservation = getReservation(reservationId);
@@ -170,5 +155,29 @@ public class ReservationService {
                 ImageType.MENTORING_PROFILE, relationId);
         return image.map(Image::getUrl)
                 .orElse(null);
+    }
+
+    @Transactional
+    public Reservation updateStatus(Long reservationId, String updateStatus) {
+        Reservation reservation = getReservation(reservationId);
+        Status status = Status.of(updateStatus);
+        reservation.changeStatus(status);
+        return reservation;
+    }
+
+    private Reservation getReservation(Long reservationId) {
+        return reservationRepository.findById(reservationId)
+            .orElseThrow(
+                () -> new ReservationNotFoundException(
+                    BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage())
+            );
+    }
+
+    @Transactional
+    public void updateStatusWithAdminAuthorization(AdminReservationStatusUpdateDto adminReservationStatusUpdateDto) {
+        checkAdminAuthority(adminReservationStatusUpdateDto.memberId());
+        Reservation reservation = getReservation(adminReservationStatusUpdateDto.reservationId());
+        Status status = Status.of(adminReservationStatusUpdateDto.status());
+        reservation.changeStatusWithoutValidation(status);
     }
 }

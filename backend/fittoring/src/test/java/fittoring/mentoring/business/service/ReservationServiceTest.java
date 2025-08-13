@@ -20,6 +20,7 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.service.dto.AdminReservationStatusUpdateDto;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.MentoringReservationGetDto;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
@@ -432,7 +433,7 @@ class ReservationServiceTest {
             "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
             Status.COMPLETE,
             mentoring,
-            mentee1
+            mentee2
         ));
         MentoringReservationGetDto mentoringReservationGetDto = new MentoringReservationGetDto(
             admin.getId(),
@@ -515,7 +516,7 @@ class ReservationServiceTest {
             "가까이 다가 선 세상은 내게 뭘 보여 줄까요~",
             Status.COMPLETE,
             mentoring,
-            mentee1
+            mentee2
         ));
         MentoringReservationGetDto mentoringReservationGetDto = new MentoringReservationGetDto(
             normalMember.getId(),
@@ -528,5 +529,72 @@ class ReservationServiceTest {
             mentoringReservationGetDto))
             .isInstanceOf(ForbiddenMemberException.class)
             .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    @DisplayName("관리자는 예약의 상태를 변경할 수 있다")
+    @CsvSource({
+        "PENDING, APPROVED",
+        "PENDING, REJECTED",
+        "PENDING, COMPLETE",
+        "APPROVED, PENDING",
+        "APPROVED, REJECTED",
+        "APPROVED, COMPLETE",
+        "REJECTED, PENDING",
+        "REJECTED, APPROVED",
+        "REJECTED, COMPLETE",
+        "COMPLETE, PENDING",
+        "COMPLETE, APPROVED",
+        "COMPLETE, REJECTED"
+    })
+    @ParameterizedTest
+    void updateStatusWithAdminAuthorization(Status originalStatus, String newStatus) {
+        // given
+        Member admin = entityManager.persist(new Member(
+            "adminId",
+            "MALE",
+            "관리자",
+            new Phone("010-1111-2222"),
+            Password.from("password"),
+            MemberRole.ADMIN
+        ));
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "고윤하",
+            new Phone("010-1234-5678"),
+            Password.from("password"),
+            MemberRole.MENTOR
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "살별",
+            "이 비행의 끝에는 분명 너의 소원이 될 거라고 작은 목소리로 우리의 추억을 빌어볼게"
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "menteeId1",
+            "MALE",
+            "김멘티",
+            new Phone("010-1234-5679"),
+            Password.from("password"),
+            MemberRole.MENTEE
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "아득한 건 언제나 늘 아름답게 보이죠",
+            originalStatus,
+            mentoring,
+            mentee
+        ));
+        AdminReservationStatusUpdateDto adminReservationStatusUpdateDto
+            = new AdminReservationStatusUpdateDto(admin.getId(), reservation.getId(), newStatus);
+
+        // when
+        reservationService.updateStatusWithAdminAuthorization(adminReservationStatusUpdateDto);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        assertThat(reservation.getStatus()).isEqualTo(newStatus);
     }
 }
