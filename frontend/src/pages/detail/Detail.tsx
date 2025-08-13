@@ -79,7 +79,7 @@ function Detail() {
               <ApplySection price={data.price} mentoringId={mentoringId} />
             </StyledDetailWrapper>
           ) : (
-            <DetailReview />
+            <DetailReview mentoringId={data.id} />
           )}
         </StyledContentWrapper>
       </StyledContainer>
