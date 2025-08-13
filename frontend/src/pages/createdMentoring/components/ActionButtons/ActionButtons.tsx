@@ -29,29 +29,41 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
 
   const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
     try {
-      const res = await patchReservationStatus(reservationId, {
+      const response = await patchReservationStatus(reservationId, {
         status: newStatus,
       });
 
-      if (res.status !== 200) throw new Error('status update failed');
+      if (response.status !== 200) throw new Error('status update failed');
     } catch (error) {
       console.error(`Error updating reservation status:`, error);
     }
   };
 
   const handleApproveButtonClick = async () => {
-    await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
-    await fetchPhoneNumber(StatusTypeEnum.APPROVED);
+    try {
+      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
+      await fetchPhoneNumber(StatusTypeEnum.APPROVED);
+    } catch (error) {
+      console.error(`Error handling approve button click:`, error);
+    }
   };
 
   const handleRejectedButtonClick = async () => {
-    await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
-    onClick(StatusTypeEnum.REJECTED, '');
+    try {
+      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
+      onClick(StatusTypeEnum.REJECTED, '');
+    } catch (error) {
+      console.error(`Error handling reject button click:`, error);
+    }
   };
 
   const handleCompleteButtonClick = async () => {
-    await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
-    onClick(StatusTypeEnum.COMPLETE, '');
+    try {
+      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
+      onClick(StatusTypeEnum.COMPLETE, '');
+    } catch (error) {
+      console.error(`Error handling complete button click:`, error);
+    }
   };
 
   if (status === StatusTypeEnum.PENDING) {
