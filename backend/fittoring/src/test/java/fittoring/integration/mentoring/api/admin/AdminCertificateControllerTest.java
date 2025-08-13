@@ -136,7 +136,7 @@ class AdminCertificateControllerTest {
                     mentoring
             ));
             imageRepository.save(new Image(
-                    "imageUrl",
+                    "profileImageUrl",
                     ImageType.CERTIFICATE,
                     certificate.getId())
             );
@@ -170,7 +170,7 @@ class AdminCertificateControllerTest {
                     mentoring
             ));
             imageRepository.save(new Image(
-                    "imageUrl",
+                    "profileImageUrl",
                     ImageType.CERTIFICATE,
                     certificate.getId())
             );
@@ -209,7 +209,7 @@ class AdminCertificateControllerTest {
                     mentoring
             ));
             imageRepository.save(new Image(
-                    "imageUrl",
+                    "profileImageUrl",
                     ImageType.CERTIFICATE,
                     certificate.getId())
             );
@@ -243,7 +243,7 @@ class AdminCertificateControllerTest {
                     mentoring
             ));
             imageRepository.save(new Image(
-                    "imageUrl",
+                    "profileImageUrl",
                     ImageType.CERTIFICATE,
                     certificate.getId())
             );
@@ -282,7 +282,7 @@ class AdminCertificateControllerTest {
                     mentoring
             ));
             imageRepository.save(new Image(
-                    "imageUrl",
+                    "profileImageUrl",
                     ImageType.CERTIFICATE,
                     certificate.getId())
             );
@@ -316,7 +316,7 @@ class AdminCertificateControllerTest {
                     mentoring
             ));
             imageRepository.save(new Image(
-                    "imageUrl",
+                    "profileImageUrl",
                     ImageType.CERTIFICATE,
                     certificate.getId())
             );

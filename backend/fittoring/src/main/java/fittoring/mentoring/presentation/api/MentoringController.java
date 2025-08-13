@@ -42,7 +42,7 @@ public class MentoringController {
     }
 
     @PostMapping("/mentorings")
-    public ResponseEntity<MentoringResponse> registerMentoring(
+    public ResponseEntity<Void> registerMentoring(
             @Login LoginInfo loginInfo,
             @RequestPart("data") MentoringRequest request,
             @RequestPart(value = "image", required = false) MultipartFile profileImage,
@@ -54,7 +54,8 @@ public class MentoringController {
                 profileImage,
                 certificateImages
         );
+        mentoringService.registerMentoring(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(mentoringService.registerMentoring(dto));
+                .build();
     }
 }

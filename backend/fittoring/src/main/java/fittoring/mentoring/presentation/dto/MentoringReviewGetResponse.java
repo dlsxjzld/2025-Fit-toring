@@ -1,13 +1,11 @@
 package fittoring.mentoring.presentation.dto;
 
-import java.time.LocalDate;
+import java.util.List;
 
 public record MentoringReviewGetResponse(
-    Long id,
-    String reviewerName,
-    LocalDate createdAt,
-    int rating,
-    String content
+    int ratingCount,
+    String ratingAverage,
+    List<ReviewGetResponse> reviews
 ) {
 
 }

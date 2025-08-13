@@ -1,12 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { isLoggedIn, getStoredUser, deleteCookie } from './LoginPage';
-
-interface User {
-  id: string;
-  username: string;
-  name: string;
-  role: string;
-}
+import { getCurrentUser, checkAuthStatus, reissueToken, User } from '../services/authApi';
 
 interface AuthContextType {
   user: User | null;
@@ -14,6 +7,8 @@ interface AuthContextType {
   isLoading: boolean;
   login: (userData: User) => void;
   logout: () => void;
+  refreshUserInfo: () => Promise<void>;
+  checkAndRefreshToken: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -30,46 +25,80 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/**
+ * AuthProvider - httpOnly 쿠키 기반 인증 관리
+ * 
+ * JavaScript에서 직접 쿠키에 접근하지 않고,
+ * 서버 API를 통해서만 인증 상태를 확인하고 관리합니다.
+ * 
+ * 초기 로딩 시에는 인증 체크를 하지 않고, ProtectedRoute에서만 인증을 확인합니다.
+ */
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // 초기 로딩 상태를 false로 변경
 
-  // 페이지 로드 시 기존 로그인 상태 확인
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      try {
-        console.log('🔍 Checking login status...');
-        const hasToken = isLoggedIn();
-        console.log('🔑 Has access token:', hasToken);
-        
-        if (hasToken) {
-          const userData = getStoredUser();
-          console.log('👤 Stored user data:', userData);
-          
-          if (userData) {
-            console.log('✅ User authenticated, setting user data');
-            setUser(userData);
-          } else {
-            console.log('❌ No user data found, logging out');
-            // 토큰은 있지만 사용자 데이터가 없는 경우 로그아웃 처리
-            handleLogout();
-          }
-        } else {
-          console.log('❌ No access token found');
-        }
-      } catch (error) {
-        console.error('❌ Error checking login status:', error);
-        // 오류 발생 시 로그아웃 처리
-        handleLogout();
-      } finally {
-        console.log('✅ Login status check complete');
-        setIsLoading(false);
+  // 서버에서 현재 사용자 정보 새로고침
+  const refreshUserInfo = async () => {
+    try {
+      console.log('🔄 Refreshing user info...');
+      const userData = await getCurrentUser();
+      
+      if (userData) {
+        console.log('✅ User info refreshed:', userData);
+        setUser(userData);
+      } else {
+        console.log('❌ No user data received');
+        setUser(null);
       }
-    };
+    } catch (error) {
+      console.error('❌ Error refreshing user info:', error);
+      setUser(null);
+    }
+  };
 
-    checkLoginStatus();
-  }, []);
+  // 토큰 확인 및 갱신 함수 (ProtectedRoute에서 사용)
+  const checkAndRefreshToken = async (): Promise<boolean> => {
+    try {
+      setIsLoading(true);
+      
+      // 먼저 현재 토큰 상태 확인
+      const isValid = await checkAuthStatus();
+      
+      if (isValid) {
+        console.log('✅ Token is valid');
+        // 사용자 정보가 없다면 가져오기
+        if (!user) {
+          await refreshUserInfo();
+        }
+        return true;
+      }
+      
+      // 토큰이 유효하지 않다면 refresh 시도
+      console.log('🔄 Token invalid, attempting refresh...');
+      const refreshSuccess = await reissueToken();
+      
+      if (refreshSuccess) {
+        console.log('✅ Token refresh successful');
+        // 토큰 갱신 후 사용자 정보 업데이트
+        await refreshUserInfo();
+        return true;
+      } else {
+        console.log('❌ Token refresh failed');
+        handleLogout();
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Error during token check:', error);
+      handleLogout();
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // 초기 로딩 시에는 인증 체크를 하지 않음
+  // ProtectedRoute에서 필요할 때만 checkAndRefreshToken() 호출
+  
   const handleLogin = (userData: User) => {
     console.log('🎉 User logged in:', userData);
     setUser(userData);
@@ -77,11 +106,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const handleLogout = () => {
     console.log('🚪 Logging out user');
-    // 모든 쿠키 삭제
-    deleteCookie('accessToken');
-    deleteCookie('refreshToken');
-    deleteCookie('userData');
-    
     setUser(null);
     console.log('✅ User logged out');
   };
@@ -92,6 +116,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login: handleLogin,
     logout: handleLogout,
+    refreshUserInfo,
+    checkAndRefreshToken,
   };
 
   return (

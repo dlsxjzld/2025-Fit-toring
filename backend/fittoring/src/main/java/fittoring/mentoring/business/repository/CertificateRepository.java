@@ -10,4 +10,6 @@ import org.springframework.stereotype.Repository;
 public interface CertificateRepository extends ListCrudRepository<Certificate, Long> {
 
     List<Certificate> findByVerificationStatus(Status statu);
+
+    List<Certificate> findByMentoringIdAndVerificationStatus(Long mentoringId, Status status);
 }

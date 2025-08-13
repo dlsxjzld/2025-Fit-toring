@@ -3,6 +3,7 @@ package fittoring.mentoring.presentation.api;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MemberService;
+import fittoring.mentoring.presentation.dto.AdminActiveStatusResponse;
 import fittoring.mentoring.presentation.dto.MyInfoResponse;
 import fittoring.mentoring.presentation.dto.MyInfoSummaryResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,11 @@ public class MemberController {
     public ResponseEntity<MyInfoSummaryResponse> getMyInfoSummary(@Login LoginInfo loginInfo) {
         MyInfoSummaryResponse memberInfoSummary = memberService.getMemberInfoSummary(loginInfo.memberId());
         return ResponseEntity.ok(memberInfoSummary);
+    }
+
+    @GetMapping("/members/status")
+    public ResponseEntity<AdminActiveStatusResponse> getAdminMemberStatus(@Login LoginInfo loginInfo) {
+        boolean isActive = memberService.getAdminMemberActiveStatus(loginInfo.memberId());
+        return ResponseEntity.ok(new AdminActiveStatusResponse(isActive));
     }
 }

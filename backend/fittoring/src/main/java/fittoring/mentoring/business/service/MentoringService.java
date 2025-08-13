@@ -7,19 +7,23 @@ import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
+import fittoring.mentoring.business.model.Certificate;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
+import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,60 +41,47 @@ public class MentoringService {
     private final CategoryRepository categoryRepository;
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final MemberRepository memberRepository;
+    private final CertificateRepository certificateRepository;
 
     public List<MentoringSummaryResponse> findMentoringSummaries(
             String categoryTitle1,
             String categoryTitle2,
             String categoryTitle3
     ) {
-        List<MentoringSummaryResponse> mentoringSummaryResponse;
-        List<MentoringResponse> mentoringResponses = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
-
-        mentoringSummaryResponse = mentoringResponses.stream()
-                .map(MentoringSummaryResponse::from)
-                .collect(Collectors.toList());
-
-        return mentoringSummaryResponse;
+        List<Mentoring> mentorings = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
+        return mentorings.stream()
+                .map(mentoring -> {
+                    Optional<Image> profileImage = imageService.findByImageTypeAndRelationId(
+                            ImageType.MENTORING_PROFILE,
+                            mentoring.getId()
+                    );
+                    List<String> categoryTitles = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
+                    return profileImage.map(image -> MentoringSummaryResponse.of(mentoring, categoryTitles, image))
+                            .orElseGet(() -> MentoringSummaryResponse.of(mentoring, categoryTitles));
+                })
+                .toList();
     }
 
-    private List<MentoringResponse> findMentorings(
+    private List<Mentoring> findMentorings(
             String categoryTitle1,
             String categoryTitle2,
             String categoryTitle3
     ) {
         if (isNoCategoryFilter(categoryTitle1, categoryTitle2, categoryTitle3)) {
-            List<Mentoring> allMentoring = mentoringRepository.findAll();
-            return getMentoringResponses(allMentoring);
+            return mentoringRepository.findAll();
         }
         validateAllCategoryTitle(categoryTitle1, categoryTitle2, categoryTitle3);
-
-        List<Mentoring> filteredMentorings = mentoringRepository.findAllMentoringWithFilter(
+        return mentoringRepository.findAllMentoringWithFilter(
                 categoryTitle1,
                 categoryTitle2,
                 categoryTitle3
         );
-
-        return getMentoringResponses(filteredMentorings);
     }
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-               && categoryTitle2 == null
-               && categoryTitle3 == null;
-    }
-
-    private List<MentoringResponse> getMentoringResponses(List<Mentoring> mentorings) {
-        List<MentoringResponse> mentoringResponses = new ArrayList<>();
-        for (Mentoring mentoring : mentorings) {
-            List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
-            imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
-                    .ifPresentOrElse(
-                            image -> mentoringResponses.add(
-                                    MentoringResponse.from(mentoring, categoryTitles, image)),
-                            () -> mentoringResponses.add(MentoringResponse.from(mentoring, categoryTitles))
-                    );
-        }
-        return mentoringResponses;
+                && categoryTitle2 == null
+                && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -121,18 +112,39 @@ public class MentoringService {
         Mentoring mentoring = mentoringRepository.findById(id)
                 .orElseThrow(
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
-
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
+        List<Certificate> certificates = certificateRepository.findByMentoringIdAndVerificationStatus(
+                id,
+                Status.APPROVED
+        );
+        List<CertificateSpecAndImageResponse> certificateDetails = getApprovedCertificates(certificates);
         Image image = imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
         if (image == null) {
-            return MentoringResponse.from(mentoring, categoryTitles);
+            return MentoringResponse.of(mentoring, categoryTitles, certificateDetails);
         }
-        return MentoringResponse.from(mentoring, categoryTitles, image);
+        return MentoringResponse.of(mentoring, categoryTitles, image, certificateDetails);
+    }
+
+    private List<CertificateSpecAndImageResponse> getApprovedCertificates(List<Certificate> certificates) {
+        return certificates.stream()
+                .filter(certificate -> imageService.findByImageTypeAndRelationId(
+                                ImageType.CERTIFICATE,
+                                certificate.getId()
+                        )
+                        .isPresent())
+                .map(certificate -> {
+                    Image certificateImage = imageService.findByImageTypeAndRelationId(
+                            ImageType.CERTIFICATE,
+                            certificate.getId()
+                    ).get();
+                    return CertificateSpecAndImageResponse.of(certificate, certificateImage.getUrl());
+                })
+                .toList();
     }
 
     @Transactional
-    public MentoringResponse registerMentoring(RegisterMentoringDto dto) {
+    public void registerMentoring(RegisterMentoringDto dto) {
         Member member = memberRepository.findById(dto.mentorId())
                 .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         validateAlreadyRegistered(member);
@@ -147,16 +159,13 @@ public class MentoringService {
 
         List<String> categoryTitles = dto.category();
         categoryMapping(categoryTitles, savedMentoring);
-
-        Image profileImage = saveProfileImage(dto.profileImage(), savedMentoring);
-
+        saveProfileImage(dto.profileImage(), savedMentoring);
         certificateService.certificateMapping(dto, savedMentoring);
         member.registerAsMentor();
-        return MentoringResponse.from(savedMentoring, categoryTitles, profileImage);
     }
 
     private void validateAlreadyRegistered(Member member) {
-        if(mentoringRepository.existsByMentor(member)){
+        if (mentoringRepository.existsByMentor(member)) {
             throw new MentoringAlreadyExistException(BusinessErrorMessage.MENTORING_ALREADY_EXIST.getMessage());
         }
     }
@@ -171,11 +180,15 @@ public class MentoringService {
         }
     }
 
-    private Image saveProfileImage(MultipartFile profileImageFile, Mentoring mentoring) {
+    private void saveProfileImage(MultipartFile profileImageFile, Mentoring mentoring) {
         if (profileImageFile == null) {
-            return null;
+            return;
         }
-        return imageService.uploadImageToS3(profileImageFile, "profile-image", ImageType.MENTORING_PROFILE,
-                mentoring.getId());
+        imageService.uploadImageToS3(
+                profileImageFile,
+                "profile-image",
+                ImageType.MENTORING_PROFILE,
+                mentoring.getId()
+        );
     }
 }

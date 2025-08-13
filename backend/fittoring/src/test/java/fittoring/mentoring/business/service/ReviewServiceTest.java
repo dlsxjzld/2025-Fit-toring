@@ -16,10 +16,10 @@ import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
-import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
+import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
@@ -371,14 +371,14 @@ class ReviewServiceTest {
         Member mentee1 = entityManager.persist(new Member(
             "loginId",
             "MALE",
-            "name",
+            "세글자",
             new Phone("010-1234-5678"),
             Password.from("password")
         ));
         Member mentee2 = entityManager.persist(new Member(
             "loginId2",
             "MALE",
-            "name",
+            "두글",
             new Phone("010-1234-5679"),
             Password.from("password")
         ));
@@ -401,33 +401,36 @@ class ReviewServiceTest {
             mentee1
         ));
         Review review2 = entityManager.persist(new Review(
-            5,
+            2,
             "최고의 멘토링이었습니다.",
             reservation2,
             mentee2
         ));
-        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoring.getId());
 
         // when
-        List<MentoringReviewGetResponse> mentoringReviewGetResponses
-            = reviewService.findMentoringReviews(mentoringReviewGetDto);
+        MentoringReviewGetResponse responseBody
+            = reviewService.findMentoringReviews(mentoring.getId());
 
         // then
-        assertThat(mentoringReviewGetResponses).containsExactlyInAnyOrder(
-            new MentoringReviewGetResponse(
-                review1.getId(),
-                review1.getMenteeName(),
-                review1.getCreatedAt().toLocalDate(),
-                review1.getRating(),
-                review1.getContent()
-            ),
-            new MentoringReviewGetResponse(
-                review2.getId(),
-                review2.getMenteeName(),
-                review2.getCreatedAt().toLocalDate(),
-                review2.getRating(),
-                review2.getContent()
-            )
-        );
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(responseBody.ratingCount()).isEqualTo(2);
+            assertThat(responseBody.ratingAverage()).isEqualTo("3.5");
+            assertThat(responseBody.reviews()).containsExactlyInAnyOrder(
+                new ReviewGetResponse(
+                    review1.getId(),
+                    review1.getMenteeName(),
+                    review1.getCreatedAt().toLocalDate(),
+                    review1.getRating(),
+                    review1.getContent()
+                ),
+                new ReviewGetResponse(
+                    review2.getId(),
+                    review2.getMenteeName(),
+                    review2.getCreatedAt().toLocalDate(),
+                    review2.getRating(),
+                    review2.getContent()
+                )
+            );
+        });
     }
 }

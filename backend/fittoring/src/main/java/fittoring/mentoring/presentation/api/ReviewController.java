@@ -4,7 +4,6 @@ import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.ReviewService;
 import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
-import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
@@ -52,11 +51,10 @@ public class ReviewController {
     }
 
     @GetMapping("/mentorings/{mentoringId}/reviews")
-    public ResponseEntity<List<MentoringReviewGetResponse>> findMentoringReviews(
+    public ResponseEntity<MentoringReviewGetResponse> findMentoringReviews(
         @PathVariable("mentoringId") Long mentoringId
     ) {
-        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoringId);
-        List<MentoringReviewGetResponse> responseBody = reviewService.findMentoringReviews(mentoringReviewGetDto);
+        MentoringReviewGetResponse responseBody = reviewService.findMentoringReviews(mentoringId);
         return ResponseEntity.status(HttpStatus.OK)
             .body(responseBody);
     }
