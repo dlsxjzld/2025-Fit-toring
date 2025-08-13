@@ -20,15 +20,7 @@ import {
 import { ArrowLeft, Edit, Trash2, FileText, Tag, Clock, Plus } from "lucide-react";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
 import { fetchMentoringDetail, MentoringDetail as MentoringDetailDTO, deleteMentoring } from "@/services/mentoringApi";
-
-// 예약 데이터 타입 (대문자 상태값으로 통일)
-interface ReservationData {
-  id: string;
-  menteeId: string;
-  menteeName: string;
-  requestTime: string;
-  status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETE";
-}
+import { fetchReservations, Reservation } from "@/services/reservationApi";
 
 // 더미 예약 데이터
 const mockReservationData: Record<string, ReservationData[]> = {
@@ -53,13 +45,12 @@ export function MentoringDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  // ✅ 서비스 타입을 그대로 사용 (MentoringDetailDTO)
   const [mentoringData, setMentoringData] = useState<MentoringDetailDTO | null>(null);
-  const [reservations, setReservations] = useState<ReservationData[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [tempStatus, setTempStatus] = useState<Record<string, ReservationData["status"]>>({});
-
+  const [tempStatus, setTempStatus] = useState<Record<string, Reservation["status"]>>({});
+ 
   const [isDeleting, setIsDeleting] = useState(false);
   const numericId = id ? Number(id) : NaN;
 
@@ -82,17 +73,20 @@ export function MentoringDetail() {
         setIsLoading(true);
         setError(null);
 
-        // ✅ API 호출
         const data = await fetchMentoringDetail(numericId);
         setMentoringData(data);
-
-        // (옵션) 예약은 아직 API 없으므로 mock 사용
-        setReservations(mockReservationData[id] ?? []);
+        try {
+          const reservationData = await fetchReservations(id);
+          setReservations(reservationData);
+        } catch (e) {
+          setReservations([]);
+        } finally {
+          setIsLoading(false);
+        }
       } catch (e) {
         setError("멘토링 데이터를 불러오지 못했습니다.");
-        // 실패 시에도 임시로 mock 표시
         setMentoringData(null);
-        setReservations(mockReservationData[id] ?? []);
+        setReservations(await fetchReservations(id));
       } finally {
         setIsLoading(false);
       }
@@ -106,7 +100,7 @@ export function MentoringDetail() {
     try {
       setIsDeleting(true);
       await deleteMentoring(numericId);
-      navigate(`/web-admin#mentoring`); // 성공 시 목록으로
+      navigate(`/web-admin#mentoring`);
     } catch (e) {
       // 필요 시 토스트/알럿
       console.error("멘토링 삭제 실패:", e);
@@ -118,11 +112,11 @@ export function MentoringDetail() {
   const handleBackToList = () => navigate(`/web-admin#mentoring`);
   const handleAddReservation = () => alert("예약 추가 기능을 구현해야 합니다.");
 
-  const handleStatusChange = (reservationId: string, newStatus: ReservationData["status"]) => {
+  const handleStatusChange = (reservationId: number, newStatus: Reservation["status"]) => {
     setTempStatus((prev) => ({ ...prev, [reservationId]: newStatus }));
   };
 
-  const handleStatusUpdate = (reservationId: string) => {
+  const handleStatusUpdate = (reservationId: number) => {
     const newStatus = tempStatus[reservationId];
     if (!newStatus) return;
     setReservations((prev) =>
