@@ -19,7 +19,10 @@ function StarRating({ rating, onRatingChange }: StarRatingProps) {
             type="button"
             onClick={() => onRatingChange(score)}
           >
-            <StyledStarIcon src={isFilled ? filledStar : emptyStar} alt="" />
+            <StyledStarIcon
+              src={isFilled ? filledStar : emptyStar}
+              alt={`${score}점`}
+            />
           </StyledStarButton>
         );
       })}
