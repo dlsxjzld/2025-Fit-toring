@@ -5,15 +5,19 @@ import Modal from '../../../../common/components/Modal/Modal';
 interface CertificatesImageModalProps {
   opened: boolean;
   onCloseClick: () => void;
+  imageUrl: string;
+  title: string;
 }
 
 function CertificatesImageModal({
   opened,
   onCloseClick,
+  imageUrl,
+  title,
 }: CertificatesImageModalProps) {
   return (
     <Modal opened={opened} onCloseClick={onCloseClick}>
-      <StyledContainer>자격증 사진</StyledContainer>
+      <StyledContainer src={imageUrl} alt={`${title}`} />
     </Modal>
   );
 }
