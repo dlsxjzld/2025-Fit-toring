@@ -25,6 +25,29 @@ interface ApiClientPatchType {
 
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
 
+let refreshPromise: Promise<void> | null = null;
+
+const fetchRefresh = async () => {
+  try {
+    await postReissue();
+  } catch (error) {
+    console.error('토큰 갱신 실패', error);
+    if (error instanceof ApiError) {
+      throw new ApiError('토큰 갱신 실패', error.status);
+    }
+  }
+};
+
+const ensureRefreshed = async () => {
+  if (!refreshPromise) {
+    refreshPromise = fetchRefresh().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+};
+
 class ApiClient {
   #baseUrl: string;
 
@@ -70,20 +93,17 @@ class ApiClient {
     };
 
     try {
+      if (refreshPromise) {
+        await refreshPromise;
+      }
+
       return await sendRequest();
     } catch (error) {
       if (
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        try {
-          await postReissue();
-        } catch (error) {
-          console.error('토큰 갱신 실패', error);
-          if (error instanceof ApiError) {
-            throw new ApiError('토큰 갱신 실패', error.status);
-          }
-        }
+        await ensureRefreshed();
 
         try {
           return await sendRequest();
