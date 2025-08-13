@@ -10,7 +10,7 @@ public record MentoringSummaryResponse(
         List<String> categories,
         int price,
         int career,
-        String imageUrl,
+        String profileImageUrl,
         String introduction
 ) {
 
