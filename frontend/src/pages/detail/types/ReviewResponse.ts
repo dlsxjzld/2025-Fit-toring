@@ -1,10 +1,10 @@
 export interface ReviewResponse {
   ratingAverage: number;
   ratingCount: number;
-  reviews: ReviewItem[];
+  reviews: ReviewItemType[];
 }
 
-export interface ReviewItem {
+export interface ReviewItemType {
   id: number;
   reviewerName: string;
   createdAt: string;
