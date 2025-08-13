@@ -16,7 +16,6 @@ import fittoring.mentoring.business.exception.PasswordEncryptionException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
-import fittoring.mentoring.business.exception.ReviewerNotSameException;
 import fittoring.mentoring.infra.exception.S3UploadException;
 import fittoring.mentoring.business.exception.NotFoundStatusException;
 import fittoring.mentoring.infra.exception.SmsException;
@@ -99,11 +98,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidPhoneVerificationException.class)
     public ResponseEntity<ErrorResponse> handle(InvalidPhoneVerificationException e) {
-        return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
-    }
-
-    @ExceptionHandler(ReviewerNotSameException.class)
-    public ResponseEntity<ErrorResponse> handle(ReviewerNotSameException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 

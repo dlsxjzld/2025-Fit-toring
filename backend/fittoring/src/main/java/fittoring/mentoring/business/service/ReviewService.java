@@ -1,11 +1,11 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
-import fittoring.mentoring.business.exception.ReviewerNotSameException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
@@ -111,7 +111,7 @@ public class ReviewService {
         if (review.getMenteeId().equals(menteeId)) {
             return;
         }
-        throw new ReviewerNotSameException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+        throw new ForbiddenMemberException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }
 
     @Transactional

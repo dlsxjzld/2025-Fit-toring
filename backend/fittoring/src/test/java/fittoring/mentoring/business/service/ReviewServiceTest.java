@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
-import fittoring.mentoring.business.exception.ReviewerNotSameException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
@@ -688,7 +688,7 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
-            .isInstanceOf(ReviewerNotSameException.class)
+            .isInstanceOf(ForbiddenMemberException.class)
             .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }
 
@@ -764,7 +764,7 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-            .isInstanceOf(ReviewerNotSameException.class)
+            .isInstanceOf(ForbiddenMemberException.class)
             .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }
 }
