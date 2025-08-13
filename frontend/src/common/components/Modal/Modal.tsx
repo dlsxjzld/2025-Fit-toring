@@ -7,12 +7,14 @@ import useEscapeKeyDown from '../../hooks/useEscapeKeyDown';
 interface ModalProps {
   opened: boolean;
   onCloseClick: () => void;
+  zIndex?: number;
 }
 
 function Modal({
   children,
   opened,
   onCloseClick,
+  zIndex = 1000,
 }: PropsWithChildren<ModalProps>) {
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -24,7 +26,7 @@ function Modal({
 
   return (
     opened && (
-      <StyledOverlay onClick={handleClick}>
+      <StyledOverlay onClick={handleClick} zIndex={zIndex}>
         <StyledContent>{children}</StyledContent>
       </StyledOverlay>
     )
@@ -33,10 +35,11 @@ function Modal({
 
 export default Modal;
 
-const StyledOverlay = styled.div`
+const StyledOverlay = styled.div<Pick<ModalProps, 'zIndex'>>`
   position: fixed;
   top: 0;
   left: 0;
+  z-index: ${({ zIndex }) => zIndex};
 
   width: 100%;
   height: 100%;
