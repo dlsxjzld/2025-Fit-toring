@@ -67,7 +67,6 @@ function MentoringItem({
         />
       </StyledApplicationInfoWrapper>
       <ReviewModal
-        key={reservationId}
         reservationId={reservationId}
         mentorName={mentorName}
         opened={opened}
