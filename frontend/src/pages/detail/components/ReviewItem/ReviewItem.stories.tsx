@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 import ReviewItem from './ReviewItem';
 
@@ -10,9 +10,9 @@ const meta = {
 
   decorators: [
     (Story) => (
-      <BrowserRouter>
+      <MemoryRouter>
         <Story />
-      </BrowserRouter>
+      </MemoryRouter>
     ),
   ],
 } satisfies Meta<typeof ReviewItem>;
