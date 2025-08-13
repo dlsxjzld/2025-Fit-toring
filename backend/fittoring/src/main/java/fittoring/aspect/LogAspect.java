@@ -1,8 +1,11 @@
 package fittoring.aspect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fittoring.util.JsonUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -15,6 +18,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +27,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 public class LogAspect {
 
     private final ObjectMapper objectMapper;
+    private final JsonUtil jsonUtil;
 
     @Pointcut("execution(* fittoring..*Controller.*(..))")
     public void controller() {
@@ -33,7 +38,34 @@ public class LogAspect {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
+        if (logHttpInfoWithRequestBody(attributes)) {
+            return;
+        }
         logHttpInfo(attributes, "REQUEST", null);
+    }
+
+    private boolean logHttpInfoWithRequestBody(ServletRequestAttributes attributes) {
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            if (request instanceof ContentCachingRequestWrapper wrapper) {
+                byte[] content = wrapper.getContentAsByteArray();
+                if (content.length == 0) {
+                    try {
+                        wrapper.getInputStream().readAllBytes();
+                        content = wrapper.getContentAsByteArray();
+                    } catch (IOException e) {
+                        log.warn("요청 바디를 읽는데 실패하였습니다.", e);
+                    }
+                }
+
+                if (content.length > 0) {
+                    String body = new String(content, StandardCharsets.UTF_8);
+                    logHttpInfo(attributes, "REQUEST", body);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void logHttpInfo(ServletRequestAttributes attributes, String prefix, String body) {
@@ -47,14 +79,14 @@ public class LogAspect {
             String userAgent = request.getHeader("User-Agent");
 
             log.info(
-                    "{}: client=[{}:{}] request=[{} {} query={} body={}]",
+                    "{}:[{} {} Query={} Body={}] client=[{}:{}]",
                     prefix,
-                    clientIp,
-                    userAgent,
                     httpMethod,
                     requestUri,
                     queryString,
-                    body
+                    jsonUtil.maskAndPretty(body),
+                    clientIp,
+                    userAgent
             );
         }
     }
@@ -71,9 +103,14 @@ public class LogAspect {
     public void logAfterApiCall(Object result) {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
         try {
-            logHttpInfo(attributes, "RESPONSE", objectMapper.writeValueAsString(result));
+            logHttpInfo(
+                    attributes,
+                    "RESPONSE",
+                    jsonUtil.extractBodyPretty(
+                            objectMapper.writeValueAsString(result)
+                    )
+            );
         } catch (Exception e) {
             log.error("RESPONSE JSON 포매팅 실패: {}", result, e);
         }
@@ -82,7 +119,7 @@ public class LogAspect {
     @AfterThrowing(pointcut = "controller()", throwing = "e")
     public void afterThrowingController(JoinPoint joinPoint, Throwable e) {
         Method method = getMethod(joinPoint);
-        log.warn("[{}], [{}], [{}], [{}]", method.getName(), e.getClass() , e.getMessage(), e.getStackTrace());
+        log.warn("[{}], [{}], [{}], [{}]", e.getClass(), e.getMessage(), method.getName(), e.getStackTrace());
     }
 
     private Method getMethod(JoinPoint joinPoint) {

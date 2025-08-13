@@ -7,7 +7,7 @@ import CategoryTags from '../../../../common/components/CategoryTags/CategoryTag
 import TextWithIcon from '../../../../common/components/TextWithIcon/TextWithIcon';
 
 interface ProfileProps {
-  profileImg?: string;
+  profileImg: string | null;
   mentorName: string;
   categories: string[];
 }
