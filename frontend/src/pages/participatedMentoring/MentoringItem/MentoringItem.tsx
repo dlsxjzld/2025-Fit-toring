@@ -108,6 +108,9 @@ const StyledProfileImage = styled.img`
   height: 4.8rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 50%;
+
+  aspect-ratio: 1/1;
+  object-fit: cover;
 `;
 
 const StyledName = styled.h4`
