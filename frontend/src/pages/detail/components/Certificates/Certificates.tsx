@@ -1,4 +1,8 @@
+import { useState } from 'react';
+
 import styled from '@emotion/styled';
+
+import CertificatesImageModal from '../CertificatesImageModal/CertificatesImageModal';
 
 import type { CertificateResponse } from '../../types/CertificatesResponse';
 
@@ -7,14 +11,30 @@ interface CertificatesProps {
 }
 
 function Certificates({ certificates }: CertificatesProps) {
+  const [opened, setOpened] = useState(false);
+
+  const handleModalOpenClick = () => {
+    setOpened(true);
+  };
+
+  const handleModalCloseClick = () => {
+    setOpened(false);
+  };
+
   return (
     <StyledContainer>
       <StyledTitle>검증된 자격 사항</StyledTitle>
       <StyledList>
         {certificates.map((item) => (
-          <StyledItem key={item.certificateId}>{item.title}</StyledItem>
+          <StyledItem key={item.certificateId} onClick={handleModalOpenClick}>
+            {item.title}
+          </StyledItem>
         ))}
       </StyledList>
+      <CertificatesImageModal
+        opened={opened}
+        onCloseClick={handleModalCloseClick}
+      />
     </StyledContainer>
   );
 }
