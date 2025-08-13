@@ -8,7 +8,7 @@ export const patchReservationStatus = async (
   searchParams: { status: MENTORING_APPLICATION_STATUS },
 ) => {
   return await apiClient.patch({
-    endpoint: `${API_ENDPOINTS.RESERVATION}/${reservationId}${API_ENDPOINTS.PATCH_MENTORING_STATUS}`,
+    endpoint: `${API_ENDPOINTS.RESERVATIONS}/${reservationId}${API_ENDPOINTS.PATCH_MENTORING_STATUS}`,
     searchParams,
     withCredentials: true,
   });
