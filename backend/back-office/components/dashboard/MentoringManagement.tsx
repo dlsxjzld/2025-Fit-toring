@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
 import {
@@ -19,6 +19,7 @@ import {
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Plus, Eye } from "lucide-react";
+import { fetchMentorings, MentoringSummary } from "../../services/mentoringApi";
 
 // 멘토링 데이터 타입
 interface MentoringItem {
@@ -27,40 +28,6 @@ interface MentoringItem {
   categories: string[];
   price: number;
 }
-
-// 더미 데이터
-const mockMentoringData: MentoringItem[] = [
-  {
-    id: "M001",
-    mentorName: "김성현",
-    categories: ["체형 교정", "다이어트", "자세 교정"],
-    price: 50000,
-  },
-  {
-    id: "M002",
-    mentorName: "박지훈",
-    categories: ["벌크업", "근력 강화", "식단 관리"],
-    price: 65000,
-  },
-  {
-    id: "M003",
-    mentorName: "이수민",
-    categories: ["홈 트레이닝", "유연성·스트레칭", "자세 교정"],
-    price: 45000,
-  },
-  {
-    id: "M004",
-    mentorName: "정대영",
-    categories: ["재활 운동", "부상 상담", "유연성·스트레칭"],
-    price: 70000,
-  },
-  {
-    id: "M005",
-    mentorName: "최영희",
-    categories: ["다이어트", "식단 관리", "홈 트레이닝"],
-    price: 40000,
-  },
-];
 
 const categoryColors = [
   "bg-blue-100 text-blue-800",
@@ -73,6 +40,28 @@ const categoryColors = [
 
 export function MentoringManagement() {
   const navigate = useNavigate();
+
+  const [mentorings, setMentorings] = useState<MentoringItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadMentorings = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await fetchMentorings();
+        setMentorings(data);
+        console.log('✅ UI 상태 업데이트 완료:', { loadedCount: data.length });
+      } catch (err) {
+        setError("멘토링 데이터를 불러오는데 실패했습니다.");
+        console.error("❌ 멘토링 로드 실패:", err);
+      } finally {
+        setIsLoading(false);
+        }
+      };
+      loadMentorings();
+    }, []);
 
   const handleViewDetail = (mentoringId: string) => {
     navigate(ROUTES.getMentoringDetailPath(mentoringId));
@@ -112,7 +101,7 @@ export function MentoringManagement() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockMentoringData.map((mentoring) => (
+              {mentorings.map((mentoring) => (
                 <TableRow
                   key={mentoring.id}
                   className="cursor-pointer hover:bg-muted/50"

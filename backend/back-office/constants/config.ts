@@ -6,7 +6,7 @@
  */
 
 // 기본 서버 URL (변경 가능)
-export const BASE_URL = '';
+export const BASE_URL = 'http://localhost:8080';
 
 // 개발 환경에서 다른 서버를 사용하고 싶을 때
 // export const BASE_URL = 'http://localhost:3000';
@@ -25,14 +25,16 @@ export const API_ENDPOINTS = {
   AUTH_ME: `${BASE_URL}/members/me`,
   AUTH_STATUS: `${BASE_URL}/members/status`,
   
-  // 관리자 API
+  // 자격증명
   ADMIN_CERTIFICATES: `${BASE_URL}/admin/certificates`,
+  CERTIFICATES: `${BASE_URL}/certificates`,
   
-  // 기타 API 엔드포인트들
-  MENTORS: `${BASE_URL}/api/mentors`,
-  MENTEES: `${BASE_URL}/api/mentees`,
-  MENTORING: `${BASE_URL}/api/mentoring`,
-  CERTIFICATES: `${BASE_URL}/api/certificates`,
+  // 멘토링
+  MENTORING: `${BASE_URL}/mentorings`,
+  MENTORING_DETAIL: `${BASE_URL}/mentorings/`,
+  MENTORING_DELETE: `${BASE_URL}/admin/mentorings/`,
+
+  // 멘토링 예약
 } as const;
 
 /**
