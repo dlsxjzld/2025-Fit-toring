@@ -127,7 +127,7 @@ const StyledContainer = styled.div`
   display: flex;
   flex-direction: column;
 
-  height: 100%;
+  min-height: 100%;
 `;
 
 const StyledContents = styled.main`
@@ -135,6 +135,8 @@ const StyledContents = styled.main`
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+
+  flex-grow: 1;
 `;
 
 const StyledCheckboxWrapper = styled.div`

@@ -23,6 +23,7 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.MentoringRequest;
+import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.DbCleaner;
@@ -560,6 +561,103 @@ class MentoringControllerTest {
                     new ArrayList<>()
             );
             assertThat(response).isNotNull().isEqualTo(expected);
+        }
+
+        @DisplayName("현재 로그인한 멘토는 자신이 개설한 멘토링을 조회할 수 있다.")
+        @Test
+        void getMentoringByMentorId() {
+            //given
+
+            //멘토 생성
+            Member mentor = new Member("id1", "MALE", "멘토1", new Phone("010-1234-5678"), Password.from("pw"));
+            Member savedMentor = memberRepository.save(mentor);
+
+            //토큰 생성
+            String accessToken = jwtProvider.createAccessToken(mentor.getId());
+
+            Mentoring savedMentoring = mentoringRepository.save(
+                    new Mentoring(
+                            savedMentor,
+                            1000,
+                            3,
+                            "멘토링 내용",
+                            "멘토링 자기소개"
+                    )
+            );
+
+            //카테고리 생성
+            Category savedCategory = categoryRepository.save(new Category("체형교정"));
+            Category savedCategory2 = categoryRepository.save(new Category("근육증진"));
+
+            //멘토링 카테고리 생성
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory, savedMentoring));
+            categoryMentoringRepository.save(new CategoryMentoring(savedCategory2, savedMentoring));
+
+            //멘토링 프로필 이미지 생성
+            Image savedImage = imageRepository.save(
+                    new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
+
+            //자격증 생성
+            Certificate certificate = new Certificate(
+                    CertificateType.LICENSE,
+                    "자격증",
+                    savedMentoring
+            );
+            Certificate certificate2 = new Certificate(
+                    CertificateType.LICENSE,
+                    "자격증",
+                    savedMentoring
+            );
+            certificate.approve();
+            certificate2.approve();
+
+            Certificate savedCertificate = certificateRepository.save(certificate);
+            Certificate savedCertificate2 = certificateRepository.save(certificate2);
+
+            //자격증 이미지 생성
+            Image savedCetificateImage = imageRepository.save(new Image(
+                    "profileImageUrl",
+                    ImageType.CERTIFICATE,
+                    savedCertificate.getId())
+            );
+
+            Image savedCertificateImage2 = imageRepository.save(new Image(
+                    "profileImageUrl2",
+                    ImageType.CERTIFICATE,
+                    savedCertificate2.getId())
+            );
+
+            //when
+            MentoringResponse response = RestAssured
+                    .given()
+                    .log().all().contentType(ContentType.JSON)
+                    .cookie("accessToken", accessToken)
+                    .when()
+                    .get("/mentorings/mine")
+                    .then().log().all()
+                    .statusCode(200)
+                    .extract()
+                    .as(MentoringResponse.class);
+
+            //then
+            List<CertificateSpecAndImageResponse> certificateSpecAndImageResponses = new ArrayList<>();
+
+            certificateSpecAndImageResponses.add(
+                    CertificateSpecAndImageResponse.of(certificate, savedCetificateImage.getUrl())
+            );
+            certificateSpecAndImageResponses.add(
+                    CertificateSpecAndImageResponse.of(certificate2, savedCertificateImage2.getUrl())
+            );
+
+            assertThat(response.id()).isEqualTo(savedMentoring.getId());
+            assertThat(response.mentorName()).isEqualTo(savedMentor.getName());
+            assertThat(response.categories()).isEqualTo(List.of("체형교정", "근육증진"));
+            assertThat(response.price()).isEqualTo(savedMentoring.getPrice());
+            assertThat(response.career()).isEqualTo(savedMentoring.getCareer());
+            assertThat(response.introduction()).isEqualTo(savedMentoring.getIntroduction());
+            assertThat(response.content()).isEqualTo(savedMentoring.getContent());
+            assertThat(response.certificates()).isEqualTo(certificateSpecAndImageResponses);
+            assertThat(response.profileImageUrl()).isEqualTo(savedImage.getUrl());
         }
 
         @DisplayName("존재하지 않는 멘토링 Id로 멘토링 조회에 실패하면 404 Not Found 상태코드를 반환한다.")

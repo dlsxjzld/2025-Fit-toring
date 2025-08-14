@@ -356,7 +356,7 @@ class MentoringServiceTest {
             );
 
             //when
-            MentoringResponse actual = mentoringService.getMentoring(mentoring1.getId());
+            MentoringResponse actual = mentoringService.getMentoringWithRelations(mentoring1.getId());
 
             //then
             assertThat(actual).isEqualTo(expected);
@@ -386,7 +386,7 @@ class MentoringServiceTest {
             //when
             //then
             assertThatThrownBy(() ->
-                    mentoringService.getMentoring(invalidId))
+                    mentoringService.getMentoringWithRelations(invalidId))
                     .isInstanceOf(MentoringNotFoundException.class)
                     .hasMessageStartingWith(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
         }
@@ -556,7 +556,7 @@ class MentoringServiceTest {
 
         Member mentee = new Member("멘티id", "MALE", "김멘티", new Phone("010-1234-1234"), Password.from("password"));
         memberRepository.save(mentee);
-        Review review = new Review(1, "리뷰내용",reservation, mentee);
+        Review review = new Review(1, "리뷰내용", reservation, mentee);
         reviewRepository.save(review);
 
         // when
@@ -564,9 +564,10 @@ class MentoringServiceTest {
 
         // then
         SoftAssertions.assertSoftly(softly -> {
-                    assertThatThrownBy(() -> mentoringService.getMentoring(mentoringId))   // 멘토링 삭제
+                    assertThatThrownBy(() -> mentoringService.getMentoringWithRelations(mentoringId))   // 멘토링 삭제
                             .isInstanceOf(MentoringNotFoundException.class);
-                    assertThat(categoryMentoringRepository.findTitlesByMentoringId(mentoringId)).isEmpty(); // 연관된 카테고리 중간 테이블 요소 삭제
+                    assertThat(categoryMentoringRepository.findTitlesByMentoringId(
+                            mentoringId)).isEmpty(); // 연관된 카테고리 중간 테이블 요소 삭제
                     assertThat(categoryRepository.existsByTitle("카테고리1")).isEqualTo(true);  // 카테고리 유지
                     assertThat(categoryRepository.existsByTitle("카테고리2")).isEqualTo(true);  // 카테고리 유지
                     assertThat(reservationRepository.findAll()).isEmpty();  // 멘토링의 예약 삭제됨
@@ -585,37 +586,37 @@ class MentoringServiceTest {
         void modifyMentoring() throws IOException {
             //given
             Member mentor = memberRepository.save(new Member(
-                "id1",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
+                    "id1",
+                    "MALE",
+                    "김트레이너",
+                    new Phone("010-1234-9048"),
+                    Password.from("pw")
             ));
 
             Category category1 = categoryRepository.save(new Category("근육증가"));
             categoryRepository.save(new Category("다이어트"));
             Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                mentor,
-                5000,
-                3,
-                "한 줄 소개",
-                "긴 글 소개"
+                    mentor,
+                    5000,
+                    3,
+                    "한 줄 소개",
+                    "긴 글 소개"
             ));
             imageRepository.save(new Image(
-                "originalProfileImage",
-                ImageType.MENTORING_PROFILE,
-                mentoring.getId()
+                    "originalProfileImage",
+                    ImageType.MENTORING_PROFILE,
+                    mentoring.getId()
             ));
             categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
             Certificate certificate = certificateRepository.save(new Certificate(
-                CertificateType.LICENSE,
-                "운전면허증",
-                mentoring
+                    CertificateType.LICENSE,
+                    "운전면허증",
+                    mentoring
             ));
             imageRepository.save(new Image(
-                "originalCertificateImage",
-                ImageType.CERTIFICATE,
-                certificate.getId()
+                    "originalCertificateImage",
+                    ImageType.CERTIFICATE,
+                    certificate.getId()
             ));
 
             int newPrice = 1000;
@@ -625,25 +626,25 @@ class MentoringServiceTest {
             String newContent = "수정된 한 줄 소개";
 
             MockMultipartFile profileImageFile = new MockMultipartFile("testProfile",
-                "testProfile".getBytes(StandardCharsets.UTF_8));
+                    "testProfile".getBytes(StandardCharsets.UTF_8));
             String profileImageS3Url = "profileImageS3Url";
             MockMultipartFile certificateImageFile = new MockMultipartFile("testCertificate",
-                "testCertificate".getBytes(StandardCharsets.UTF_8));
+                    "testCertificate".getBytes(StandardCharsets.UTF_8));
             String certificateImageS3Url = "testCertificateImageS3Url";
             when(s3Uploader.upload(profileImageFile, "profile-image")).thenReturn(profileImageS3Url);
             when(s3Uploader.upload(certificateImageFile, "certificate-image")).thenReturn(certificateImageS3Url);
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
-                mentoring.getId(),
-                mentor.getId(),
-                newPrice,
-                List.of(newCategory),
-                newIntroduction,
-                newCareer,
-                newContent,
-                profileImageFile,
-                List.of(new CertificateInfo(CertificateType.AWARD, "최우수상")),
-                List.of(certificateImageFile)
+                    mentoring.getId(),
+                    mentor.getId(),
+                    newPrice,
+                    List.of(newCategory),
+                    newIntroduction,
+                    newCareer,
+                    newContent,
+                    profileImageFile,
+                    List.of(new CertificateInfo(CertificateType.AWARD, "최우수상")),
+                    List.of(certificateImageFile)
             );
 
             // when
@@ -652,10 +653,12 @@ class MentoringServiceTest {
             // then
             Mentoring changedMentoring = mentoringRepository.findById(mentoring.getId()).get();
             List<String> changedCategories = categoryMentoringRepository.findTitlesByMentoringId(mentoring.getId());
-            Image changedProfileImage = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId()).get();
+            Image changedProfileImage = imageRepository.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE,
+                    mentoring.getId()).get();
 
             Certificate changedCertificate = certificateRepository.findAllByMentoringId(mentoring.getId()).get(0);
-            Image certificateImage = imageRepository.findByImageTypeAndRelationId(ImageType.CERTIFICATE, changedCertificate.getId()).get();
+            Image certificateImage = imageRepository.findByImageTypeAndRelationId(ImageType.CERTIFICATE,
+                    changedCertificate.getId()).get();
 
             SoftAssertions.assertSoftly(softAssertions -> {
                 softAssertions.assertThat(changedMentoring.getPrice()).isEqualTo(newPrice);
@@ -673,11 +676,11 @@ class MentoringServiceTest {
         void modifyMentoringFail1() {
             // given
             Member mentor = memberRepository.save(new Member(
-                "id1",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
+                    "id1",
+                    "MALE",
+                    "김트레이너",
+                    new Phone("010-1234-9048"),
+                    Password.from("pw")
             ));
 
             int newPrice = 1000;
@@ -687,23 +690,23 @@ class MentoringServiceTest {
             String newContent = "수정된 한 줄 소개";
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
-                999L,
-                mentor.getId(),
-                newPrice,
-                List.of(newCategory),
-                newIntroduction,
-                newCareer,
-                newContent,
-                null,
-                null,
-                null
+                    999L,
+                    mentor.getId(),
+                    newPrice,
+                    List.of(newCategory),
+                    newIntroduction,
+                    newCareer,
+                    newContent,
+                    null,
+                    null,
+                    null
             );
 
             // when
             // then
             assertThatThrownBy(() -> mentoringService.modifyMentoring(modifyMentoringDto))
-                .isInstanceOf(MentoringNotFoundException.class)
-                .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
+                    .isInstanceOf(MentoringNotFoundException.class)
+                    .hasMessage(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage());
         }
 
         @DisplayName("본인이 개설하지 않은 멘토링을 수정하려고 하면 예외가 발생한다")
@@ -711,26 +714,26 @@ class MentoringServiceTest {
         void modifyMentoringFail2() {
             // given
             Member mentor = memberRepository.save(new Member(
-                "id1",
-                "MALE",
-                "김트레이너",
-                new Phone("010-1234-9048"),
-                Password.from("pw")
+                    "id1",
+                    "MALE",
+                    "김트레이너",
+                    new Phone("010-1234-9048"),
+                    Password.from("pw")
             ));
             Mentoring mentoring = mentoringRepository.save(new Mentoring(
-                mentor,
-                5000,
-                3,
-                "한 줄 소개",
-                "긴 글 소개"
+                    mentor,
+                    5000,
+                    3,
+                    "한 줄 소개",
+                    "긴 글 소개"
             ));
 
             Member invalidMember = memberRepository.save(new Member(
-                "id2",
-                "MALE",
-                "박트레이너",
-                new Phone("010-1234-9021"),
-                Password.from("pw")
+                    "id2",
+                    "MALE",
+                    "박트레이너",
+                    new Phone("010-1234-9021"),
+                    Password.from("pw")
             ));
             int newPrice = 1000;
             String newCategory = "다이어트";
@@ -739,23 +742,23 @@ class MentoringServiceTest {
             String newContent = "수정된 한 줄 소개";
 
             ModifyMentoringDto modifyMentoringDto = new ModifyMentoringDto(
-                mentoring.getId(),
-                invalidMember.getId(),
-                newPrice,
-                List.of(newCategory),
-                newIntroduction,
-                newCareer,
-                newContent,
-                null,
-                null,
-                null
+                    mentoring.getId(),
+                    invalidMember.getId(),
+                    newPrice,
+                    List.of(newCategory),
+                    newIntroduction,
+                    newCareer,
+                    newContent,
+                    null,
+                    null,
+                    null
             );
 
             // when
             // then
             assertThatThrownBy(() -> mentoringService.modifyMentoring(modifyMentoringDto))
-                .isInstanceOf(ForbiddenMemberException.class)
-                .hasMessage(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
+                    .isInstanceOf(ForbiddenMemberException.class)
+                    .hasMessage(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
         }
     }
 }
