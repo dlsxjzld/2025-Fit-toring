@@ -55,6 +55,10 @@ public class Reservation {
         this.status = updateStatus;
     }
 
+    public void changeStatusWithoutValidation(Status updateStatus) {
+        this.status = updateStatus;
+    }
+
     public boolean isPending() {
         return this.status.isPending();
     }

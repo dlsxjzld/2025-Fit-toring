@@ -7,18 +7,32 @@ import MentoringItem from './MentoringItem/MentoringItem';
 import MentoringList from './MentoringList/MentoringList';
 
 import type { ParticipatedMentoringType } from './types/participatedMentoring';
+import { StatusTypeEnum } from '../../common/types/statusType';
 
 function ParticipatedMentoring() {
   const [participatedMentoringList, setParticipatedMentoringList] = useState<
     ParticipatedMentoringType[]
   >([]);
 
+  const handleReviewSubmitButtonClick = (reservationId: number) => {
+    setParticipatedMentoringList((prevList) =>
+      prevList.map((item) =>
+        item.reservationId === reservationId
+          ? { ...item, isReviewed: true, status: StatusTypeEnum.COMPLETE }
+          : item,
+      ),
+    );
+  };
+
   useEffect(() => {
     const fetchParticipatedMentoringList = async () => {
-      const data = await getParticipatedMentoringList();
-      setParticipatedMentoringList(data);
+      try {
+        const data = await getParticipatedMentoringList();
+        setParticipatedMentoringList(data);
+      } catch (error) {
+        console.error('참여한 멘토링 목록 불러오기 실패:', error);
+      }
     };
-
     fetchParticipatedMentoringList();
   }, []);
 
@@ -39,7 +53,11 @@ function ParticipatedMentoring() {
         {participatedMentoringList.length > 0 ? (
           <MentoringList>
             {participatedMentoringList.map((item) => (
-              <MentoringItem key={item.reservationId} mentoring={item} />
+              <MentoringItem
+                key={item.reservationId}
+                mentoring={item}
+                handleReviewSubmitButtonClick={handleReviewSubmitButtonClick}
+              />
             ))}
           </MentoringList>
         ) : (
