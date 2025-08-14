@@ -203,7 +203,14 @@ class ApiClient {
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        await fetchRefresh();
+        try {
+          await postReissue();
+        } catch (error) {
+          console.error('토큰 갱신 실패', error);
+          if (error instanceof ApiError) {
+            throw new ApiError('토큰 갱신 실패', error.status);
+          }
+        }
 
         try {
           return await sendRequest();
