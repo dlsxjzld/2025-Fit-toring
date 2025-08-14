@@ -40,6 +40,7 @@ public class MentoringController {
             profileImage,
             certificateImages
         );
+        mentoringService.registerMentoring(dto);
         return ResponseEntity.status(HttpStatus.CREATED)
             .build();
     }
@@ -50,8 +51,13 @@ public class MentoringController {
             @RequestParam(required = false) String categoryTitle2,
             @RequestParam(required = false) String categoryTitle3
     ) {
+        List<MentoringSummaryResponse> responseBody = mentoringService.findMentoringSummaries(
+            categoryTitle1,
+            categoryTitle2,
+            categoryTitle3
+        );
         return ResponseEntity.ok()
-                .body(mentoringService.findMentoringSummaries(categoryTitle1, categoryTitle2, categoryTitle3));
+                .body(responseBody);
     }
 
     @GetMapping("/mentorings/{mentoringId}")
