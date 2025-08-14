@@ -36,4 +36,8 @@ public class ImageService {
     private Image saveImage(Image image){
         return imageRepository.save(image);
     }
+
+    public void deleteByImageTypeAndRelationId(ImageType imageType, Long relationId) {
+        imageRepository.deleteByImageTypeAndRelationId(imageType, relationId);
+    }
 }

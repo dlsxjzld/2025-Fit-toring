@@ -1,3 +1,6 @@
+import ApiError from './ApiError';
+import { postReissue } from './postReissue';
+
 interface ApiClientGetType {
   endpoint: string;
   searchParams?: Record<string, string>;
@@ -21,6 +24,29 @@ interface ApiClientPatchType {
 }
 
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
+
+let refreshPromise: Promise<void> | null = null;
+
+const fetchRefresh = async () => {
+  try {
+    await postReissue();
+  } catch (error) {
+    console.error('토큰 갱신 실패', error);
+    if (error instanceof ApiError) {
+      throw new ApiError('토큰 갱신 실패', error.status);
+    }
+  }
+};
+
+const ensureRefreshed = async () => {
+  if (!refreshPromise) {
+    refreshPromise = fetchRefresh().finally(() => {
+      refreshPromise = null;
+    });
+  }
+
+  return refreshPromise;
+};
 
 class ApiClient {
   #baseUrl: string;
@@ -56,14 +82,46 @@ class ApiClient {
         : ('same-origin' as RequestCredentials),
     };
 
-    const response = await fetch(url, options);
+    const sendRequest = async () => {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new ApiError(data.message, response.status);
+      }
 
-    if (!response.ok) {
-      const data = await response.json();
-      throw new Error(data.message);
+      return response.json();
+    };
+
+    try {
+      if (refreshPromise) {
+        await refreshPromise;
+      }
+
+      return await sendRequest();
+    } catch (error) {
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        try {
+          await ensureRefreshed();
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+
+        try {
+          return await sendRequest();
+        } catch (error) {
+          console.error('재요청 실패', error);
+          if (error instanceof ApiError) {
+            throw new ApiError('재요청 실패', error.status);
+          }
+        }
+      }
+
+      throw error;
     }
-    // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
-    return response.json();
   }
 
   async post({ endpoint, body, withCredentials }: ApiClientPostType) {
@@ -79,14 +137,17 @@ class ApiClient {
         : ('same-origin' as RequestCredentials),
     };
 
-    const response = await fetch(url, options);
+    const sendRequest = async () => {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new ApiError(data.message, response.status);
+      }
 
-    if (!response.ok) {
-      // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
-      const data = await response.json();
-      throw new Error(data.message);
-    }
-    return response;
+      return response;
+    };
+
+    return this.requestWithRefresh(sendRequest);
   }
 
   async delete({ endpoint }: ApiClientDeleteType) {
@@ -99,13 +160,15 @@ class ApiClient {
       },
     };
 
-    const response = await fetch(url, options);
+    const sendRequest = async () => {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new ApiError(data.message, response.status);
+      }
+    };
 
-    if (!response.ok) {
-      // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
-      const data = await response.json();
-      throw new Error(data.message);
-    }
+    return this.requestWithRefresh(sendRequest);
   }
 
   async patch({ endpoint, searchParams, withCredentials }: ApiClientPatchType) {
@@ -122,14 +185,50 @@ class ApiClient {
         : ('same-origin' as RequestCredentials),
     };
 
-    const response = await fetch(url, options);
+    const sendRequest = async () => {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new ApiError(data.message, response.status);
+      }
 
-    if (!response.ok) {
-      // TODO: 커스텀에러 추가후, 에러 타입별로 구분해 throw 및 try-catch 처리 필요
-      const data = await response.json();
-      throw new Error(data.message);
+      return response;
+    };
+
+    return this.requestWithRefresh(sendRequest);
+  }
+
+  private async requestWithRefresh<T>(
+    sendRequest: () => Promise<T>,
+  ): Promise<T> {
+    try {
+      return await sendRequest();
+    } catch (error) {
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        try {
+          await postReissue();
+        } catch (error) {
+          console.error('토큰 갱신 실패', error);
+          if (error instanceof ApiError) {
+            throw new ApiError('토큰 갱신 실패', error.status);
+          }
+        }
+
+        try {
+          return await sendRequest();
+        } catch (error) {
+          console.error('재요청 실패', error);
+          if (error instanceof ApiError) {
+            throw new ApiError('재요청 실패', error.status);
+          }
+        }
+      }
+
+      throw error;
     }
-    return response;
   }
 }
 

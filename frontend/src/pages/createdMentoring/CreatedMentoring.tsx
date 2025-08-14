@@ -16,8 +16,12 @@ function CreatedMentoring() {
 
   useEffect(() => {
     const fetchMentoringApplicationList = async () => {
-      const response = await getMentoringApplicationList();
-      setMentoringApplicationList(response);
+      try {
+        const response = await getMentoringApplicationList();
+        setMentoringApplicationList(response);
+      } catch (error) {
+        console.error(error);
+      }
     };
 
     fetchMentoringApplicationList();
