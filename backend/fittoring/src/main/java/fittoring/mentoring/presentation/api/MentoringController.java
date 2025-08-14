@@ -41,6 +41,12 @@ public class MentoringController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/mentorings/mine")
+    public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
+        MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/mentorings")
     public ResponseEntity<Void> registerMentoring(
             @Login LoginInfo loginInfo,
