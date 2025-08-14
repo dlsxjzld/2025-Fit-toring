@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from './apis/getMentoringDetail';
 import ApplySection from './components/ApplySection/ApplySection';
+import Certificates from './components/Certificates/Certificates';
 import DetailHeader from './components/DetailHeader/DetailHeader';
 import Introduction from './components/Introduction/Introduction';
 import MentorSummary from './components/MentorSummary/MentorSummary';
@@ -76,13 +77,15 @@ function Detail() {
           {selected === 'detail' ? (
             <StyledDetailWrapper>
               <Introduction content={data.content} />
-              <ApplySection price={data.price} mentoringId={mentoringId} />
+              <StyledLine />
+              <Certificates certificates={data.certificates} />
             </StyledDetailWrapper>
           ) : (
             <DetailReview />
           )}
         </StyledContentWrapper>
       </StyledContainer>
+      <ApplySection price={data.price} mentoringId={mentoringId} />
     </>
   );
 }
@@ -90,6 +93,7 @@ function Detail() {
 export default Detail;
 
 const StyledContainer = styled.div`
+  margin-bottom: 10rem;
   padding: 0 2rem;
 `;
 
@@ -109,7 +113,7 @@ const StyledTapWrapper = styled.div`
   padding: 1rem;
 `;
 
-const StyledTap = styled.p<{ selected?: boolean }>`
+const StyledTap = styled.p<{ selected: boolean }>`
   width: 50%;
   cursor: pointer;
 
@@ -122,6 +126,7 @@ const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
   position: absolute;
   bottom: 0;
   left: 0;
+  z-index: 0;
 
   width: 50%;
   height: 1px;
@@ -143,7 +148,12 @@ const StyledContentWrapper = styled.div`
 const StyledDetailWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2.4rem;
+  gap: 2rem;
+`;
 
+const StyledLine = styled.hr`
   width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;

@@ -11,6 +11,7 @@ export default Header;
 const StyledContainer = styled.header`
   position: sticky;
   top: 0;
+  z-index: 100;
 
   width: 48rem;
   height: 5.7rem;
