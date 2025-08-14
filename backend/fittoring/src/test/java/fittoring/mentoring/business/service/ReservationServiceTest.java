@@ -7,6 +7,7 @@ import fittoring.config.JpaConfiguration;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
@@ -111,9 +112,41 @@ class ReservationServiceTest {
         );
     }
 
+    @DisplayName("본인이 개설한 멘토링에 예약하려고 하면 예외가 발생한다")
+    @Test
+    void createReservationFail1() {
+        // given
+        Member mentor = entityManager.persist(new Member(
+            "mentorLoginId",
+            "MALE",
+            "아이유",
+            new Phone("010-1234-5678"),
+            Password.from("password"),
+            MemberRole.MENTOR
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "모던 타임즈",
+            "또 봐요 미스터 채플린~"
+        ));
+        ReservationCreateDto dto = new ReservationCreateDto(
+            mentor.getId(),
+            mentoring.getId(),
+            "그 이름도 내겐 사랑스런 채플린~"
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reservationService.createReservation(dto))
+            .isInstanceOf(MentorAndMenteeIsSameException.class)
+            .hasMessage(BusinessErrorMessage.MENTOR_AND_MENTEE_IS_SAME.getMessage());
+    }
+
     @DisplayName("존재하지 않는 멘토링이라면 예외가 발생한다.")
     @Test
-    void createReservationFail() {
+    void createReservationFail2() {
         // given
         Member mentee = new Member("id1", "남", "멘티남", new Phone("010-1234-5678"), Password.from("pw"));
         entityManager.persist(mentee);
