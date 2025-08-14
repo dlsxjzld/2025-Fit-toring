@@ -29,19 +29,19 @@ public class MentoringController {
 
     @PostMapping("/mentorings")
     public ResponseEntity<Void> registerMentoring(
-        @Login LoginInfo loginInfo,
-        @RequestPart("data") MentoringRequest request,
-        @RequestPart(value = "image", required = false) MultipartFile profileImage,
-        @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
+            @Login LoginInfo loginInfo,
+            @RequestPart("data") MentoringRequest request,
+            @RequestPart(value = "image", required = false) MultipartFile profileImage,
+            @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
     ) {
         RegisterMentoringDto dto = RegisterMentoringDto.of(
-            loginInfo.memberId(),
-            request,
-            profileImage,
-            certificateImages
+                loginInfo.memberId(),
+                request,
+                profileImage,
+                certificateImages
         );
         return ResponseEntity.status(HttpStatus.CREATED)
-            .build();
+                .build();
     }
 
     @GetMapping("/mentorings")
@@ -56,28 +56,30 @@ public class MentoringController {
 
     @GetMapping("/mentorings/{mentoringId}")
     public ResponseEntity<MentoringResponse> getMentoring(@PathVariable("mentoringId") Long id) {
-        MentoringResponse response = mentoringService.getMentoring(id);
+        MentoringResponse response = mentoringService.getMentoringWithRelations(id);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/mentorings/{mentoringId}")
     public ResponseEntity<Void> modifyMentoring(
-        @PathVariable("mentoringId") Long mentoringId,
-        @Login LoginInfo loginInfo,
-        @RequestPart("data") MentoringRequest requestBody,
-        @RequestPart(value = "image", required = false) MultipartFile profileImage,
-        @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
-    ) {   ModifyMentoringDto mentoringModifyDto = ModifyMentoringDto.of(
-            mentoringId,
-            loginInfo.memberId(),
-            requestBody,
-            profileImage,
-            certificateImages
+            @PathVariable("mentoringId") Long mentoringId,
+            @Login LoginInfo loginInfo,
+            @RequestPart("data") MentoringRequest requestBody,
+            @RequestPart(value = "image", required = false) MultipartFile profileImage,
+            @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
+    ) {
+        ModifyMentoringDto mentoringModifyDto = ModifyMentoringDto.of(
+                mentoringId,
+                loginInfo.memberId(),
+                requestBody,
+                profileImage,
+                certificateImages
         );
         mentoringService.modifyMentoring(mentoringModifyDto);
         return ResponseEntity.ok()
                 .build();
-}
+    }
+
     @GetMapping("/mentorings/mine")
     public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
         MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());

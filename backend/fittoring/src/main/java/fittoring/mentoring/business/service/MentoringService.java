@@ -99,7 +99,7 @@ public class MentoringService {
     public MentoringResponse getMentoringByMentorId(Long mentorId) {
         Member mentor = getMemberById(mentorId);
         Mentoring mentoring = getMentoringByMentor(mentor);
-        return getMentoring(mentoring.getId());
+        return getMentoringWithRelations(mentoring.getId());
     }
 
     private Member getMemberById(Long mentorId) {
@@ -114,7 +114,7 @@ public class MentoringService {
     }
 
     @Transactional(readOnly = true)
-    public MentoringResponse getMentoring(final Long mentoringId) {
+    public MentoringResponse getMentoringWithRelations(final Long mentoringId) {
         Mentoring mentoring = getMentoringById(mentoringId);
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
         List<Certificate> certificates = certificateRepository.findByMentoringIdAndVerificationStatus(
