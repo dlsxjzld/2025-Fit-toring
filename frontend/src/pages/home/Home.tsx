@@ -7,6 +7,7 @@ import { useLocation } from 'react-router-dom';
 import Footer from '../../common/components/Footer/Footer';
 
 import { getMentorList } from './apis/getMentorList';
+import Feedback from './components/Feedback/Feedback';
 import HomeHeader from './components/HomeHeader/HomeHeader';
 import MentorCardItem from './components/MentorCardItem/MentorCardItem';
 import MentorCardList from './components/MentorCardList/MentorCardList';
@@ -113,7 +114,9 @@ function Home() {
           ))}
         </MentorCardList>
       </StyledContents>
-      <Footer>문의: fitoring7@gmail.com</Footer>
+      <Footer>
+        <Feedback />
+      </Footer>
     </StyledContainer>
   );
 }

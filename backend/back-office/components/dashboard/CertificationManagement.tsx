@@ -325,7 +325,7 @@ export function CertificationManagement() {
   };
 
   return (
-    <div className="h-full flex flex-col pt-6 md:ml-[180px]">
+    <div className="h-full flex flex-col">
       {/* 헤더 */}
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">

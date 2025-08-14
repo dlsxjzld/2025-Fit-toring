@@ -63,6 +63,10 @@ public class Member {
         }
     }
 
+    public boolean isNotAdmin() {
+        return this.role != MemberRole.ADMIN;
+    }
+
     public String getPassword() {
         return password.getPassword();
     }

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -18,6 +18,7 @@ import {
   SidebarInset,
   SidebarTrigger,
 } from "./ui/sidebar";
+import { Button } from "./ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -33,18 +34,53 @@ import {
   BookOpen,
 } from "lucide-react";
 import { CertificationManagement } from "./dashboard/CertificationManagement";
+import { MentoringManagement } from "./dashboard/MentoringManagement";
+import { MentoringDetail } from "./dashboard/MentoringDetail";
 import { ComingSoon } from "./dashboard/ComingSoon";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useAuth } from "./AuthContext";
+import { logout as apiLogout } from "../services/authApi";
+import { ROUTES } from "../constants/routes";
 
 export function Dashboard() {
   const [activeMenu, setActiveMenu] = useState("certifications");
-  const { logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const params = useParams();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  // URL 경로에 따라 activeMenu 설정
+  useEffect(() => {
+    if (location.pathname.startsWith('/mentoring/')) {
+      setActiveMenu('mentoring-detail');
+    } else if (location.pathname === '/' || location.pathname === '/dashboard') {
+      // 해시가 있으면 해당 메뉴로 이동
+      if (location.hash === '#mentoring') {
+        setActiveMenu('mentoring');
+      } else {
+        setActiveMenu('certifications');
+      }
+    }
+  }, [location.pathname, location.hash]);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    
+    try {
+      console.log('🚪 Attempting logout...');
+      // 서버에 로그아웃 요청
+      await apiLogout();
+      console.log('✅ Server logout successful');
+    } catch (error) {
+      console.error('❌ Server logout failed:', error);
+      // 서버 로그아웃 실패해도 클라이언트 로그아웃은 진행
+    } finally {
+      // 클라이언트 로그아웃 (상태 초기화)
+      logout();
+      navigate(ROUTES.LOGIN);
+      setIsLoggingOut(false);
+    }
   };
 
   const renderContent = () => {
@@ -54,7 +90,9 @@ export function Dashboard() {
       case "mentees":
         return <ComingSoon />;
       case "mentoring":
-        return <ComingSoon />;
+        return <MentoringManagement />;
+      case "mentoring-detail":
+        return <MentoringDetail />;
       default:
         return <CertificationManagement />;
     }
@@ -68,6 +106,8 @@ export function Dashboard() {
         return "멘티 관리";
       case "mentoring":
         return "멘토링 관리";
+      case "mentoring-detail":
+        return "멘토링 상세";
       default:
         return "자격증 관리";
     }
@@ -170,12 +210,23 @@ export function Dashboard() {
                   <SidebarMenuButton
                     onClick={handleLogout}
                     tooltip="로그아웃"
+                    disabled={isLoggingOut}
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>로그아웃</span>
+                    <span>{isLoggingOut ? "로그아웃 중..." : "로그아웃"}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
+              
+              {/* 현재 사용자 정보 표시 */}
+              {user && (
+                <div className="px-4 py-2 border-t border-sidebar-border group-data-[collapsible=icon]:hidden">
+                  <p className="text-xs text-muted-foreground">로그인:</p>
+                  <p className="text-sm font-medium truncate">{user.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">@{user.loginId}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user.role}</p>
+                </div>
+              )}
             </SidebarFooter>
           </Sidebar>
 

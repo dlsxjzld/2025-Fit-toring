@@ -12,10 +12,15 @@ public record MentoringResponse(
         int career,
         String profileImageUrl,
         String introduction,
-        String content
+        String content,
+        List<CertificateSpecAndImageResponse> certificates
 ) {
 
-    public static MentoringResponse from(Mentoring mentoring, List<String> categoryTitles) {
+    public static MentoringResponse of(
+            Mentoring mentoring,
+            List<String> categoryTitles,
+            List<CertificateSpecAndImageResponse> certificates
+    ) {
         return new MentoringResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
@@ -24,13 +29,19 @@ public record MentoringResponse(
                 mentoring.getCareer(),
                 null,
                 mentoring.getIntroduction(),
-                mentoring.getContent()
+                mentoring.getContent(),
+                certificates
         );
     }
 
-    public static MentoringResponse from(Mentoring mentoring, List<String> categoryTitles, Image image) {
-        if(image==null){
-            return from(mentoring, categoryTitles);
+    public static MentoringResponse of(
+            Mentoring mentoring,
+            List<String> categoryTitles,
+            Image image,
+            List<CertificateSpecAndImageResponse> certificates
+    ) {
+        if (image == null) {
+            return of(mentoring, categoryTitles, certificates);
         }
         return new MentoringResponse(
                 mentoring.getId(),
@@ -40,7 +51,8 @@ public record MentoringResponse(
                 mentoring.getCareer(),
                 image.getUrl(),
                 mentoring.getIntroduction(),
-                mentoring.getContent()
+                mentoring.getContent(),
+                certificates
         );
     }
 }

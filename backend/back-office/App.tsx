@@ -4,16 +4,18 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute';
 import { LoginPage } from './components/LoginPage';
 import { Dashboard } from './components/Dashboard';
+import { MentoringDetailPage } from './components/MentoringDetailPage';
 import { Toaster } from './components/ui/sonner';
+import { ROUTES, BASE_PATH } from './constants/routes';
 
 export default function App() {
   return (
-    <Router basename="/web-admin">
+    <Router basename={BASE_PATH}>
       <AuthProvider>
         <Routes>
-          {/* 로그인 페이지 */}
+          {/* Public Routes - 로그인 불필요 */}
           <Route
-            path="/login"
+            path={ROUTES.LOGIN}
             element={
               <PublicRoute>
                 <LoginPage />
@@ -21,9 +23,9 @@ export default function App() {
             }
           />
           
-          {/* 대시보드 */}
+          {/* Protected Routes - 로그인 필수 */}
           <Route
-            path="/dashboard"
+            path={ROUTES.ROOT}
             element={
               <ProtectedRoute>
                 <Dashboard />
@@ -31,13 +33,41 @@ export default function App() {
             }
           />
           
-          {/* 루트 경로는 대시보드로 리다이렉트 */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path={ROUTES.DASHBOARD}
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
           
-          {/* 404 페이지 */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path={ROUTES.MENTORING_DETAIL}
+            element={
+              <ProtectedRoute>
+                <MentoringDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* 404 - 존재하지 않는 경로는 메인으로 리다이렉트 */}
+          {/* 루트 경로(/) 접근 시 web-admin으로 리다이렉트 */}
+          <Route 
+            path="/" 
+            element={<Navigate to={ROUTES.ROOT} replace />} 
+          />
+          <Route 
+            path="*" 
+            element={<Navigate to={ROUTES.ROOT} replace />} 
+          />
         </Routes>
-        <Toaster />
+        <Toaster 
+          position="bottom-right"
+          visibleToasts={5}
+          duration={4000}
+          gap={12}
+        />
       </AuthProvider>
     </Router>
   );

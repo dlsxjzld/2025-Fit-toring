@@ -7,7 +7,7 @@ export interface MentoringDetail {
   categories: string[];
   price: number;
   career: number;
-  imageUrl: string;
+  profileImageUrl: string;
   introduction: string;
 }
 

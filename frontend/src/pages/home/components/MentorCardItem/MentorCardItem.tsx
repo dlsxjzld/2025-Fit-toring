@@ -15,13 +15,21 @@ interface MentorCardItemProps {
 }
 
 function MentorCardItem({
-  mentor: { id, mentorName, categories, price, career, imageUrl, introduction },
+  mentor: {
+    id,
+    mentorName,
+    categories,
+    price,
+    career,
+    profileImageUrl,
+    introduction,
+  },
 }: MentorCardItemProps) {
   return (
     <StyledContainer>
       <StyledWrapper>
         <StyledProfileImg
-          src={imageUrl || profileImg}
+          src={profileImageUrl || profileImg}
           alt="트레이너 이미지"
           onError={(e) => {
             e.currentTarget.src = profileImg;
