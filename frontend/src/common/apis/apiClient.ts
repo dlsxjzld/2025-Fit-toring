@@ -23,6 +23,12 @@ interface ApiClientPatchType {
   withCredentials?: boolean;
 }
 
+interface ApiClientPutType {
+  endpoint: string;
+  searchParams: Record<string, string | number>;
+  withCredentials?: boolean;
+}
+
 type RequestCredentials = 'omit' | 'same-origin' | 'include';
 
 let refreshPromise: Promise<void> | null = null;
@@ -176,6 +182,33 @@ class ApiClient {
 
     const options = {
       method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(searchParams),
+      credentials: withCredentials
+        ? 'include'
+        : ('same-origin' as RequestCredentials),
+    };
+
+    const sendRequest = async () => {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new ApiError(data.message, response.status);
+      }
+
+      return response;
+    };
+
+    return this.requestWithRefresh(sendRequest);
+  }
+
+  async put({ endpoint, searchParams, withCredentials }: ApiClientPutType) {
+    const url = new URL(`${this.#baseUrl}${endpoint}`);
+
+    const options = {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
