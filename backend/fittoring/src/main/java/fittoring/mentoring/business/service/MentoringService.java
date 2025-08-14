@@ -1,5 +1,6 @@
 package fittoring.mentoring.business.service;
 
+import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
@@ -12,6 +13,7 @@ import fittoring.mentoring.business.model.Certificate;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
@@ -106,7 +108,7 @@ public class MentoringService {
                             ImageType.MENTORING_PROFILE,
                             mentoring.getId()
                     );
-                    List<String> categoryTitles = categoryMentoringRepository.findTitleByMentoringId(mentoring.getId());
+                    List<String> categoryTitles = categoryMentoringRepository.findTitlesByMentoringId(mentoring.getId());
                     return profileImage.map(image -> MentoringSummaryResponse.of(mentoring, categoryTitles, image))
                             .orElseGet(() -> MentoringSummaryResponse.of(mentoring, categoryTitles));
                 })
@@ -227,6 +229,22 @@ public class MentoringService {
         imageService.deleteByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoringId);
         for (Certificate certificate : certificates) {
             imageService.deleteByImageTypeAndRelationId(ImageType.CERTIFICATE, certificate.getId());
+        }
+    }
+
+    @Transactional
+    public void deleteMentoringByAdmin(LoginInfo loginInfo, Long mentoringId){
+        checkAdminAuthority(loginInfo.memberId());
+        Mentoring mentoring = mentoringRepository.findById(mentoringId)
+                .orElseThrow(() -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+        mentoringRepository.delete(mentoring);
+    }
+
+    private void checkAdminAuthority(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        if (MemberRole.isNotAdmin(member.getRole())) {
+            throw new ForbiddenMemberException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
 }
