@@ -28,8 +28,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
         if (
                 request.getMethod().equalsIgnoreCase("GET") &&
-                request.getRequestURL().toString().startsWith("/mentorings") &&
-                !request.getRequestURL().toString().contains("/mine")
+                request.getRequestURL().toString().contains("/mentorings") &&
+                !request.getRequestURL().toString().contains("/mine") &&
+                !request.getRequestURL().toString().contains("/admin")
         ) {
             return true;
         }
