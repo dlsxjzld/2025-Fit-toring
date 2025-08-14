@@ -37,9 +37,9 @@ function DetailReview({ mentoringId }: DetailReviewProps) {
         <p>({totalReviewInfo.ratingCount}개 리뷰)</p>
       </StyledTotalWrapper>
       <StyledReviewList>
-        {totalReviewInfo.reviews.map((review) => {
-          return <ReviewItem key={review.id} review={review} />;
-        })}
+        {totalReviewInfo.reviews.map((review) => (
+          <ReviewItem key={review.id} review={review} />
+        ))}
       </StyledReviewList>
     </StyledContainer>
   );
