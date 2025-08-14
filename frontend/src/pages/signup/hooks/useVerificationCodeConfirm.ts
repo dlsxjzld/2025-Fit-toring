@@ -9,13 +9,13 @@ import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 interface useVerificationCodeConfirmParams {
   verificationCode: string;
   verificationCodeErrorMessage: string;
-  successVerification: () => void;
+  completeVerification: () => void;
 }
 
 const useVerificationCodeConfirm = ({
   verificationCode,
   verificationCodeErrorMessage,
-  successVerification,
+  completeVerification,
 }: useVerificationCodeConfirmParams) => {
   const {
     confirm: confrimVerificationCode,
@@ -32,7 +32,7 @@ const useVerificationCodeConfirm = ({
       if (response.status === 200) {
         alert('인증 성공');
         confrimVerificationCode();
-        successVerification();
+        completeVerification();
       }
     } catch (error) {
       setVerificationCodeError(true);

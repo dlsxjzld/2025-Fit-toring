@@ -92,11 +92,11 @@ function SignupForm() {
     setVerificationStep('idle');
   };
 
-  const successRequestCompleted = () => {
+  const completeRequest = () => {
     setVerificationStep('requested');
   };
 
-  const successVerification = () => {
+  const completeVerification = () => {
     setVerificationStep('verified');
   };
 
@@ -110,7 +110,7 @@ function SignupForm() {
   } = useVerificationCodeRequest({
     phoneNumber,
     phoneNumberErrorMessage,
-    successRequestCompleted,
+    completeRequest,
   });
 
   const {
@@ -131,7 +131,7 @@ function SignupForm() {
   } = useVerificationCodeConfirm({
     verificationCode,
     verificationCodeErrorMessage,
-    successVerification,
+    completeVerification,
   });
 
   const getDisplayedVerificationErrorMessage = () => {

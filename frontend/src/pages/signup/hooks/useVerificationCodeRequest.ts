@@ -7,13 +7,13 @@ import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 interface useVerificationCodeRequestParams {
   phoneNumber: string;
   phoneNumberErrorMessage: string;
-  successRequestCompleted: () => void;
+  completeRequest: () => void;
 }
 
 const useVerificationCodeRequest = ({
   phoneNumber,
   phoneNumberErrorMessage,
-  successRequestCompleted,
+  completeRequest,
 }: useVerificationCodeRequestParams) => {
   const {
     confirm: confirmPhoneNumber,
@@ -27,7 +27,7 @@ const useVerificationCodeRequest = ({
       if (response.status === 201) {
         alert('인증요청 성공');
         confirmPhoneNumber();
-        successRequestCompleted();
+        completeRequest();
       }
     } catch (error) {
       console.error('인증요청 실패', error);
