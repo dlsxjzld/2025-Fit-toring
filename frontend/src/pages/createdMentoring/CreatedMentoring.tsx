@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
+
+import Button from '../../common/components/Button/Button';
+import { PAGE_URL } from '../../common/constants/url';
 
 import { getMentoringApplicationList } from './apis/getMentoringApplicationList';
 import MentoringApplicationItem from './components/MentoringApplicationItem/MentoringApplicationItem';
@@ -13,6 +18,14 @@ function CreatedMentoring() {
   const [mentoringApplicationList, setMentoringApplicationList] = useState<
     MentoringApplication[]
   >([]);
+
+  const navigate = useNavigate();
+
+  const DUMMY_MENTORING_ID = 2;
+
+  const handleMentoringShowButtonClick = () => {
+    navigate(`${PAGE_URL.DETAIL}/${DUMMY_MENTORING_ID}`);
+  };
 
   useEffect(() => {
     const fetchMentoringApplicationList = async () => {
@@ -56,7 +69,19 @@ function CreatedMentoring() {
 
   return (
     <StyledContainer>
-      <StyledTitle>개설한 멘토링</StyledTitle>
+      <StyledMentoringSectionHeader>
+        <StyledTitle>개설한 멘토링</StyledTitle>
+        <Button
+          onClick={handleMentoringShowButtonClick}
+          customStyle={css`
+            padding: 1rem;
+
+            font-size: 1.4rem;
+          `}
+        >
+          개설한 멘토링 보기
+        </Button>
+      </StyledMentoringSectionHeader>
       <StyledWrapper>
         <StyledInfoWrapper>
           <StyledSubTitle>
@@ -91,6 +116,12 @@ const StyledContainer = styled.section`
   width: 100%;
   height: 100%;
   padding: 2rem;
+`;
+
+const StyledMentoringSectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const StyledTitle = styled.h2`
