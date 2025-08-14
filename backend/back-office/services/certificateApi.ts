@@ -1,4 +1,5 @@
 // 자격증 API 서비스
+import { BASE_URL } from '../constants/config';
 
 // 서버 응답 타입 정의
 export interface CertificateListResponse {
@@ -34,20 +35,8 @@ export interface CertificateData {
     rejectionReason?: string;
 }
 
-// 쿠키 유틸
-const getCookie = (name: string): string | null => {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-    }
-    return null;
-};
-
 // API 기본 설정
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = BASE_URL;
 
 // 헤더 생성
 const getApiHeaders = (additionalHeaders?: Record<string, string>): HeadersInit => ({

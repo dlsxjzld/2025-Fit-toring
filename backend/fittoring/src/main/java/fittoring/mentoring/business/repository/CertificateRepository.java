@@ -12,4 +12,6 @@ public interface CertificateRepository extends ListCrudRepository<Certificate, L
     List<Certificate> findByVerificationStatus(Status statu);
 
     List<Certificate> findByMentoringIdAndVerificationStatus(Long mentoringId, Status status);
+
+    List<Certificate> findAllByMentoringId(Long mentoringId);
 }
