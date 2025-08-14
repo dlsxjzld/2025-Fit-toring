@@ -103,7 +103,12 @@ class ApiClient {
         error instanceof ApiError &&
         (error.status === 401 || error.status === 403)
       ) {
-        await ensureRefreshed();
+        try {
+          await ensureRefreshed();
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
 
         try {
           return await sendRequest();
