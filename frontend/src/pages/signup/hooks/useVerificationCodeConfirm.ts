@@ -62,7 +62,6 @@ const useVerificationCodeConfirm = ({
   return {
     verificationCodeError,
     handleAuthCodeVerifyClick,
-    verificationCodeMatchConfirmed,
     getFinalVerificationCodeErrorMessage,
     shouldBlockSubmitByVerificationCode,
   };
