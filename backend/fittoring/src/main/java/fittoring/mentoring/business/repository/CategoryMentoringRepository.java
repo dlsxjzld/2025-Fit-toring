@@ -16,5 +16,7 @@ public interface CategoryMentoringRepository extends ListCrudRepository<Category
         FROM CategoryMentoring cm INNER JOIN Category c ON cm.category.id = c.id
         WHERE cm.mentoring.id = :mentoringId
     """)
-    List<String> findTitleByMentoringId(Long mentoringId);
+    List<String> findTitlesByMentoringId(Long mentoringId);
+
+    void deleteByMentoringId(Long mentoringId);
 }

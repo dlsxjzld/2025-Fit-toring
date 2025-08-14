@@ -9,11 +9,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -44,6 +47,7 @@ public class Review {
 
     @ManyToOne
     @JoinColumn(nullable = false, unique = true)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Reservation reservation;
 
     @ManyToOne
@@ -52,6 +56,19 @@ public class Review {
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {
         this(null, rating, content, null, reservation, mentee);
+    }
+
+    public void modify(Integer rating, String content) {
+        if (rating != null) {
+            this.rating = rating;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+    }
+
+    public Long getMenteeId() {
+        return mentee.getId();
     }
 
     public String getMenteeName() {

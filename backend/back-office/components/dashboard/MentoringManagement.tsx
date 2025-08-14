@@ -1,66 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "../ui/table";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
-import { Plus, Eye } from "lucide-react";
+import { Plus } from "lucide-react";
+import { fetchMentorings, MentoringSummary } from "../../services/mentoringApi";
 
-// 멘토링 데이터 타입
+// UI 전용 타입
 interface MentoringItem {
-  id: string;
+  id: string;               // UI에서 문자열로 사용
   mentorName: string;
   categories: string[];
   price: number;
 }
-
-// 더미 데이터
-const mockMentoringData: MentoringItem[] = [
-  {
-    id: "M001",
-    mentorName: "김성현",
-    categories: ["체형 교정", "다이어트", "자세 교정"],
-    price: 50000,
-  },
-  {
-    id: "M002",
-    mentorName: "박지훈",
-    categories: ["벌크업", "근력 강화", "식단 관리"],
-    price: 65000,
-  },
-  {
-    id: "M003",
-    mentorName: "이수민",
-    categories: ["홈 트레이닝", "유연성·스트레칭", "자세 교정"],
-    price: 45000,
-  },
-  {
-    id: "M004",
-    mentorName: "정대영",
-    categories: ["재활 운동", "부상 상담", "유연성·스트레칭"],
-    price: 70000,
-  },
-  {
-    id: "M005",
-    mentorName: "최영희",
-    categories: ["다이어트", "식단 관리", "홈 트레이닝"],
-    price: 40000,
-  },
-];
 
 const categoryColors = [
   "bg-blue-100 text-blue-800",
@@ -74,13 +32,43 @@ const categoryColors = [
 export function MentoringManagement() {
   const navigate = useNavigate();
 
+  const [mentorings, setMentorings] = useState<MentoringItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadMentorings = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data: MentoringSummary[] = await fetchMentorings();
+
+        // ⬇️ API 타입(MentoringSummary: id=number)을 UI 타입(MentoringItem: id=string)으로 변환
+        setMentorings(
+          data.map((d) => ({
+            id: String(d.id),
+            mentorName: d.mentorName,
+            categories: d.categories ?? [],
+            price: d.price,
+          }))
+        );
+        console.log("✅ UI 상태 업데이트 완료:", { loadedCount: data.length });
+      } catch (err) {
+        setError("멘토링 데이터를 불러오는데 실패했습니다.");
+        console.error("❌ 멘토링 로드 실패:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadMentorings();
+  }, []);
+
   const handleViewDetail = (mentoringId: string) => {
     navigate(ROUTES.getMentoringDetailPath(mentoringId));
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("ko-KR").format(price) + "원";
-  };
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("ko-KR").format(price) + "원";
 
   return (
     <div className="space-y-3">
@@ -93,7 +81,8 @@ export function MentoringManagement() {
           </p>
         </div>
         <Button>
-          <Plus className="h-4 w-4 mr-2" />새 멘토링 등록
+          <Plus className="h-4 w-4 mr-2" />
+          새 멘토링 등록
         </Button>
       </div>
 
@@ -103,16 +92,14 @@ export function MentoringManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="pl-8">
-                  멘토링 ID
-                </TableHead>
+                <TableHead className="pl-8">멘토링 ID</TableHead>
                 <TableHead>멘토명</TableHead>
                 <TableHead>카테고리</TableHead>
                 <TableHead>가격</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockMentoringData.map((mentoring) => (
+              {mentorings.map((mentoring) => (
                 <TableRow
                   key={mentoring.id}
                   className="cursor-pointer hover:bg-muted/50"
@@ -121,41 +108,35 @@ export function MentoringManagement() {
                   <TableCell className="font-medium pl-8 py-3">
                     {mentoring.id}
                   </TableCell>
-                  <TableCell className="py-3">
-                    {mentoring.mentorName}
-                  </TableCell>
+                  <TableCell className="py-3">{mentoring.mentorName}</TableCell>
                   <TableCell className="py-3">
                     <div className="flex flex-wrap gap-1">
-                      {mentoring.categories
-                        .slice(0, 3)
-                        .map((category, index) => (
-                          <Badge
-                            key={category}
-                            variant="outline"
-                            className={
-                              categoryColors[
-                                index % categoryColors.length
-                              ]
-                            }
-                          >
-                            {category}
-                          </Badge>
-                        ))}
-                      {mentoring.categories.length > 3 && (
+                      {mentoring.categories.slice(0, 3).map((category, index) => (
                         <Badge
+                          key={`${category}-${index}`}
                           variant="outline"
-                          className="bg-gray-100 text-gray-600"
+                          className={categoryColors[index % categoryColors.length]}
                         >
+                          {category}
+                        </Badge>
+                      ))}
+                      {mentoring.categories.length > 3 && (
+                        <Badge variant="outline" className="bg-gray-100 text-gray-600">
                           +{mentoring.categories.length - 3}
                         </Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="py-3">
-                    {formatPrice(mentoring.price)}
-                  </TableCell>
+                  <TableCell className="py-3">{formatPrice(mentoring.price)}</TableCell>
                 </TableRow>
               ))}
+              {(!isLoading && mentorings.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    표시할 멘토링이 없습니다.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </div>

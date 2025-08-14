@@ -27,47 +27,66 @@ function ActionButtons({ reservationId, status, onClick }: ActionButtonsProps) {
     }
   };
 
-  const handleActionButtonClick = async (
-    newStatus: MENTORING_APPLICATION_STATUS,
-  ) => {
+  const updateStatus = async (newStatus: MENTORING_APPLICATION_STATUS) => {
     try {
       const response = await patchReservationStatus(reservationId, {
         status: newStatus,
       });
 
-      if (response.status !== 200) {
-        throw new Error(`Failed to update reservation status to ${newStatus}.`);
-      }
-
-      if (newStatus === MENTORING_APPLICATION_STATUS_ENUM.APPROVED) {
-        await fetchPhoneNumber(StatusTypeEnum.APPROVED);
-      } else {
-        onClick(StatusTypeEnum.REJECTED, '');
-      }
+      if (response.status !== 200) throw new Error('status update failed');
     } catch (error) {
-      console.error(`Error ${newStatus} reservation:`, error);
-      return;
+      console.error(`Error updating reservation status:`, error);
     }
   };
 
-  return status === StatusTypeEnum.PENDING ? (
-    <StyledContainer>
-      <StyledPrimaryButton
-        onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.APPROVED)
-        }
-      >
-        승인
-      </StyledPrimaryButton>
-      <StyledSecondaryButton
-        onClick={() =>
-          handleActionButtonClick(MENTORING_APPLICATION_STATUS_ENUM.REJECTED)
-        }
-      >
-        거절
-      </StyledSecondaryButton>
-    </StyledContainer>
-  ) : null;
+  const handleApproveButtonClick = async () => {
+    try {
+      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.APPROVED);
+      await fetchPhoneNumber(StatusTypeEnum.APPROVED);
+    } catch (error) {
+      console.error(`Error handling approve button click:`, error);
+    }
+  };
+
+  const handleRejectedButtonClick = async () => {
+    try {
+      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.REJECTED);
+      onClick(StatusTypeEnum.REJECTED, '');
+    } catch (error) {
+      console.error(`Error handling reject button click:`, error);
+    }
+  };
+
+  const handleCompleteButtonClick = async () => {
+    try {
+      await updateStatus(MENTORING_APPLICATION_STATUS_ENUM.COMPLETE);
+      onClick(StatusTypeEnum.COMPLETE, '');
+    } catch (error) {
+      console.error(`Error handling complete button click:`, error);
+    }
+  };
+
+  if (status === StatusTypeEnum.PENDING) {
+    return (
+      <StyledContainer>
+        <StyledPrimaryButton onClick={handleApproveButtonClick}>
+          승인
+        </StyledPrimaryButton>
+        <StyledSecondaryButton onClick={handleRejectedButtonClick}>
+          거절
+        </StyledSecondaryButton>
+      </StyledContainer>
+    );
+  }
+  if (status === StatusTypeEnum.APPROVED) {
+    return (
+      <StyledContainer>
+        <StyledPrimaryButton onClick={handleCompleteButtonClick}>
+          완료
+        </StyledPrimaryButton>
+      </StyledContainer>
+    );
+  }
 }
 
 export default ActionButtons;

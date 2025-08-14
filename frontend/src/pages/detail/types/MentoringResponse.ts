@@ -1,3 +1,5 @@
+import type { CertificateResponse } from './CertificatesResponse';
+
 export interface MentoringResponse {
   id: number;
   mentorName: string;
@@ -7,4 +9,5 @@ export interface MentoringResponse {
   profileImageUrl: string | null;
   introduction: string;
   content: string;
+  certificates: CertificateResponse[];
 }
