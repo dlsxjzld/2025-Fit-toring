@@ -56,7 +56,7 @@ const StyledContainer = styled.section`
   height: 9.4rem;
   padding: 2rem 2.1rem 0.8rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
 
   background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
 

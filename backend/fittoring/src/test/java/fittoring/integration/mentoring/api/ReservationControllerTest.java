@@ -1,14 +1,18 @@
 package fittoring.integration.mentoring.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.doNothing;
 
+import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
+import fittoring.mentoring.business.model.MemberRole;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Reservation;
@@ -23,6 +27,7 @@ import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.business.service.dto.MentorMentoringReservationResponse;
 import fittoring.mentoring.business.service.dto.PhoneNumberResponse;
+import fittoring.mentoring.business.service.dto.ReservationCreateDto;
 import fittoring.mentoring.infra.SmsRestClientService;
 import fittoring.mentoring.presentation.dto.ReservationCreateRequest;
 import fittoring.mentoring.presentation.dto.ReservationCreateResponse;
@@ -145,9 +150,47 @@ class ReservationControllerTest {
         assertThat(response).isEqualTo(expected);
     }
 
+    @DisplayName("본인이 개설한 멘토링에 예약하려고 하면 400 Bad Request를 반환한다")
+    @Test
+    void createReservationFail1() {
+        // given
+        Member mentor = memberRepository.save(new Member(
+            "mentorLoginId",
+            "MALE",
+            "아이유",
+            new Phone("010-1234-5678"),
+            Password.from("password"),
+            MemberRole.MENTOR
+        ));
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "모던 타임즈",
+            "또 봐요 미스터 채플린~"
+        ));
+
+        String mentorAccessToken = jwtProvider.createAccessToken(mentor.getId());
+        ReservationCreateRequest requestBody = new ReservationCreateRequest(
+            "그 이름도 내겐 사랑스런 채플린~"
+        );
+
+        // when
+        // then
+        RestAssured
+            .given()
+            .log().all().contentType(ContentType.JSON)
+            .cookie("accessToken", mentorAccessToken)
+            .body(requestBody)
+            .when()
+            .post("/mentorings/" + mentoring.getId() + "/reservation")
+            .then()
+            .statusCode(400);
+    }
+
     @DisplayName("존재하지 않는 멘토링에 예약을 시도하면 상태코드 404 Not Found를 반환한다.")
     @Test
-    void createReservation2() {
+    void createReservationFail2() {
         //given
         Member mentee = memberRepository.save(
                 new Member("id1", "MALE", "김멘티", new Phone("010-1234-5679"), Password.from("pw")));

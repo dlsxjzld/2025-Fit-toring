@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import * as Sentry from '@sentry/react';
 
 import { postAuthCode } from '../apis/postAuthCode';
@@ -9,11 +7,13 @@ import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 interface useVerificationCodeRequestParams {
   phoneNumber: string;
   phoneNumberErrorMessage: string;
+  completeRequest: () => void;
 }
 
 const useVerificationCodeRequest = ({
   phoneNumber,
   phoneNumberErrorMessage,
+  completeRequest,
 }: useVerificationCodeRequestParams) => {
   const {
     confirm: confirmPhoneNumber,
@@ -21,15 +21,13 @@ const useVerificationCodeRequest = ({
     shouldBlockSubmit: shouldBlockSubmitByPhoneNumberCheck,
   } = useSubmitGuardWithConfirm(phoneNumber);
 
-  const [requestCompleted, setRequestCompleted] = useState(false);
-
   const handleAuthCodeClick = async (phoneNumber: string) => {
     try {
       const response = await postAuthCode(phoneNumber);
       if (response.status === 201) {
         alert('인증요청 성공');
         confirmPhoneNumber();
-        setRequestCompleted(true);
+        completeRequest();
       }
     } catch (error) {
       console.error('인증요청 실패', error);
@@ -56,7 +54,6 @@ const useVerificationCodeRequest = ({
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
     matchConfirmedPhoneNumber,
-    requestCompleted,
   };
 };
 

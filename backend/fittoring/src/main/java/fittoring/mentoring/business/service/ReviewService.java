@@ -3,6 +3,7 @@ package fittoring.mentoring.business.service;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
+import fittoring.mentoring.business.exception.ReservationNotCompletedException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
@@ -44,6 +45,7 @@ public class ReviewService {
     private Review createNewReview(Long reservationId, Long menteeId, int rating, String content) {
         Reservation reservation = reservationRepository.findById(reservationId)
             .orElseThrow(() -> new ReservationNotFoundException(BusinessErrorMessage.RESERVATION_NOT_FOUND.getMessage()));
+        validateReservationIsCompleted(reservation);
         Member mentee = memberRepository.findById(menteeId)
             .orElseThrow(() -> new MemberNotFoundException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         validateReservationOwnership(reservation, menteeId);
@@ -51,8 +53,15 @@ public class ReviewService {
         return new Review(rating, content, reservation, mentee);
     }
 
+    private void validateReservationIsCompleted(Reservation reservation) {
+        if (reservation.isComplete()) {
+            return;
+        }
+        throw new ReservationNotCompletedException(BusinessErrorMessage.RESERVATION_NOT_COMPLETED.getMessage());
+    }
+
     private void validateReservationOwnership(Reservation reservation, Long menteeId) {
-        if (reservation.getMentee().getId().equals(menteeId)) {
+        if (reservation.isCreatedByMember(menteeId)) {
             return;
         }
         throw new ReservationNotFoundException(BusinessErrorMessage.REVIEWING_RESERVATION_NOT_FOUND.getMessage());

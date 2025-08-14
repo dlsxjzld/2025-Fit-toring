@@ -81,7 +81,7 @@ function Detail() {
               <Certificates certificates={data.certificates} />
             </StyledDetailWrapper>
           ) : (
-            <DetailReview />
+            <DetailReview mentoringId={data.id} />
           )}
         </StyledContentWrapper>
       </StyledContainer>

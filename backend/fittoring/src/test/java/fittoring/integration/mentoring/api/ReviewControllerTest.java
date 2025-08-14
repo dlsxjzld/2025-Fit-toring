@@ -92,7 +92,7 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -150,7 +150,7 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -206,7 +206,7 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -270,7 +270,7 @@ class ReviewControllerTest {
         Reservation reservation = reservationRepository.save(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -303,6 +303,62 @@ class ReviewControllerTest {
                 .post("/mentorings/" + mentoring.getId() + "/review")
                 .then().log().all()
                 .statusCode(404);
+    }
+
+    @DisplayName("멘토링이 완료되지 않은 예약에 리뷰 작성을 요청하면 400 Bad Request를 반환한다")
+    @Test
+    void createReviewFail4() {
+        // given
+        Password password = Password.from("password");
+        Member mentor = memberRepository.save(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            password
+        ));
+        Member mentee = memberRepository.save(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            password
+        ));
+        String accessToken = jwtProvider.createAccessToken(mentee.getId());
+        Mentoring mentoring = mentoringRepository.save(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Reservation reservation = reservationRepository.save(
+            new Reservation(
+                "예약 신청합니다.",
+                Status.PENDING,
+                mentoring,
+                mentee
+            )
+        );
+        int rating = 4;
+        String content = "전반적으로 좋았습니다.";
+        ReviewCreateRequest requestBody = new ReviewCreateRequest(
+            reservation.getId(),
+            rating,
+            content
+        );
+
+        // when
+        // then
+        RestAssured
+            .given()
+            .log().all().contentType(ContentType.JSON)
+            .cookie("accessToken", accessToken)
+            .body(requestBody)
+            .when()
+            .post("/reviews")
+            .then().log().all()
+            .statusCode(400);
     }
 
     @DisplayName("특정 멤버의 리뷰를 모두 조회 성공 시 200 OK를 반환한다")

@@ -9,11 +9,13 @@ import useSubmitGuardWithConfirm from './useSubmitGuardWithConfirm';
 interface useVerificationCodeConfirmParams {
   verificationCode: string;
   verificationCodeErrorMessage: string;
+  completeVerification: () => void;
 }
 
 const useVerificationCodeConfirm = ({
   verificationCode,
   verificationCodeErrorMessage,
+  completeVerification,
 }: useVerificationCodeConfirmParams) => {
   const {
     confirm: confrimVerificationCode,
@@ -30,6 +32,7 @@ const useVerificationCodeConfirm = ({
       if (response.status === 200) {
         alert('인증 성공');
         confrimVerificationCode();
+        completeVerification();
       }
     } catch (error) {
       setVerificationCodeError(true);
@@ -48,6 +51,7 @@ const useVerificationCodeConfirm = ({
     if (!verificationCodeMatchConfirmed) {
       return '인증을 해주세요';
     }
+
     if (verificationCodeError) {
       return '인증 실패';
     }

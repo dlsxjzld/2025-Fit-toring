@@ -216,7 +216,7 @@ public class MentoringService {
     }
 
     private void validateMentorMatches(Mentoring mentoring, Long mentorId) {
-        if (mentoring.isSameMentorId(mentorId)) {
+        if (mentoring.isCreatedByMember(mentorId)) {
             return;
         }
         throw new ForbiddenMemberException(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());

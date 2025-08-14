@@ -63,15 +63,11 @@ public class Mentoring {
         this.introduction = introduction;
     }
 
-    public boolean isSameMentorId(Long mentorId) {
-        return this.mentor.getId().equals(mentorId);
+    public boolean isCreatedByMember(Long memberId) {
+        return this.mentor.isSameIdWith(memberId);
     }
 
     public String getMentorName() {
         return this.mentor.getName();
-    }
-
-    public String getMentorPhoneNumber() {
-        return this.mentor.getPhoneNumber();
     }
 }

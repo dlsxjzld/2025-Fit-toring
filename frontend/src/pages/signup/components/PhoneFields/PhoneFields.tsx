@@ -15,7 +15,8 @@ interface PhoneFieldsProps {
   onAuthCodeClick: (phoneNumber: string) => void;
   phoneNumberErrorMessage: string;
   verificationCodeErrorMessage: string;
-  isVerificationButtonEnabled: boolean;
+  verificationButtonEnabled: boolean;
+  verificationRequestButtonEnabled: boolean;
 }
 
 function PhoneFields({
@@ -28,10 +29,9 @@ function PhoneFields({
   onAuthCodeVerifyClick,
   phoneNumberErrorMessage,
   verificationCodeErrorMessage,
-  isVerificationButtonEnabled,
+  verificationButtonEnabled,
+  verificationRequestButtonEnabled,
 }: PhoneFieldsProps) {
-  const isVerificationRequestButtonEnabled =
-    phoneNumber !== '' && phoneNumberErrorMessage === '';
   return (
     <>
       <FormField label="전화번호 *" errorMessage={phoneNumberErrorMessage}>
@@ -52,9 +52,7 @@ function PhoneFields({
             type="button"
             customStyle={buttonCustomStyle}
             onClick={() => onAuthCodeClick(phoneNumber)}
-            variant={
-              isVerificationRequestButtonEnabled ? 'primary' : 'disabled'
-            }
+            variant={verificationRequestButtonEnabled ? 'primary' : 'disabled'}
           >
             인증요청
           </Button>
@@ -81,7 +79,7 @@ function PhoneFields({
             type="button"
             customStyle={buttonCustomStyle}
             onClick={() => onAuthCodeVerifyClick(phoneNumber)}
-            variant={isVerificationButtonEnabled ? 'primary' : 'disabled'}
+            variant={verificationButtonEnabled ? 'primary' : 'disabled'}
           >
             인증하기
           </Button>

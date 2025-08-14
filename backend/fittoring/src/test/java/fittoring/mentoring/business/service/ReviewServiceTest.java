@@ -7,6 +7,7 @@ import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
+import fittoring.mentoring.business.exception.ReservationNotCompletedException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
 import fittoring.mentoring.business.exception.ReviewNotFoundException;
@@ -89,7 +90,7 @@ class ReviewServiceTest {
         Reservation reservation = entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -141,7 +142,7 @@ class ReviewServiceTest {
         entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -189,7 +190,7 @@ class ReviewServiceTest {
         Reservation reservation = entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -246,7 +247,7 @@ class ReviewServiceTest {
         Reservation reservation = entityManager.persist(
                 new Reservation(
                         "예약 신청합니다.",
-                        Status.PENDING,
+                        Status.COMPLETE,
                         mentoring,
                         mentee
                 )
@@ -266,6 +267,56 @@ class ReviewServiceTest {
         assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
                 .isInstanceOf(ReviewAlreadyExistsException.class)
                 .hasMessage(BusinessErrorMessage.DUPLICATED_REVIEW.getMessage());
+    }
+
+    @DisplayName("멘토링이 완료되지 않은 예약에는 리뷰를 남길 수 없다")
+    @Test
+    void createReservationFail4() {
+        // given
+        Password password = Password.from("password");
+        Member mentor = entityManager.persist(new Member(
+            "mentor",
+            "MALE",
+            "김트레이너",
+            new Phone("010-2222-3333"),
+            password
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            password
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "content",
+            "introduction"
+        ));
+        Reservation reservation = entityManager.persist(
+            new Reservation(
+                "예약 신청합니다.",
+                Status.PENDING,
+                mentoring,
+                mentee
+            )
+        );
+        int rating = 5;
+        String content = "최고의 멘토링이었습니다.";
+        ReviewCreateDto reviewCreateDto = new ReviewCreateDto(
+            mentee.getId(),
+            reservation.getId(),
+            rating,
+            content
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.createReview(reviewCreateDto))
+            .isInstanceOf(ReservationNotCompletedException.class)
+            .hasMessage(BusinessErrorMessage.RESERVATION_NOT_COMPLETED.getMessage());
     }
 
     @DisplayName("특정 멤버의 리뷰를 모두 조회 성공 시 리뷰 정보를 반환한다")

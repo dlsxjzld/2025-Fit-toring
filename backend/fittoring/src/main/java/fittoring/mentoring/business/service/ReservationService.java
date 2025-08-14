@@ -2,6 +2,7 @@ package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
@@ -52,6 +53,7 @@ public class ReservationService {
 
     private Reservation createReservationEntity(ReservationCreateDto dto) {
         Mentoring mentoring = getMentoring(dto.mentoringId());
+        validateNotMyMentoring(mentoring, dto.menteeId());
         Member mentee = getMember(dto.menteeId());
         return new Reservation(
                 dto.content(),
@@ -65,6 +67,12 @@ public class ReservationService {
         return mentoringRepository.findById(mentoringId)
                 .orElseThrow(
                         () -> new MentoringNotFoundException(BusinessErrorMessage.MENTORING_NOT_FOUND.getMessage()));
+    }
+
+    private void validateNotMyMentoring(Mentoring mentoring, Long menteeId) {
+        if (mentoring.isCreatedByMember(menteeId)) {
+            throw new MentorAndMenteeIsSameException(BusinessErrorMessage.MENTOR_AND_MENTEE_IS_SAME.getMessage());
+        }
     }
 
     private Member getMember(Long menteeId) {

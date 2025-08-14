@@ -63,6 +63,10 @@ public class Member {
         }
     }
 
+    public boolean isSameIdWith(Long memberId) {
+        return this.id.equals(memberId);
+    }
+
     public boolean isNotAdmin() {
         return this.role != MemberRole.ADMIN;
     }

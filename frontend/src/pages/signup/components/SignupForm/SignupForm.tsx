@@ -24,6 +24,8 @@ import UserInfoFields from '../UserInfoFields/UserInfoFields';
 
 import type { Gender, SignupInfo } from '../../types/signupInfo';
 
+export type VerificationStep = 'idle' | 'requested' | 'verified';
+
 function SignupForm() {
   const navigate = useNavigate();
 
@@ -76,8 +78,27 @@ function SignupForm() {
     passwordConfrimValidated,
   } = usePasswordWithConfirmInput();
 
-  const { phoneNumber, inputRef, handlePhoneNumberChange } =
-    useFormattedPhoneNumber();
+  const {
+    phoneNumber,
+    inputRef,
+    handlePhoneNumberChange: changePhoneNumber,
+  } = useFormattedPhoneNumber();
+
+  const [verificationStep, setVerificationStep] =
+    useState<VerificationStep>('idle');
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    changePhoneNumber(e);
+    setVerificationStep('idle');
+  };
+
+  const completeRequest = () => {
+    setVerificationStep('requested');
+  };
+
+  const completeVerification = () => {
+    setVerificationStep('verified');
+  };
 
   const phoneNumberErrorMessage = getPhoneNumberErrorMessage(phoneNumber);
 
@@ -86,8 +107,11 @@ function SignupForm() {
     handleAuthCodeClick,
     getFinalPhoneNumberErrorMessage,
     matchConfirmedPhoneNumber,
-    requestCompleted,
-  } = useVerificationCodeRequest({ phoneNumber, phoneNumberErrorMessage });
+  } = useVerificationCodeRequest({
+    phoneNumber,
+    phoneNumberErrorMessage,
+    completeRequest,
+  });
 
   const {
     verificationCode,
@@ -95,6 +119,9 @@ function SignupForm() {
     errorMessage: verificationCodeErrorMessage,
     validated: verificationCodeValidated,
   } = useVerificationCodeInput();
+
+  const [submitVerificationErrorMessage, setSubmitVerificationErrorMessage] =
+    useState('');
 
   const {
     verificationCodeError,
@@ -104,7 +131,16 @@ function SignupForm() {
   } = useVerificationCodeConfirm({
     verificationCode,
     verificationCodeErrorMessage,
+    completeVerification,
   });
+
+  const getDisplayedVerificationErrorMessage = () => {
+    if (verificationStep === 'verified') {
+      return getFinalVerificationCodeErrorMessage();
+    }
+
+    return submitVerificationErrorMessage;
+  };
 
   const validateForm = () => {
     const validations = [
@@ -119,12 +155,14 @@ function SignupForm() {
     return validations.every(Boolean);
   };
 
+  const verificationRequestButtonEnabled =
+    phoneNumberErrorMessage === '' && phoneNumber !== '';
+
   const getVerificationButtonEnabled = () => {
     return (
       matchConfirmedPhoneNumber &&
       phoneNumberErrorMessage === '' &&
-      verificationCodeValidated &&
-      requestCompleted
+      verificationCodeValidated
     );
   };
 
@@ -140,6 +178,11 @@ function SignupForm() {
     }
 
     if (shouldBlockSubmitByPhoneNumberCheck()) {
+      return;
+    }
+
+    if (verificationStep !== 'verified') {
+      setSubmitVerificationErrorMessage('인증을 다시 해주세요.');
       return;
     }
 
@@ -208,14 +251,15 @@ function SignupForm() {
         <PhoneFields
           phoneNumber={phoneNumber}
           verificationCode={verificationCode}
-          verificationCodeErrorMessage={getFinalVerificationCodeErrorMessage()}
+          verificationCodeErrorMessage={getDisplayedVerificationErrorMessage()}
           phoneNumberErrorMessage={getFinalPhoneNumberErrorMessage()}
           onPhoneNumberChange={handlePhoneNumberChange}
           inputRef={inputRef}
           onVerificationCodeChange={handleVerificationCodeChange}
           onAuthCodeVerifyClick={handleAuthCodeVerifyClick}
           onAuthCodeClick={handleAuthCodeClick}
-          isVerificationButtonEnabled={getVerificationButtonEnabled()}
+          verificationButtonEnabled={getVerificationButtonEnabled()}
+          verificationRequestButtonEnabled={verificationRequestButtonEnabled}
         />
       </StyledFormFields>
       <Button

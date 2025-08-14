@@ -20,6 +20,7 @@ function CertificateSection({
   handleCertificateImageFilesChange,
 }: CertificateSectionProps) {
   const [certificates, setCertificates] = useState<CertificateItem[]>([]);
+
   const handleAddButtonClick = () => {
     setCertificates((prev) => [
       ...prev,
@@ -31,10 +32,22 @@ function CertificateSection({
       },
     ]);
   };
+
   const handleDeleteButtonClick = (id: string) => {
     const updated = certificates.filter((item) => item.id !== id);
+
     setCertificates(updated);
-    onCertificateChange({ certificateInfos: updated });
+
+    const finalCertificates = updated.map(({ title, type }) => ({
+      title,
+      type,
+    }));
+    onCertificateChange({ certificateInfos: finalCertificates });
+
+    const files = updated
+      .map((item) => item.file)
+      .filter((file): file is File => !!file);
+    handleCertificateImageFilesChange(files);
   };
 
   const handleCertificateChangeById = (

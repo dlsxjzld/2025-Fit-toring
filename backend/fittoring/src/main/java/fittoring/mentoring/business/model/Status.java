@@ -38,14 +38,18 @@ public enum Status {
     }
 
     public boolean isApprove() {
-        return this.equals(APPROVED);
+        return this == APPROVED;
     }
 
     public boolean isReject() {
-        return this.equals(REJECTED);
+        return this == REJECTED;
     }
 
     public boolean isPending() {
-        return this.equals(PENDING);
+        return this == PENDING;
+    }
+
+    public boolean isComplete() {
+        return this == COMPLETE;
     }
 }

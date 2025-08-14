@@ -1,3 +1,5 @@
+import { API_ENDPOINTS } from '../constants/apiEndpoints';
+
 import ApiError from './ApiError';
 import { postReissue } from './postReissue';
 
@@ -147,7 +149,7 @@ class ApiClient {
       return response;
     };
 
-    return this.requestWithRefresh(sendRequest);
+    return this.requestWithRefresh(sendRequest, endpoint);
   }
 
   async delete({ endpoint }: ApiClientDeleteType) {
@@ -200,13 +202,15 @@ class ApiClient {
 
   private async requestWithRefresh<T>(
     sendRequest: () => Promise<T>,
+    endpoint?: string,
   ): Promise<T> {
     try {
       return await sendRequest();
     } catch (error) {
       if (
         error instanceof ApiError &&
-        (error.status === 401 || error.status === 403)
+        (error.status === 401 || error.status === 403) &&
+        endpoint !== API_ENDPOINTS.REISSUE
       ) {
         try {
           await postReissue();

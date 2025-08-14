@@ -1,39 +1,43 @@
 import styled from '@emotion/styled';
 import filledStar from '../../../../common/assets/images/starIcon.svg';
 import ReviewItem from '../ReviewItem/ReviewItem';
+import { getReviews } from '../../apis/getReviews';
+import { useEffect, useState } from 'react';
+import { ReviewResponse } from '../../types/ReviewResponse';
 
-const REVIEW_MOCK = {
-  ratingAverage: 4,
-  ratingCount: 2,
-  reviews: [
-    {
-      id: 23,
-      reviewerName: '김**',
-      createdAt: '2025-08-07',
-      rating: 5,
-      content:
-        '정말 전문적이고 친절한 상담이었습니다. 개인별 맞춤 운동법을 자세히 설명해주셔서 매우 도움이 되었어요. 15분이 짧다고 생각했는데 알찬 내용으로 가득했습니다!',
-    },
-    {
-      id: 36,
-      reviewerName: '박**',
-      createdAt: '2025-08-07',
-      rating: 3,
-      content: '보통이었어요',
-    },
-  ],
-};
+interface DetailReviewProps {
+  mentoringId: number;
+}
 
-function DetailReview() {
+function DetailReview({ mentoringId }: DetailReviewProps) {
+  const [totalReviewInfo, setTotalReviewInfo] = useState<ReviewResponse | null>(
+    null,
+  );
+
+  const fetchReview = async () => {
+    try {
+      const response = await getReviews(mentoringId);
+      setTotalReviewInfo(response);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchReview();
+  }, []);
+
+  if (!totalReviewInfo) return null;
+
   return (
     <StyledContainer>
       <StyledTotalWrapper>
         <img src={filledStar} />
-        <strong>{REVIEW_MOCK.ratingAverage}</strong>
-        <p>({REVIEW_MOCK.ratingCount}개 리뷰)</p>
+        <strong>{totalReviewInfo.ratingAverage}</strong>
+        <p>({totalReviewInfo.ratingCount}개 리뷰)</p>
       </StyledTotalWrapper>
       <StyledReviewList>
-        {REVIEW_MOCK.reviews.map((review) => (
+        {totalReviewInfo.reviews.map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
       </StyledReviewList>
