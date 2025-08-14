@@ -55,7 +55,7 @@ public class ReviewService {
     }
 
     private void validateReservationIsCompleted(Reservation reservation) {
-        if (reservation.getStatus().equals(Status.COMPLETE.name())) {
+        if (reservation.hasStatus(Status.COMPLETE)) {
             return;
         }
         throw new ReservationNotCompletedException(BusinessErrorMessage.RESERVATION_NOT_COMPLETED.getMessage());

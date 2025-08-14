@@ -53,6 +53,10 @@ public class Reservation {
         this(null, content, null, status, mentoring, mentee);
     }
 
+    public boolean hasStatus(Status status) {
+        return this.status == status;
+    }
+
     public void changeStatus(Status updateStatus) {
         this.status.validateReservation(updateStatus);
         this.status = updateStatus;
