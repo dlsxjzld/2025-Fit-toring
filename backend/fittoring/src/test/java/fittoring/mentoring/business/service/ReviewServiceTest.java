@@ -5,9 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
+import fittoring.mentoring.business.exception.ForbiddenMemberException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
 import fittoring.mentoring.business.exception.ReviewAlreadyExistsException;
+import fittoring.mentoring.business.exception.ReviewNotFoundException;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
@@ -15,18 +17,21 @@ import fittoring.mentoring.business.model.Reservation;
 import fittoring.mentoring.business.model.Review;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
-import fittoring.mentoring.business.service.dto.MemberReviewGetDto;
-import fittoring.mentoring.business.service.dto.MentoringReviewGetDto;
 import fittoring.mentoring.business.service.dto.ReviewCreateDto;
+import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
+import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
 import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import fittoring.util.DbCleaner;
 import java.util.List;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -326,7 +331,6 @@ class ReviewServiceTest {
             reservation2,
             mentee
         ));
-        MemberReviewGetDto memberReviewGetDto = new MemberReviewGetDto(mentee.getId());
         List<MemberReviewGetResponse> expected = List.of(
             new MemberReviewGetResponse(
                 review1.getId(),
@@ -344,7 +348,7 @@ class ReviewServiceTest {
 
         // when
         List<MemberReviewGetResponse> memberReviewGetResponses =
-            reviewService.findMemberReviews(memberReviewGetDto);
+            reviewService.findMemberReviews(mentee.getId());
 
         // then
         assertThat(memberReviewGetResponses).containsExactlyInAnyOrderElementsOf(expected);
@@ -371,14 +375,14 @@ class ReviewServiceTest {
         Member mentee1 = entityManager.persist(new Member(
             "loginId",
             "MALE",
-            "name",
+            "세글자",
             new Phone("010-1234-5678"),
             Password.from("password")
         ));
         Member mentee2 = entityManager.persist(new Member(
             "loginId2",
             "MALE",
-            "name",
+            "두글",
             new Phone("010-1234-5679"),
             Password.from("password")
         ));
@@ -401,33 +405,433 @@ class ReviewServiceTest {
             mentee1
         ));
         Review review2 = entityManager.persist(new Review(
-            5,
+            2,
             "최고의 멘토링이었습니다.",
             reservation2,
             mentee2
         ));
-        MentoringReviewGetDto mentoringReviewGetDto = new MentoringReviewGetDto(mentoring.getId());
 
         // when
-        List<MentoringReviewGetResponse> mentoringReviewGetResponses
-            = reviewService.findMentoringReviews(mentoringReviewGetDto);
+        MentoringReviewGetResponse responseBody
+            = reviewService.findMentoringReviews(mentoring.getId());
 
         // then
-        assertThat(mentoringReviewGetResponses).containsExactlyInAnyOrder(
-            new MentoringReviewGetResponse(
-                review1.getId(),
-                review1.getMenteeName(),
-                review1.getCreatedAt().toLocalDate(),
-                review1.getRating(),
-                review1.getContent()
-            ),
-            new MentoringReviewGetResponse(
-                review2.getId(),
-                review2.getMenteeName(),
-                review2.getCreatedAt().toLocalDate(),
-                review2.getRating(),
-                review2.getContent()
-            )
+        SoftAssertions.assertSoftly(softAssertions -> {
+            assertThat(responseBody.ratingCount()).isEqualTo(2);
+            assertThat(responseBody.ratingAverage()).isEqualTo("3.5");
+            assertThat(responseBody.reviews()).containsExactlyInAnyOrder(
+                new ReviewGetResponse(
+                    review1.getId(),
+                    review1.getMenteeName(),
+                    review1.getCreatedAt().toLocalDate(),
+                    review1.getRating(),
+                    review1.getContent()
+                ),
+                new ReviewGetResponse(
+                    review2.getId(),
+                    review2.getMenteeName(),
+                    review2.getCreatedAt().toLocalDate(),
+                    review2.getRating(),
+                    review2.getContent()
+                )
+            );
+        });
+    }
+
+    @DisplayName("본인이 남긴 리뷰의 별점을 수정한다")
+    @Test
+    void modifyReview1() {
+        // given
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "길 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee
+        ));
+        int originalRating = 5;
+        String originalContent = "최고의 멘토링이었습니다.";
+        Review review = entityManager.persist(new Review(
+            originalRating,
+            originalContent,
+            reservation,
+            mentee
+        ));
+        int newRating = 2;
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            mentee.getId(),
+            review.getId(),
+            newRating,
+            null
         );
+
+        // when
+        reviewService.modifyReview(reviewModifyDto);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
+            softAssertions.assertThat(review.getContent()).isEqualTo(originalContent);
+        });
+    }
+
+    @DisplayName("본인이 남긴 리뷰의 별점을 수정한다")
+    @ValueSource(strings = {"", " "})
+    @ParameterizedTest
+    void modifyReview2(String newString) {
+        // given
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "길 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee
+        ));
+        int originalRating = 5;
+        String originalContent = "최고의 멘토링이었습니다.";
+        Review review = entityManager.persist(new Review(
+            originalRating,
+            originalContent,
+            reservation,
+            mentee
+        ));
+        int newRating = 2;
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            mentee.getId(),
+            review.getId(),
+            newRating,
+            newString
+        );
+
+        // when
+        reviewService.modifyReview(reviewModifyDto);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
+            softAssertions.assertThat(review.getContent()).isEqualTo(originalContent);
+        });
+    }
+
+    @DisplayName("본인이 남긴 리뷰의 내용을 수정한다")
+    @Test
+    void modifyReview3() {
+        // given
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "길 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee
+        ));
+        int originalRating = 5;
+        String originalContent = "최고의 멘토링이었습니다.";
+        Review review = entityManager.persist(new Review(
+            originalRating,
+            originalContent,
+            reservation,
+            mentee
+        ));
+        String newContent = "생각해 보니 비용이 너무 비쌌던 것 같아요";
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            mentee.getId(),
+            review.getId(),
+            null,
+            newContent
+        );
+
+        // when
+        reviewService.modifyReview(reviewModifyDto);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(review.getRating()).isEqualTo(originalRating);
+            softAssertions.assertThat(review.getContent()).isEqualTo(newContent);
+        });
+    }
+
+    @DisplayName("본인이 남긴 리뷰의 별점과 내용을 수정한다")
+    @Test
+    void modifyReview4() {
+        // given
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "길 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee
+        ));
+        int originalRating = 5;
+        String originalContent = "최고의 멘토링이었습니다.";
+        Review review = entityManager.persist(new Review(
+            originalRating,
+            originalContent,
+            reservation,
+            mentee
+        ));
+        int newRating = 2;
+        String newContent = "생각해 보니 비용이 너무 비쌌던 것 같아요";
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            mentee.getId(),
+            review.getId(),
+            newRating,
+            newContent
+        );
+
+        // when
+        reviewService.modifyReview(reviewModifyDto);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        SoftAssertions.assertSoftly(softAssertions -> {
+            softAssertions.assertThat(review.getRating()).isEqualTo(newRating);
+            softAssertions.assertThat(review.getContent()).isEqualTo(newContent);
+        });
+    }
+
+    @DisplayName("존재하지 않는 리뷰를 수정하려고 하면 예외가 발생한다")
+    @Test
+    void modifyReviewFail1() {
+        // given
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            mentee.getId(),
+            999L,
+            2,
+            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
+            .isInstanceOf(ReviewNotFoundException.class)
+            .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("본인이 작성하지 않은 리뷰를 수정하려고 하면 예외가 발생한다")
+    @Test
+    void modifyReviewFail2() {
+        // given
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "길 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee
+        ));
+        Review review = entityManager.persist(new Review(
+            5,
+            "최고의 멘토링이었습니다.",
+            reservation,
+            mentee
+        ));
+        Member invalidMember = entityManager.persist(new Member(
+            "loginId2",
+            "MALE",
+            "name2",
+            new Phone("010-1234-5679"),
+            Password.from("password")
+        ));
+        ReviewModifyDto reviewModifyDto = new ReviewModifyDto(
+            invalidMember.getId(),
+            review.getId(),
+            2,
+            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
+            .isInstanceOf(ForbiddenMemberException.class)
+            .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+    }
+
+    @DisplayName("존재하지 않는 리뷰 삭제 요청 시 예외가 발생한다")
+    @Test
+    void deleteReviewFail1() {
+        // given
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(mentee.getId(), 999L);
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
+            .isInstanceOf(ReviewNotFoundException.class)
+            .hasMessage(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("본인이 작성하지 않은 리뷰를 삭제하려고 하면 예외가 발생한다")
+    @Test
+    void deleteReviewFail2() {
+        // given
+        Member mentee = entityManager.persist(new Member(
+            "loginId",
+            "MALE",
+            "name",
+            new Phone("010-1234-5678"),
+            Password.from("password")
+        ));
+        Member mentor = entityManager.persist(new Member(
+            "mentorId",
+            "MALE",
+            "김트레이너",
+            new Phone("010-1111-2222"),
+            Password.from("password")
+        ));
+        Mentoring mentoring = entityManager.persist(new Mentoring(
+            mentor,
+            5000,
+            5,
+            "한 줄 소개",
+            "긴 글 소개"
+        ));
+        Reservation reservation = entityManager.persist(new Reservation(
+            "예약합니다.",
+            Status.COMPLETE,
+            mentoring,
+            mentee
+        ));
+        Review review = entityManager.persist(new Review(
+            5,
+            "최고의 멘토링이었습니다.",
+            reservation,
+            mentee
+        ));
+        Member invalidMember = entityManager.persist(new Member(
+            "loginId2",
+            "MALE",
+            "name2",
+            new Phone("010-1234-5679"),
+            Password.from("password")
+        ));
+        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(
+            invalidMember.getId(),
+            review.getId()
+        );
+
+        // when
+        // then
+        assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
+            .isInstanceOf(ForbiddenMemberException.class)
+            .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
     }
 }

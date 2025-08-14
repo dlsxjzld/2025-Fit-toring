@@ -49,14 +49,21 @@ const StyledContainer = styled.section`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
+  position: fixed;
+  bottom: 0;
 
-  width: 100%;
+  width: 48rem;
   height: 9.4rem;
   padding: 2rem 2.1rem 0.8rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN100};
   border-radius: 8px;
 
   background-color: ${({ theme }) => theme.SYSTEM.MAIN50};
+
+  @media screen and (width <= 480px) {
+    width: 100%;
+    border: none;
+  }
 `;
 
 const StyledWrapper = styled.div`

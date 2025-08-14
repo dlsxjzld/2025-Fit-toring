@@ -5,12 +5,14 @@ import { useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from './apis/getMentoringDetail';
 import ApplySection from './components/ApplySection/ApplySection';
+import Certificates from './components/Certificates/Certificates';
 import DetailHeader from './components/DetailHeader/DetailHeader';
 import Introduction from './components/Introduction/Introduction';
 import MentorSummary from './components/MentorSummary/MentorSummary';
 import Profile from './components/Profile/Profile';
 
 import type { MentoringResponse } from './types/MentoringResponse';
+import DetailReview from './components/DetailReview/DetailReview';
 
 type TapType = 'detail' | 'review';
 
@@ -75,15 +77,15 @@ function Detail() {
           {selected === 'detail' ? (
             <StyledDetailWrapper>
               <Introduction content={data.content} />
-              <ApplySection price={data.price} mentoringId={mentoringId} />
+              <StyledLine />
+              <Certificates certificates={data.certificates} />
             </StyledDetailWrapper>
           ) : (
-            <div>
-              <p>리뷰 영역</p>
-            </div>
+            <DetailReview />
           )}
         </StyledContentWrapper>
       </StyledContainer>
+      <ApplySection price={data.price} mentoringId={mentoringId} />
     </>
   );
 }
@@ -91,6 +93,7 @@ function Detail() {
 export default Detail;
 
 const StyledContainer = styled.div`
+  margin-bottom: 10rem;
   padding: 0 2rem;
 `;
 
@@ -102,16 +105,18 @@ const StyledMentorInfoWrapper = styled.div`
 `;
 
 const StyledTapWrapper = styled.div`
-  position: relative;
-  width: 100%;
   display: flex;
   flex-direction: row;
+  position: relative;
+
+  width: 100%;
   padding: 1rem;
 `;
 
-const StyledTap = styled.p<{ selected?: boolean }>`
+const StyledTap = styled.p<{ selected: boolean }>`
   width: 50%;
   cursor: pointer;
+
   text-align: center;
 
   ${({ theme }) => theme.TYPOGRAPHY.B2_B};
@@ -121,11 +126,13 @@ const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
   position: absolute;
   bottom: 0;
   left: 0;
+  z-index: 0;
+
   width: 50%;
   height: 1px;
+
   background-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   transition: transform 0.2s ease-in-out;
-  z-index: 0;
 
   transform: ${({ selected }) =>
     selected === 'detail' ? 'translateX(0%)' : 'translateX(100%)'};
@@ -133,6 +140,7 @@ const StyledTapIndicator = styled.div<{ selected: 'detail' | 'review' }>`
 
 const StyledContentWrapper = styled.div`
   display: flex;
+
   width: 100%;
   padding-top: 2rem;
 `;
@@ -140,6 +148,12 @@ const StyledContentWrapper = styled.div`
 const StyledDetailWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2.4rem;
+  gap: 2rem;
+`;
+
+const StyledLine = styled.hr`
   width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
 `;

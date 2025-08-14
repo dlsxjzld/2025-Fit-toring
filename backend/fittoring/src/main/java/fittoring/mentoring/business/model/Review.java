@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -52,6 +53,19 @@ public class Review {
 
     public Review(int rating, String content, Reservation reservation, Member mentee) {
         this(null, rating, content, null, reservation, mentee);
+    }
+
+    public void modify(Integer rating, String content) {
+        if (rating != null) {
+            this.rating = rating;
+        }
+        if (content != null && !content.isBlank()) {
+            this.content = content;
+        }
+    }
+
+    public Long getMenteeId() {
+        return mentee.getId();
     }
 
     public String getMenteeName() {

@@ -26,6 +26,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     mentoring: PARTICIPATED_MENTORING_LIST[0],
+    handleReviewSubmitButtonClick: () => {},
   },
   parameters: {
     docs: {
@@ -40,6 +41,7 @@ export const Default: Story = {
 export const Pending: Story = {
   args: {
     mentoring: PARTICIPATED_MENTORING_LIST[2],
+    handleReviewSubmitButtonClick: () => {},
   },
   parameters: {
     docs: {
@@ -54,6 +56,7 @@ export const Pending: Story = {
 export const Approved: Story = {
   args: {
     mentoring: PARTICIPATED_MENTORING_LIST[1],
+    handleReviewSubmitButtonClick: () => {},
   },
   parameters: {
     docs: {
@@ -68,6 +71,7 @@ export const Approved: Story = {
 export const Completed: Story = {
   args: {
     mentoring: PARTICIPATED_MENTORING_LIST[0],
+    handleReviewSubmitButtonClick: () => {},
   },
   parameters: {
     docs: {

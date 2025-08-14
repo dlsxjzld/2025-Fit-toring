@@ -5,15 +5,15 @@ import fittoring.mentoring.business.model.CertificateType;
 
 public record CertificateSpecAndImageResponse(
         Long certificateId,
-        String certificateName,
-        CertificateType certificateType,
+        String title,
+        CertificateType type,
         String imageUrl
 ) {
 
     public static CertificateSpecAndImageResponse of(Certificate certificate, String imageUrl) {
         return new CertificateSpecAndImageResponse(
                 certificate.getId(),
-                certificate.getMentorName(),
+                certificate.getTitle(),
                 certificate.getType(),
                 imageUrl
         );

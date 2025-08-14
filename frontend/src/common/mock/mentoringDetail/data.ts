@@ -11,4 +11,18 @@ export const MENTORING_DETAIL: MentoringResponse = {
     '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
   content:
     '김트레이너는 대단합니다. 저를 믿고 신청해주세요. 모든것을 도와드립니다. 여러분 저를 믿어주세요.',
+  certificates: [
+    {
+      certificateId: '1',
+      certificateName: '스포츠안마 자격증',
+      certificateType: 'LICENSE',
+      imageUrl: null,
+    },
+    {
+      certificateId: '2',
+      certificateName: '한국대학교 졸업증명서',
+      certificateType: 'EDUCATION',
+      imageUrl: null,
+    },
+  ],
 };

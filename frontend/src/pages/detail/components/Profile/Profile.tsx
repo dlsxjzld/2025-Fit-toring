@@ -42,16 +42,17 @@ const StyledContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4rem;
+  gap: 2rem;
 
   width: 100%;
   margin-top: 2.3rem;
-  padding: 0 1rem;
 `;
 
 const StyledProfileImg = styled.img`
-  width: 14rem;
-  height: 14rem;
+  flex-shrink: 0;
+
+  width: 12rem;
+  height: 12rem;
   border: 1px solid ${({ theme }) => theme.SYSTEM.MAIN400};
   border-radius: 50%;
 `;
