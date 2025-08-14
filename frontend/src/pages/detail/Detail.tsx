@@ -12,6 +12,7 @@ import MentorSummary from './components/MentorSummary/MentorSummary';
 import Profile from './components/Profile/Profile';
 
 import type { MentoringResponse } from './types/MentoringResponse';
+import DetailReview from './components/DetailReview/DetailReview';
 
 type TapType = 'detail' | 'review';
 
@@ -80,9 +81,7 @@ function Detail() {
               <Certificates certificates={data.certificates} />
             </StyledDetailWrapper>
           ) : (
-            <div>
-              <p>리뷰 영역</p>
-            </div>
+            <DetailReview />
           )}
         </StyledContentWrapper>
       </StyledContainer>

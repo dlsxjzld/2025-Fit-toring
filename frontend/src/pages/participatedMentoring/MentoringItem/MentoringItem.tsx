@@ -5,14 +5,18 @@ import MentoringApplicationStatus from '../../../common/components/MentoringAppl
 import ReviewButton from '../ReviewButton/ReviewButton';
 
 import type { ParticipatedMentoringType } from '../types/participatedMentoring';
+import ReviewModal from '../ReviewModal/ReviewModal';
+import { useState } from 'react';
 interface MentoringItemProps {
   mentoring: ParticipatedMentoringType;
+  handleReviewSubmitButtonClick: (reservationId: number) => void;
 }
 
 const TIME = '15';
 
 function MentoringItem({
   mentoring: {
+    reservationId,
     mentorName,
     mentorProfileImage,
     price,
@@ -21,9 +25,16 @@ function MentoringItem({
     isReviewed,
     status,
   },
+  handleReviewSubmitButtonClick,
 }: MentoringItemProps) {
+  const [opened, setOpened] = useState(false);
+
+  const handleReviewModalToggle = () => {
+    setOpened((prev) => !prev);
+  };
+
   return (
-    <StyledContainer key={mentorName}>
+    <StyledContainer key={reservationId}>
       <StyledMentorInfoWrapper>
         <StyledProfileImage
           src={mentorProfileImage || defaultImage}
@@ -49,8 +60,19 @@ function MentoringItem({
         <StyledApplicationPrice>
           💰 {TIME}분 {price.toLocaleString()}원
         </StyledApplicationPrice>
-        <ReviewButton isReviewed={isReviewed} status={status} />
+        <ReviewButton
+          isReviewed={isReviewed}
+          status={status}
+          onReviewButtonClick={handleReviewModalToggle}
+        />
       </StyledApplicationInfoWrapper>
+      <ReviewModal
+        reservationId={reservationId}
+        mentorName={mentorName}
+        opened={opened}
+        onCloseClick={handleReviewModalToggle}
+        onReviewSubmitButtonClick={handleReviewSubmitButtonClick}
+      />
     </StyledContainer>
   );
 }
@@ -85,6 +107,9 @@ const StyledProfileImage = styled.img`
   height: 4.8rem;
   border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
   border-radius: 50%;
+
+  aspect-ratio: 1/1;
+  object-fit: cover;
 `;
 
 const StyledName = styled.h4`
@@ -112,7 +137,6 @@ const StyledCategory = styled.span`
   align-items: center;
   justify-content: center;
 
-  width: 7rem;
   padding: 0.2rem 0.4rem;
   border-radius: 6px;
 

@@ -1,0 +1,214 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+  SidebarProvider,
+  SidebarInset,
+  SidebarTrigger,
+} from "./ui/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
+import {
+  Users,
+  LogOut,
+  Menu,
+  ChevronRight,
+  Award,
+  UserCheck,
+  BookOpen,
+} from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useAuth } from "./AuthContext";
+import { logout as apiLogout } from "../services/authApi";
+import { ROUTES } from "../constants/routes";
+
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  pageTitle: string;
+  activeMenu?: string;
+}
+
+export function DashboardLayout({ children, pageTitle, activeMenu = "certifications" }: DashboardLayoutProps) {
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    
+    try {
+      console.log('🚪 Attempting logout...');
+      // 서버에 로그아웃 요청
+      await apiLogout();
+      console.log('✅ Server logout successful');
+    } catch (error) {
+      console.error('❌ Server logout failed:', error);
+      // 서버 로그아웃 실패해도 클라이언트 로그아웃은 진행
+    } finally {
+      // 클라이언트 로그아웃 (상태 초기화)
+      logout();
+      navigate(ROUTES.LOGIN);
+      setIsLoggingOut(false);
+    }
+  };
+
+  const handleMenuClick = (menuType: string) => {
+    switch (menuType) {
+      case "certifications":
+        navigate(ROUTES.ROOT);
+        break;
+      case "mentees":
+        navigate(ROUTES.ROOT); // ComingSoon으로 이동
+        break;
+      case "mentoring":
+        navigate(`${ROUTES.ROOT}#mentoring`);
+        break;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <SidebarProvider defaultOpen={true}>
+        <Sidebar collapsible="icon" className="w-full border-0">
+          <SidebarHeader>
+            <div className="flex items-center gap-2 px-4 py-2">
+              <ImageWithFallback
+                src="https://images.unsplash.com/photo-1560472354-c58ff3013449?w=100&h=100&fit=crop&crop=center"
+                alt="Logo"
+                className="h-10 w-10 object-contain rounded-lg"
+              />
+              <div className="group-data-[collapsible=icon]:hidden">
+                <h2 className="font-semibold text-[20px]">
+                  Fittoring
+                </h2>
+                <p className="text-xs text-muted-foreground text-[13px]">
+                  관리자 시스템
+                </p>
+              </div>
+            </div>
+          </SidebarHeader>
+
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>메뉴</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  <Collapsible
+                    defaultOpen
+                    className="group/collapsible"
+                  >
+                    <SidebarMenuItem>
+                      <CollapsibleTrigger asChild>
+                        <SidebarMenuButton tooltip="멘토 관리">
+                          <Users className="h-4 w-4" />
+                          <span>멘토 관리</span>
+                          <ChevronRight className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                        </SidebarMenuButton>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <SidebarMenuSub>
+                          <SidebarMenuSubItem>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={activeMenu === "certifications"}
+                              onClick={() => handleMenuClick("certifications")}
+                            >
+                              <div className="flex items-center cursor-pointer">
+                                <Award className="h-4 w-4" />
+                                <span>자격증 관리</span>
+                              </div>
+                            </SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </SidebarMenuSub>
+                      </CollapsibleContent>
+                    </SidebarMenuItem>
+                  </Collapsible>
+
+                  {/* 멘티 관리 */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      tooltip="멘티 관리"
+                      isActive={activeMenu === "mentees"}
+                      onClick={() => handleMenuClick("mentees")}
+                    >
+                      <UserCheck className="h-4 w-4" />
+                      <span>멘티 관리</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+
+                  {/* 멘토링 관리 */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      tooltip="멘토링 관리"
+                      isActive={activeMenu === "mentoring" || activeMenu === "mentoring-detail"}
+                      onClick={() => handleMenuClick("mentoring")}
+                    >
+                      <BookOpen className="h-4 w-4" />
+                      <span>멘토링 관리</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+
+          <SidebarFooter>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={handleLogout}
+                  tooltip="로그아웃"
+                  disabled={isLoggingOut}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>{isLoggingOut ? "로그아웃 중..." : "로그아웃"}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+            
+            {/* 현재 사용자 정보 표시 */}
+            {user && (
+              <div className="px-4 py-2 border-t border-sidebar-border group-data-[collapsible=icon]:hidden">
+                <p className="text-xs text-muted-foreground">로그인:</p>
+                <p className="text-sm font-medium truncate">{user.name}</p>
+                <p className="text-xs text-muted-foreground truncate">@{user.loginId}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.role}</p>
+              </div>
+            )}
+          </SidebarFooter>
+        </Sidebar>
+
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6">
+            <SidebarTrigger className="-ml-1" />
+            <div className="flex items-center gap-2">
+              <Menu className="h-5 w-5" />
+              <h1 className="font-semibold">
+                {pageTitle}
+              </h1>
+            </div>
+          </header>
+          
+          <main className="flex-1 overflow-auto p-6">
+            {children}
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
+  );
+}
