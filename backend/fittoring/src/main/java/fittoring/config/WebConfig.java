@@ -29,7 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://www.fittoring.store",
                         "https://www.fittoring.com",
                         "https://fittoring.com",
-                        "https://www.dev.fittoring.com"
+                        "https://www.dev.fittoring.com",
                         "https://dev.fittoring.com"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
