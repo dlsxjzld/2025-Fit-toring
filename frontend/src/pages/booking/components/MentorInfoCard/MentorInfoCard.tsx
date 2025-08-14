@@ -19,7 +19,7 @@ function MentoInfoCard({ mentorDetail }: MentoInfoCardProps) {
       {mentorDetail ? (
         <>
           <StyledMentoProfileWrapper>
-            <ProfileImg src={mentorDetail.imageUrl} />
+            <ProfileImg src={mentorDetail.profileImageUrl} />
             <StyledMetoNameText>{mentorDetail.mentorName}</StyledMetoNameText>
           </StyledMentoProfileWrapper>
           <StyledInfoWithTags>
