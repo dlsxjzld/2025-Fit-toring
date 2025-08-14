@@ -1,1 +1,0 @@
-{"version":1,"problems":{"Baekjoon Online Judge":{"신기한 소수":{"name":"신기한 소수","groupName":"Baekjoon Online Judge","url":"https://www.acmicpc.net/problem/2023","sampleTestcases":[{"name":"Sample Testcase #1","input":"4\n","output":"2333\n2339\n2393\n2399\n2939\n3119\n3137\n3733\n3739\n3793\n3797\n5939\n7193\n7331\n7333\n7393\n"}],"memoryLimit":4,"timeLimit":2000}}}}
