@@ -32,7 +32,7 @@ export const putMentoring = async ({
 
   return apiClient.put({
     endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}`,
-    searchParams: { mentoringId },
+    body: formData,
     withCredentials: true,
   });
 };
