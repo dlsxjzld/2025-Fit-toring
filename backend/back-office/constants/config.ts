@@ -3,7 +3,7 @@
  * 
  * 서버 URL이 변경될 수 있으므로 상수로 분리하여 관리합니다.
  */
-export const BASE_URL = 'http://localhost:8080';
+export const BASE_URL = '';
 
 /**
  * API 엔드포인트 상수
