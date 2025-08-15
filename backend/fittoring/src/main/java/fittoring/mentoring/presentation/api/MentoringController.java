@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api;
 
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringService;
@@ -8,7 +9,9 @@ import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.MentoringRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +30,7 @@ public class MentoringController {
 
     private final MentoringService mentoringService;
 
+    @AuthRequired
     @PostMapping("/mentorings")
     public ResponseEntity<Void> registerMentoring(
             @Login LoginInfo loginInfo,
@@ -52,9 +56,9 @@ public class MentoringController {
             @RequestParam(required = false) String categoryTitle3
     ) {
         List<MentoringSummaryResponse> responseBody = mentoringService.findMentoringSummaries(
-            categoryTitle1,
-            categoryTitle2,
-            categoryTitle3
+                categoryTitle1,
+                categoryTitle2,
+                categoryTitle3
         );
         return ResponseEntity.ok()
                 .body(responseBody);
@@ -66,6 +70,7 @@ public class MentoringController {
         return ResponseEntity.ok(response);
     }
 
+    @AuthRequired
     @PutMapping("/mentorings/{mentoringId}")
     public ResponseEntity<Void> modifyMentoring(
             @PathVariable("mentoringId") Long mentoringId,
@@ -86,6 +91,7 @@ public class MentoringController {
                 .build();
     }
 
+    @AuthRequired
     @GetMapping("/mentorings/mine")
     public ResponseEntity<MentoringResponse> getMentoringMine(@Login LoginInfo loginInfo) {
         MentoringResponse response = mentoringService.getMentoringByMentorId(loginInfo.memberId());
