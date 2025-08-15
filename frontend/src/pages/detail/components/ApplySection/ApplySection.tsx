@@ -25,8 +25,10 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
     null,
   );
 
+  const createdByMe = mineMentoring?.id === mentoringId;
+
   const handleMoveToBookingPage = () => {
-    if (mineMentoring) {
+    if (createdByMe) {
       navigate(`${PAGE_URL.MENTORING_UPDATE}/${mentoringId}`);
       return;
     }
@@ -64,7 +66,7 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
         `}
         onClick={handleMoveToBookingPage}
       >
-        {mineMentoring ? '수정하기' : '신청하기'}
+        {createdByMe ? '수정하기' : '신청하기'}
       </Button>
     </StyledContainer>
   );
