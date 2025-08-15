@@ -13,11 +13,13 @@ import type { UserInfoResponse } from '../../../types/userInfoResponse';
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
   onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
+  price: number;
 }
 
 function BaseInfoSection({
   onPriceChange,
   priceErrorMessage,
+  price,
 }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
@@ -55,6 +57,7 @@ function BaseInfoSection({
             required
             onChange={handlePriceChange}
             errored={priceErrorMessage !== ''}
+            value={price}
           />
         </FormField>
         <FormField label="전화번호 *">

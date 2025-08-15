@@ -9,9 +9,13 @@ interface DetailIntroduceProps {
   onDetailIntroduceChange: (
     newData: Pick<mentoringCreateFormData, 'content'>,
   ) => void;
+  detailIntroduce: string;
 }
 
-function DetailIntroduce({ onDetailIntroduceChange }: DetailIntroduceProps) {
+function DetailIntroduce({
+  onDetailIntroduceChange,
+  detailIntroduce,
+}: DetailIntroduceProps) {
   return (
     <section>
       <TitleSeparator>상세 소개</TitleSeparator>
@@ -23,6 +27,7 @@ function DetailIntroduce({ onDetailIntroduceChange }: DetailIntroduceProps) {
             onChange={(e) =>
               onDetailIntroduceChange({ content: e.target.value })
             }
+            value={detailIntroduce}
             required
           />
         </FormField>
