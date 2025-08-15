@@ -123,7 +123,7 @@ export function MentoringDetail() {
       setReservations((prev) =>
         prev.map((r) => (r.id === reservationId ? { ...r, status: newStatus } : r)),
       );
-      await fetchUpdateStatusReservation(numericId, reservationId, newStatus);
+      await fetchUpdateStatusReservation(reservationId, newStatus);
 
       setTempStatus((prev) => {
         const copy = { ...prev };

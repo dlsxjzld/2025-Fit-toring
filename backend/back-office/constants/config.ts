@@ -28,7 +28,7 @@ export const API_ENDPOINTS = {
   MENTORING_DELETE: `${BASE_URL}/admin/mentorings/`,
 
   // 멘토링 예약
-  MENTORING_RESERVATION_PREFIX: `${BASE_URL}/admin/mentorings/`,
+  MENTORING_RESERVATION_PREFIX: `${BASE_URL}/admin/reservations/`,
 } as const;
 
 /**

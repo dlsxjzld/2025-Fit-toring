@@ -63,11 +63,10 @@ export const fetchReservations = async (mentoringId: number): Promise<Reservatio
 export type ReservationStatus = Reservation["status"];
 
 export const fetchUpdateStatusReservation = async (
-  mentoringId: number,
   reservationId: number,
   status: ReservationStatus
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, mentoringId, "reservations", reservationId);
+  const url = joinUrl(RESV_BASE, reservationId, "status");
 
   const res = await fetchWithTokenRefresh(url, {
     method: "PATCH",
