@@ -102,10 +102,13 @@ function MentoringCreateForm() {
       <BaseInfoSection
         onPriceChange={handleMentoringDataChange}
         priceErrorMessage={priceErrorMessage}
+        price={mentoringData.price}
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
       <IntroduceSection
+        introduce={mentoringData.introduction}
+        career={mentoringData.career}
         onIntroduceChange={handleMentoringDataChange}
         introduceErrorMessage={introduceErrorMessage}
         careerErrorMessage={careerErrorMessage}
@@ -114,7 +117,10 @@ function MentoringCreateForm() {
         onCertificateChange={handleMentoringDataChange}
         handleCertificateImageFilesChange={handleCertificateImageFilesChange}
       />
-      <DetailIntroduce onDetailIntroduceChange={handleMentoringDataChange} />
+      <DetailIntroduce
+        detailIntroduce={mentoringData.content}
+        onDetailIntroduceChange={handleMentoringDataChange}
+      />
       <StyledSeparator />
       <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
     </StyledContainer>
