@@ -36,7 +36,7 @@ const RESV_BASE =
  */
 export const fetchReservations = async (mentoringId: number): Promise<Reservation[]> => {
   try {
-    const base = (API_ENDPOINTS as any).MENTORING_RESERVATION_PREFIX ?? "/admin/mentorings";
+    const base = (API_ENDPOINTS as any).ADMIN_MENTORING ?? "/admin/mentorings";
     const url = joinUrl(base, mentoringId, "reservations");
 
     const res = await fetchWithTokenRefresh(url, {
@@ -86,7 +86,7 @@ export const fetchUpdateStatusReservation = async (
  export const fetchDeleteReservation = async (
   reservationId: number
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, "reservations", reservationId);
+  const url = joinUrl(RESV_BASE, reservationId);
 
   const res = await fetchWithTokenRefresh(url, {
     method: "DELETE",

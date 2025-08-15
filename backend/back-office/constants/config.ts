@@ -3,7 +3,7 @@
  * 
  * 서버 URL이 변경될 수 있으므로 상수로 분리하여 관리합니다.
  */
-export const BASE_URL = '';
+export const BASE_URL = 'http://localhost:8080';
 
 /**
  * API 엔드포인트 상수
@@ -23,6 +23,7 @@ export const API_ENDPOINTS = {
   CERTIFICATES: `${BASE_URL}/certificates`,
   
   // 멘토링
+  ADMIN_MENTORING: `${BASE_URL}/admin/mentorings`,
   MENTORING: `${BASE_URL}/mentorings`,
   MENTORING_DETAIL: `${BASE_URL}/mentorings/`,
   MENTORING_DELETE: `${BASE_URL}/admin/mentorings/`,
