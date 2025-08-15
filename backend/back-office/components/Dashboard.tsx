@@ -121,7 +121,7 @@ export function Dashboard() {
             <SidebarHeader>
               <div className="flex items-center gap-2 px-4 py-2">
                 <ImageWithFallback
-                  src="https://images.unsplash.com/photo-1560472354-c58ff3013449?w=100&h=100&fit=crop&crop=center"
+                  src="/web-admin/fittoring.png"
                   alt="Logo"
                   className="h-10 w-10 object-contain rounded-lg"
                 />

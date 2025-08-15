@@ -68,7 +68,7 @@ export function LoginPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <ImageWithFallback
-              src="https://images.unsplash.com/photo-1560472354-c58ff3013449?w=100&h=100&fit=crop&crop=center"
+              src="/web-admin/fittoring.png"
               alt="Logo"
               className="h-16 w-16 object-contain rounded-lg"
             />
