@@ -147,7 +147,7 @@ export function MentoringDetail() {
       setRowBusy((p) => ({ ...p, [reservationId]: true }));
       setReservations((prev) => prev.filter((r) => r.id !== reservationId));
   
-      await fetchDeleteReservation(numericId, reservationId);
+      await fetchDeleteReservation(reservationId);
     } catch (e) {
       console.error("예약 삭제 실패:", e);
       setReservations(prevReservations);

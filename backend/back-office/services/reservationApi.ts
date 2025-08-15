@@ -75,7 +75,7 @@ export const fetchUpdateStatusReservation = async (
     body: JSON.stringify({ status }),
   });
 
-  if (!(res.status === 204 || res.ok)) {
+  if (!(res.status === 200 || res.ok)) {
     console.warn(`예약 상태 수정 실패: ${res.status} ${res.statusText}`);
   }
 };
@@ -84,10 +84,9 @@ export const fetchUpdateStatusReservation = async (
  * 예약 항목 삭제
  */
  export const fetchDeleteReservation = async (
-  mentoringId: number,
   reservationId: number
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, mentoringId, "reservations", reservationId);
+  const url = joinUrl(RESV_BASE, "reservations", reservationId);
 
   const res = await fetchWithTokenRefresh(url, {
     method: "DELETE",
