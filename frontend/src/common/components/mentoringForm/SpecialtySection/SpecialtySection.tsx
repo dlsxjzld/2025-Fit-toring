@@ -15,11 +15,17 @@ interface SpecialtySectionProps {
   onSpecialtyChange: (
     newData: Pick<mentoringCreateFormData, 'category'>,
   ) => void;
+  initialSelectedSpecialties?: string[];
 }
 
-function SpecialtySection({ onSpecialtyChange }: SpecialtySectionProps) {
+function SpecialtySection({
+  initialSelectedSpecialties,
+  onSpecialtyChange,
+}: SpecialtySectionProps) {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>(
+    initialSelectedSpecialties ?? [],
+  );
 
   const handleToggleSpecialtyTagChange = (title: string) => {
     setSelectedSpecialties((prev) => {

@@ -13,13 +13,17 @@ interface CertificateSectionProps {
     newData: Pick<mentoringCreateFormData, 'certificateInfos'>,
   ) => void;
   handleCertificateImageFilesChange: (files: File[]) => void;
+  initialCertificates?: CertificateItem[];
 }
 
 function CertificateSection({
   onCertificateChange,
   handleCertificateImageFilesChange,
+  initialCertificates,
 }: CertificateSectionProps) {
-  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
+  const [certificates, setCertificates] = useState<CertificateItem[]>(
+    initialCertificates ?? [],
+  );
 
   const handleAddButtonClick = () => {
     setCertificates((prev) => [
@@ -92,6 +96,7 @@ function CertificateSection({
           onCertificateImageFileChange={(file) =>
             handleCertificateChangeById(item.id, { file })
           }
+          initialCertificate={item}
         />
       ))}
 

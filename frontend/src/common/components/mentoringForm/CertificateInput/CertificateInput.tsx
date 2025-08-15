@@ -12,6 +12,7 @@ interface CertificateInputProps {
   onDeleteButtonClick: () => void;
   onCertificateChange: (id: string, changed: Partial<CertificateItem>) => void;
   onCertificateImageFileChange: (file: File) => void;
+  initialCertificate?: CertificateItem;
 }
 
 function CertificateInput({
@@ -19,8 +20,11 @@ function CertificateInput({
   onDeleteButtonClick,
   onCertificateChange,
   onCertificateImageFileChange,
+  initialCertificate,
 }: CertificateInputProps) {
-  const { previewUrl, handleImageChange } = usePreviewImage();
+  const { previewUrl, handleImageChange } = usePreviewImage(
+    initialCertificate?.imageUrl,
+  );
 
   const handleCertificateIdChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -62,6 +66,7 @@ function CertificateInput({
           placeholder="생활체육지도자 자격증 1급"
           onChange={handleCertificateTitleChange}
           required
+          value={initialCertificate.title}
         />
       </StyledContentWrapper>
 
@@ -78,7 +83,7 @@ function CertificateInput({
               onCertificateImageFileChange(file);
             }
           }}
-          required
+          required={!previewUrl}
         />
         {previewUrl ? (
           <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />

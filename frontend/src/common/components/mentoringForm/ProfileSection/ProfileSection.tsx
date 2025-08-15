@@ -6,10 +6,14 @@ import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
 interface ProfileSectionProps {
   onProfileImageChange: (file: File | null) => void;
+  profileImageFile?: string | null;
 }
 
-function ProfileSection({ onProfileImageChange }: ProfileSectionProps) {
-  const { previewUrl, handleImageChange } = usePreviewImage();
+function ProfileSection({
+  profileImageFile,
+  onProfileImageChange,
+}: ProfileSectionProps) {
+  const { previewUrl, handleImageChange } = usePreviewImage(profileImageFile);
 
   const handleProfileImageInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
