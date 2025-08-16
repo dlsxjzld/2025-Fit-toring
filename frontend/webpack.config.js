@@ -68,6 +68,7 @@ module.exports = {
     }),
     new DotenvWebpackPlugin({
       path: path.resolve(__dirname, '.env'),
+      systemvars: true,
     }),
     new CopyWebpackPlugin({
       patterns: [{ from: 'public', to: '.' }],
