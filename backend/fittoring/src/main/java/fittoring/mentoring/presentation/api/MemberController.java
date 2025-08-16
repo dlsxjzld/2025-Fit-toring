@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api;
 
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MemberService;
@@ -17,18 +18,21 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @AuthRequired
     @GetMapping("/members/me")
     public ResponseEntity<MyInfoResponse> getMyInfo(@Login LoginInfo loginInfo) {
         MyInfoResponse memberInfo = memberService.getMemberInfo(loginInfo.memberId());
         return ResponseEntity.ok(memberInfo);
     }
 
+    @AuthRequired
     @GetMapping("/members/summary")
     public ResponseEntity<MyInfoSummaryResponse> getMyInfoSummary(@Login LoginInfo loginInfo) {
         MyInfoSummaryResponse memberInfoSummary = memberService.getMemberInfoSummary(loginInfo.memberId());
         return ResponseEntity.ok(memberInfoSummary);
     }
 
+    @AuthRequired
     @GetMapping("/members/status")
     public ResponseEntity<AdminActiveStatusResponse> getAdminMemberStatus(@Login LoginInfo loginInfo) {
         boolean isActive = memberService.getAdminMemberActiveStatus(loginInfo.memberId());

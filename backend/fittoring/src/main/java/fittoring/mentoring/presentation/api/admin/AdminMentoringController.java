@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api.admin;
 
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringService;
@@ -15,6 +16,7 @@ public class AdminMentoringController {
 
     private final MentoringService mentoringService;
 
+    @AuthRequired
     @DeleteMapping("/admin/mentorings/{mentoringId}")
     public ResponseEntity<Void> deleteMentoring(@Login LoginInfo loginInfo,
                                                 @PathVariable("mentoringId") Long mentoringId) {

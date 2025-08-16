@@ -23,12 +23,13 @@ export const API_ENDPOINTS = {
   CERTIFICATES: `${BASE_URL}/certificates`,
   
   // 멘토링
+  ADMIN_MENTORING: `${BASE_URL}/admin/mentorings`,
   MENTORING: `${BASE_URL}/mentorings`,
   MENTORING_DETAIL: `${BASE_URL}/mentorings/`,
   MENTORING_DELETE: `${BASE_URL}/admin/mentorings/`,
 
   // 멘토링 예약
-  MENTORING_RESERVATION_PREFIX: `${BASE_URL}/admin/mentorings/`,
+  MENTORING_RESERVATION_PREFIX: `${BASE_URL}/admin/reservations/`,
 } as const;
 
 /**

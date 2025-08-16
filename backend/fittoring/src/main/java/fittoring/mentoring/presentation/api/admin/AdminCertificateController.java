@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api.admin;
 
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.model.Status;
@@ -23,6 +24,7 @@ public class AdminCertificateController {
 
     private final CertificateService certificateService;
 
+    @AuthRequired
     @GetMapping
     public ResponseEntity<List<CertificateResponse>> getAllCertificates(
             @Login LoginInfo loginInfo,
@@ -35,6 +37,7 @@ public class AdminCertificateController {
         return ResponseEntity.ok().body(certificates);
     }
 
+    @AuthRequired
     @GetMapping("/{certificateId}")
     public ResponseEntity<CertificateDetailResponse> getCertificate(
             @Login LoginInfo loginInfo,
@@ -47,6 +50,7 @@ public class AdminCertificateController {
         return ResponseEntity.ok().body(response);
     }
 
+    @AuthRequired
     @PostMapping("/{certificateId}/approve")
     public ResponseEntity<Void> approveCertificate(
             @Login LoginInfo loginInfo,
@@ -59,6 +63,7 @@ public class AdminCertificateController {
         return ResponseEntity.noContent().build();
     }
 
+    @AuthRequired
     @PostMapping("/{certificateId}/reject")
     public ResponseEntity<Void> rejectCertificate(
             @Login LoginInfo loginInfo,

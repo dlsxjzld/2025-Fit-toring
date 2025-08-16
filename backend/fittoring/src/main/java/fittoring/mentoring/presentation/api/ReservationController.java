@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api;
 
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringReservationFacadeService;
@@ -30,6 +31,7 @@ public class ReservationController {
     private final MentoringReservationFacadeService mentoringReservationFacadeService;
     private final ReservationService reservationService;
 
+    @AuthRequired
     @PostMapping("/mentorings/{mentoringId}/reservation")
     public ResponseEntity<ReservationCreateResponse> createReservation(
             @Login LoginInfo loginInfo,
@@ -47,6 +49,7 @@ public class ReservationController {
                 .body(responseBody);
     }
 
+    @AuthRequired
     @GetMapping("/reservations/participated")
     public ResponseEntity<List<ParticipatedReservationResponse>> findParticipatedReservation(
             @Login LoginInfo loginInfo
@@ -57,6 +60,7 @@ public class ReservationController {
                 .body(responseBody);
     }
 
+    @AuthRequired
     @GetMapping("/mentorings/mine/reservations")
     public ResponseEntity<List<MentorMentoringReservationResponse>> getReservationsByMentor(
             @Login LoginInfo loginInfo
@@ -67,6 +71,7 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
+    @AuthRequired
     @PatchMapping("/reservations/{reservationId}/status")
     public ResponseEntity<Void> updateStatus(
             @PathVariable Long reservationId,
@@ -76,6 +81,7 @@ public class ReservationController {
         return ResponseEntity.ok().build();
     }
 
+    @AuthRequired
     @GetMapping("/reservations/{reservationId}/phone")
     public ResponseEntity<PhoneNumberResponse> getPhone(@PathVariable Long reservationId) {
         PhoneNumberResponse response = reservationService.getPhone(reservationId);

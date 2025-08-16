@@ -1,5 +1,6 @@
 package fittoring.mentoring.presentation.api.admin;
 
+import fittoring.config.auth.AuthRequired;
 import fittoring.config.auth.Login;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.ReservationService;
@@ -26,40 +27,43 @@ public class AdminReservationController {
 
     private final ReservationService reservationService;
 
+    @AuthRequired
     @GetMapping("/admin/mentorings/{mentoringId}/reservations")
     public ResponseEntity<List<AdminReservationResponse>> findMentoringReservations(
-        @Login LoginInfo loginInfo,
-        @PathVariable("mentoringId") Long mentoringId
+            @Login LoginInfo loginInfo,
+            @PathVariable("mentoringId") Long mentoringId
     ) {
         MentoringReservationGetDto mentoringReservationGetDto
-            = new MentoringReservationGetDto(loginInfo.memberId(), mentoringId);
+                = new MentoringReservationGetDto(loginInfo.memberId(), mentoringId);
         List<AdminReservationResponse> responseBody = reservationService.findMentoringReservationsWithAdminAuthorization(
-            mentoringReservationGetDto);
+                mentoringReservationGetDto);
         return ResponseEntity.status(HttpStatus.OK)
-            .body(responseBody);
+                .body(responseBody);
     }
 
+    @AuthRequired
     @PatchMapping("/admin/reservations/{reservationId}/status")
     public ResponseEntity<Void> updateStatus(
-        @Login LoginInfo loginInfo,
-        @PathVariable Long reservationId,
-        @RequestBody @Valid ReservationStatusUpdateRequest request
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId,
+            @RequestBody @Valid ReservationStatusUpdateRequest request
     ) {
         AdminReservationStatusUpdateDto adminReservationStatusUpdateDto
-            = AdminReservationStatusUpdateDto.of(loginInfo.memberId(), reservationId, request.status());
+                = AdminReservationStatusUpdateDto.of(loginInfo.memberId(), reservationId, request.status());
         reservationService.updateStatusWithAdminAuthorization(adminReservationStatusUpdateDto);
         return ResponseEntity.ok().build();
     }
 
+    @AuthRequired
     @DeleteMapping("/admin/reservations/{reservationId}")
     public ResponseEntity<Void> deleteReservation(
-        @Login LoginInfo loginInfo,
-        @PathVariable Long reservationId
+            @Login LoginInfo loginInfo,
+            @PathVariable Long reservationId
     ) {
         AdminReservationDeleteDto adminReservationDeleteDto
-            = new AdminReservationDeleteDto(loginInfo.memberId(), reservationId);
+                = new AdminReservationDeleteDto(loginInfo.memberId(), reservationId);
         reservationService.deleteReservationWithAdminAuthorization(adminReservationDeleteDto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-            .build();
+                .build();
     }
 }

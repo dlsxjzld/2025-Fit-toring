@@ -36,7 +36,7 @@ const RESV_BASE =
  */
 export const fetchReservations = async (mentoringId: number): Promise<Reservation[]> => {
   try {
-    const base = (API_ENDPOINTS as any).MENTORING_RESERVATION_PREFIX ?? "/admin/mentorings";
+    const base = (API_ENDPOINTS as any).ADMIN_MENTORING ?? "/admin/mentorings";
     const url = joinUrl(base, mentoringId, "reservations");
 
     const res = await fetchWithTokenRefresh(url, {
@@ -63,11 +63,10 @@ export const fetchReservations = async (mentoringId: number): Promise<Reservatio
 export type ReservationStatus = Reservation["status"];
 
 export const fetchUpdateStatusReservation = async (
-  mentoringId: number,
   reservationId: number,
   status: ReservationStatus
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, mentoringId, "reservations", reservationId);
+  const url = joinUrl(RESV_BASE, reservationId, "status");
 
   const res = await fetchWithTokenRefresh(url, {
     method: "PATCH",
@@ -76,7 +75,7 @@ export const fetchUpdateStatusReservation = async (
     body: JSON.stringify({ status }),
   });
 
-  if (!(res.status === 204 || res.ok)) {
+  if (!(res.status === 200 || res.ok)) {
     console.warn(`예약 상태 수정 실패: ${res.status} ${res.statusText}`);
   }
 };
@@ -85,10 +84,9 @@ export const fetchUpdateStatusReservation = async (
  * 예약 항목 삭제
  */
  export const fetchDeleteReservation = async (
-  mentoringId: number,
   reservationId: number
 ): Promise<void> => {
-  const url = joinUrl(RESV_BASE, mentoringId, "reservations", reservationId);
+  const url = joinUrl(RESV_BASE, reservationId);
 
   const res = await fetchWithTokenRefresh(url, {
     method: "DELETE",
