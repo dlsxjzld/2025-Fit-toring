@@ -36,16 +36,6 @@ const categoryColors = [
   "bg-indigo-100 text-indigo-800",
 ];
 
-// Reservation 스키마에 맞춘 mock (menteeId/requestTime 제거, createdAt/content 사용)
-const mockReservationData: Record<string, Reservation[]> = {
-  "1": [
-    { id: 1, menteeName: "이민수", createdAt: "2024-01-25T14:00:00Z", status: "PENDING",  content: "" },
-    { id: 2, menteeName: "김현주", createdAt: "2024-01-24T16:30:00Z", status: "APPROVED", content: "" },
-    { id: 3, menteeName: "박철수", createdAt: "2024-01-23T10:15:00Z", status: "COMPLETE", content: "" },
-    { id: 4, menteeName: "정유진", createdAt: "2024-01-22T13:45:00Z", status: "REJECTED", content: "" },
-  ],
-};
-
 export function MentoringDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -88,8 +78,6 @@ export function MentoringDetail() {
       } catch (e) {
         setError("멘토링 데이터를 불러오지 못했습니다.");
         setMentoringData(null);
-        // 실패 시 mock 사용
-        setReservations(mockReservationData[id] ?? []);
       } finally {
         setIsLoading(false);
       }
@@ -105,7 +93,7 @@ export function MentoringDetail() {
       await deleteMentoring(numericId);
       navigate(`/web-admin#mentoring`);
     } catch (e) {
-      // console.error("멘토링 삭제 실패:", e);
+      console.error("멘토링 삭제 실패:", e);
     } finally {
       setIsDeleting(false);
     }
@@ -123,7 +111,7 @@ export function MentoringDetail() {
       setReservations((prev) =>
         prev.map((r) => (r.id === reservationId ? { ...r, status: newStatus } : r)),
       );
-      await fetchUpdateStatusReservation(numericId, reservationId, newStatus);
+      await fetchUpdateStatusReservation(reservationId, newStatus);
 
       setTempStatus((prev) => {
         const copy = { ...prev };
@@ -131,7 +119,7 @@ export function MentoringDetail() {
         return copy;
       });
     } catch (e) {
-      // console.error("예약 상태 수정 실패:", e);
+      console.error("예약 상태 수정 실패:", e);
       setReservations(prevReservations);
     } finally {
       setRowBusy((p) => ({ ...p, [reservationId]: false }));
@@ -147,7 +135,7 @@ export function MentoringDetail() {
       setRowBusy((p) => ({ ...p, [reservationId]: true }));
       setReservations((prev) => prev.filter((r) => r.id !== reservationId));
   
-      await fetchDeleteReservation(numericId, reservationId);
+      await fetchDeleteReservation(reservationId);
     } catch (e) {
       console.error("예약 삭제 실패:", e);
       setReservations(prevReservations);
@@ -358,6 +346,7 @@ export function MentoringDetail() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="pl-8">멘티 이름</TableHead>
+                    <TableHead className="pl-8">신청문구</TableHead>
                     <TableHead>요청 시간</TableHead>
                     <TableHead>현재 상태</TableHead>
                     <TableHead>수정</TableHead>
@@ -369,6 +358,9 @@ export function MentoringDetail() {
                     <TableRow key={reservation.id}>
                       <TableCell className="font-medium pl-8 py-6">
                         {reservation.menteeName}
+                      </TableCell>
+                      <TableCell className="font-medium pl-8 py-6">
+                        {reservation.content}
                       </TableCell>
                       <TableCell className="py-3">
                         {formatDateTime(reservation.createdAt)}
