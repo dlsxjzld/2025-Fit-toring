@@ -23,11 +23,13 @@ import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
+import fittoring.mentoring.business.service.dto.ReviewStats;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -165,17 +167,34 @@ public class MentoringService {
             String categoryTitle3
     ) {
         List<Mentoring> mentorings = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
+        List<ReviewStats> reviewStats = mentoringRepository.findReviewStats();
+
+        Map<Long, ReviewStats> reviewStatsMap = new HashMap<>();
+        for (ReviewStats stats : reviewStats) {
+            reviewStatsMap.put(stats.mentoringId(), stats);
+        }
+
         return mentorings.stream()
                 .map(mentoring -> {
-                    Optional<Image> profileImage = imageService.findByImageTypeAndRelationId(
-                            ImageType.MENTORING_PROFILE,
-                            mentoring.getId()
-                    );
-                    List<String> categoryTitles = categoryMentoringRepository.findTitlesByMentoringId(
-                            mentoring.getId());
-                    return profileImage.map(image -> MentoringSummaryResponse.of(mentoring, categoryTitles, image))
-                            .orElseGet(() -> MentoringSummaryResponse.of(mentoring, categoryTitles));
-                })
+                            Image profileImage = imageService.findByImageTypeAndRelationId(
+                                    ImageType.MENTORING_PROFILE,
+                                    mentoring.getId()
+                            ).orElse(null);
+                            List<String> categoryTitles = categoryMentoringRepository.findTitlesByMentoringId(
+                                    mentoring.getId());
+                            ReviewStats reviewStat = reviewStatsMap.getOrDefault(
+                                    mentoring.getId(),
+                                    new ReviewStats(mentoring.getId(), 0.0, 0)
+                            );
+
+                            return MentoringSummaryResponse.of(
+                                    mentoring,
+                                    categoryTitles,
+                                    profileImage,
+                                    reviewStat
+                            );
+                        }
+                )
                 .toList();
     }
 
