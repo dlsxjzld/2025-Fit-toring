@@ -14,6 +14,9 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
@@ -21,9 +24,12 @@ import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.presentation.dto.MentoringRequest;
+import fittoring.mentoring.business.service.dto.ReviewStats;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
+import fittoring.mentoring.presentation.dto.MentoringRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import fittoring.util.DbCleaner;
@@ -69,6 +75,12 @@ class MentoringControllerTest {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @Autowired
     private DbCleaner dbCleaner;
@@ -139,6 +151,30 @@ class MentoringControllerTest {
                     new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId())
             );
 
+            //예약 생성
+            Reservation savedReservation = reservationRepository.save(
+                    new Reservation("content", Status.COMPLETE, savedMentoring, mentee));
+
+            Reservation savedReservation2 = reservationRepository.save(
+                    new Reservation("content", Status.COMPLETE, savedMentoring2, mentee));
+
+            //리뷰 생성
+            Review review = new Review(
+                    5,
+                    "최고의 멘토링이었습니다.",
+                    savedReservation,
+                    mentee
+            );
+            reviewRepository.save(review);
+
+            Review review2 = new Review(
+                    2,
+                    "별로의 멘토링이었습니다.",
+                    savedReservation2,
+                    mentee
+            );
+            reviewRepository.save(review2);
+
             //when
             List<MentoringSummaryResponse> response = RestAssured
                     .given()
@@ -153,6 +189,9 @@ class MentoringControllerTest {
                     });
 
             //then
+            ReviewStats reviewStats = new ReviewStats(savedMentoring.getId(), 5.0, 1);
+            ReviewStats reviewStats2 = new ReviewStats(savedMentoring.getId(), 2.0, 1);
+
             MentoringSummaryResponse expected = new MentoringSummaryResponse(
                     savedMentoring.getId(),
                     savedMentoring.getMentorName(),
@@ -160,7 +199,9 @@ class MentoringControllerTest {
                     savedMentoring.getPrice(),
                     savedMentoring.getCareer(),
                     savedImage.getUrl(),
-                    savedMentoring.getIntroduction()
+                    savedMentoring.getIntroduction(),
+                    reviewStats.reviewAverage(),
+                    reviewStats.reviewCount()
             );
 
             MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
@@ -170,12 +211,12 @@ class MentoringControllerTest {
                     savedMentoring2.getPrice(),
                     savedMentoring2.getCareer(),
                     savedImage2.getUrl(),
-                    savedMentoring2.getIntroduction()
+                    savedMentoring2.getIntroduction(),
+                    reviewStats2.reviewAverage(),
+                    reviewStats2.reviewCount()
             );
 
-            assertThat(response)
-                    .isNotNull()
-                    .containsExactlyInAnyOrder(expected, expected2);
+            assertThat(response).containsExactlyInAnyOrder(expected, expected2);
         }
 
         @DisplayName("조회할 멘토링 목록이 없을 때, 200 OK 상태코드와 멘토링 목록을 반환한다.")
@@ -309,7 +350,9 @@ class MentoringControllerTest {
                     savedMentoring.getPrice(),
                     savedMentoring.getCareer(),
                     savedImage.getUrl(),
-                    savedMentoring.getIntroduction()
+                    savedMentoring.getIntroduction(),
+                    0.0,
+                    0
             );
 
             MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
@@ -322,7 +365,9 @@ class MentoringControllerTest {
                     savedMentoring2.getPrice(),
                     savedMentoring2.getCareer(),
                     savedImage2.getUrl(),
-                    savedMentoring2.getIntroduction()
+                    savedMentoring2.getIntroduction(),
+                    0.0,
+                    0
             );
 
             MentoringSummaryResponse expected3 = new MentoringSummaryResponse(
@@ -336,7 +381,9 @@ class MentoringControllerTest {
                     savedMentoring3.getPrice(),
                     savedMentoring3.getCareer(),
                     savedImage3.getUrl(),
-                    savedMentoring3.getIntroduction()
+                    savedMentoring3.getIntroduction(),
+                    0.0,
+                    0
             );
 
             List<MentoringSummaryResponse> expectedList = List.of(expected, expected2, expected3);
@@ -728,37 +775,37 @@ class MentoringControllerTest {
     void modifyMentoring() throws IOException {
         //given
         Member mentor = memberRepository.save(new Member(
-            "id1",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1234-9048"),
-            Password.from("pw")
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
         ));
 
         Category category1 = categoryRepository.save(new Category("category1"));
         categoryRepository.save(new Category("category2"));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            3,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                3,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         imageRepository.save(new Image(
-            "originalProfileImage",
-            ImageType.MENTORING_PROFILE,
-            mentoring.getId()
+                "originalProfileImage",
+                ImageType.MENTORING_PROFILE,
+                mentoring.getId()
         ));
         categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
         Certificate certificate = certificateRepository.save(new Certificate(
-            CertificateType.LICENSE,
-            "운전면허증",
-            mentoring
+                CertificateType.LICENSE,
+                "운전면허증",
+                mentoring
         ));
         imageRepository.save(new Image(
-            "originalCertificateImage",
-            ImageType.CERTIFICATE,
-            certificate.getId()
+                "originalCertificateImage",
+                ImageType.CERTIFICATE,
+                certificate.getId()
         ));
 
         int newPrice = 1000;
@@ -767,27 +814,27 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRequest requestBody = new MentoringRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .contentType(ContentType.MULTIPART)
-            .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-            .when()
-            .put("/mentorings/" + mentoring.getId())
-            .then().log().all()
-            .statusCode(200);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("존재하지 않는 멘토링을 수정하려고 하면 404 Not Found를 반환한다")
@@ -795,11 +842,11 @@ class MentoringControllerTest {
     void modifyMentoringFail1() throws IOException {
         // given
         Member mentor = memberRepository.save(new Member(
-            "id1",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1234-9048"),
-            Password.from("pw")
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
         ));
 
         int newPrice = 1000;
@@ -808,27 +855,27 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRequest requestBody = new MentoringRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(mentor.getId());
 
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .contentType(ContentType.MULTIPART)
-            .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-            .when()
-            .put("/mentorings/999")
-            .then().log().all()
-            .statusCode(404);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/999")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @DisplayName("본인이 개설하지 않은 멘토링을 수정하려고 하면 403 Forbidden를 반환한다")
@@ -836,26 +883,26 @@ class MentoringControllerTest {
     void modifyMentoringFail2() throws IOException {
         // given
         Member mentor = memberRepository.save(new Member(
-            "id1",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1234-9048"),
-            Password.from("pw")
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            3,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                3,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
 
         Member invalidMember = memberRepository.save(new Member(
-            "id2",
-            "MALE",
-            "박트레이너",
-            new Phone("010-1234-9021"),
-            Password.from("pw")
+                "id2",
+                "MALE",
+                "박트레이너",
+                new Phone("010-1234-9021"),
+                Password.from("pw")
         ));
 
         int newPrice = 1000;
@@ -864,27 +911,27 @@ class MentoringControllerTest {
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
         MentoringRequest requestBody = new MentoringRequest(
-            newPrice,
-            List.of(newCategory),
-            newIntroduction,
-            newCareer,
-            newContent,
-            Collections.emptyList()
+                newPrice,
+                List.of(newCategory),
+                newIntroduction,
+                newCareer,
+                newContent,
+                Collections.emptyList()
         );
         String accessToken = jwtProvider.createAccessToken(invalidMember.getId());
 
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .contentType(ContentType.MULTIPART)
-            .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-            .when()
-            .put("/mentorings/" + mentoring.getId())
-            .then().log().all()
-            .statusCode(403);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(403);
     }
 }
 
