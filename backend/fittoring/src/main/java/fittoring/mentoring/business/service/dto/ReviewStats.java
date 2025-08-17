@@ -1,6 +1,6 @@
 package fittoring.mentoring.business.service.dto;
 
-public record ReviewStatus(
+public record ReviewStats(
         Long mentoringId,
         Double reviewAverage,
         long reviewCount) {
