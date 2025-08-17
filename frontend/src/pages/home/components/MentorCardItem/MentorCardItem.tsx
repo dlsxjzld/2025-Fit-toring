@@ -23,6 +23,8 @@ function MentorCardItem({
     career,
     profileImageUrl,
     introduction,
+    reviewAverage,
+    reviewCount,
   },
 }: MentorCardItemProps) {
   return (
@@ -37,8 +39,11 @@ function MentorCardItem({
         />
         <StyledInfoWrapper>
           <StyledTitle>{mentorName}</StyledTitle>
-          <TextWithIcon text="4.9 (127)" iconSrc={starIcon} iconName="별점" />
-          <TextWithIcon text="강남구" iconSrc={locationIcon} iconName="위치" />
+          <TextWithIcon
+            text={`${reviewAverage} (${reviewCount})`}
+            iconSrc={starIcon}
+            iconName="별점"
+          />
           <StyledPersonalHistory>경력: {career}년</StyledPersonalHistory>
           <CategoryTags tagNames={categories} />
         </StyledInfoWrapper>
