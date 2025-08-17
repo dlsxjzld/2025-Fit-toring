@@ -6,7 +6,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.CertificateNotFoundException;
+import fittoring.mentoring.business.exception.NotCertificateOwnerException;
+import fittoring.mentoring.business.exception.NotReviewOwnerException;
 import fittoring.mentoring.business.model.Certificate;
 import fittoring.mentoring.business.model.CertificateType;
 import fittoring.mentoring.business.model.Image;
@@ -17,11 +19,14 @@ import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
 import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
+import fittoring.mentoring.business.service.dto.CertificateDeleteDto;
 import fittoring.mentoring.infra.S3Uploader;
 import fittoring.mentoring.presentation.dto.CertificateDetailResponse;
 import fittoring.mentoring.presentation.dto.CertificateResponse;
 import fittoring.util.DbCleaner;
+
 import java.util.List;
+
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +38,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -97,7 +103,7 @@ class CertificateServiceTest {
         // when
         // then
         assertThatThrownBy(() -> certificateService.getAllCertificates(user.getId(), null))
-                .isInstanceOf(ForbiddenMemberException.class)
+                .isInstanceOf(NotReviewOwnerException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
@@ -214,7 +220,7 @@ class CertificateServiceTest {
                 user.getId(),
                 mentoring.getId()
         ))
-                .isInstanceOf(ForbiddenMemberException.class)
+                .isInstanceOf(NotReviewOwnerException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
@@ -261,7 +267,7 @@ class CertificateServiceTest {
         // when
         // then
         assertThatThrownBy(() -> certificateService.approveCertificate(user.getId(), certificate.getId()))
-                .isInstanceOf(ForbiddenMemberException.class)
+                .isInstanceOf(NotReviewOwnerException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 
@@ -308,7 +314,63 @@ class CertificateServiceTest {
         // when
         // then
         assertThatThrownBy(() -> certificateService.rejectCertificate(user.getId(), certificate.getId()))
-                .isInstanceOf(ForbiddenMemberException.class)
+                .isInstanceOf(NotReviewOwnerException.class)
                 .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+    }
+
+    @DisplayName("존재하지 않는 자격 사항 삭제 요청 시 예외가 발생한다.")
+    @Test
+    void deleteCertificateFail1() {
+        // given
+        Member mentee = em.persist(new Member(
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        ));
+        CertificateDeleteDto dto = new CertificateDeleteDto(mentee.getId(), 999L);
+
+        // when
+        // then
+        assertThatThrownBy(() -> certificateService.deleteCertificate(dto))
+                .isInstanceOf(CertificateNotFoundException.class)
+                .hasMessage(BusinessErrorMessage.CERTIFICATE_NOT_FOUND.getMessage());
+    }
+
+    @DisplayName("본인의 것이 아닌 자격 사항을 삭제하려고 하면 예외가 발생한다")
+    @Test
+    void deleteReviewFail2() {
+        // given
+        Member mentorKim = em.persist(new Member(
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
+        ));
+        Member mentorPark = em.persist(new Member(
+                "mentorId2",
+                "MALE",
+                "박트레이너",
+                new Phone("010-1111-2223"),
+                Password.from("password")
+        ));
+        Mentoring parkMentoring = em.persist(new Mentoring(
+                mentorPark,
+                5000,
+                10,
+                "박트레이너의 멘토링",
+                "박트레이너는 컴퓨터에 빠삭합니다."
+        ));
+        Certificate parkLicense = em.persist(new Certificate(CertificateType.LICENSE, "정보처리기사", parkMentoring));
+
+        CertificateDeleteDto dto = new CertificateDeleteDto(mentorKim.getId(), parkLicense.getId());
+
+        // when
+        // then
+        assertThatThrownBy(() -> certificateService.deleteCertificate(dto))
+                .isInstanceOf(NotCertificateOwnerException.class)
+                .hasMessage(BusinessErrorMessage.NOT_CERTIFICATE_OWNER.getMessage());
     }
 }

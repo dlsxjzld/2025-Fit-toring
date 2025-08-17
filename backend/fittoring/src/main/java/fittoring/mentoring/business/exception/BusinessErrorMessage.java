@@ -34,10 +34,11 @@ public enum BusinessErrorMessage {
     CERTIFICATE_INFO_IMAGE_MISMATCH("자격증 정보와 자격증 이미지의 수가 일치하지 않습니다."),
     INVALID_CERTIFICATE_INFO("올바르지 않은 자격증 정보입니다."),
     REVIEW_NOT_FOUND("존재하지 않는 리뷰입니다."),
-    REVIEWER_NOT_SAME("자신이 남긴 리뷰가 아닙니다."),
+    NOT_REVIEW_OWNER("자신이 남긴 리뷰가 아닙니다."),
     MENTOR_NOT_SAME("자신이 개설한 멘토링이 아닙니다."),
     MENTOR_AND_MENTEE_IS_SAME("본인이 개설한 멘토링에는 예약할 수 없습니다."),
     RESERVATION_NOT_COMPLETED("멘토링이 완료된 후에만 리뷰를 남길 수 있습니다."),
+    NOT_CERTIFICATE_OWNER("자신의 자격사항이 아닙니다."),
     ;
 
     private final String message;

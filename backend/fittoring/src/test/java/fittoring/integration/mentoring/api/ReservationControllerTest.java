@@ -267,7 +267,7 @@ class ReservationControllerTest {
                 category3, mentoring2
         ));
         Member mentee = memberRepository.save(new Member(
-                "menteeId",
+                "mentorId",
                 "남",
                 "김멘티",
                 new Phone("010-5678-1234"),

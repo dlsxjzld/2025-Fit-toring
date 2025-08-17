@@ -1,7 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.NotReviewOwnerException;
 import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.exception.NotFoundMemberException;
@@ -137,7 +137,7 @@ public class ReservationService {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> new NotFoundMemberException(BusinessErrorMessage.MEMBER_NOT_FOUND.getMessage()));
         if (MemberRole.isNotAdmin(member.getRole())) {
-            throw new ForbiddenMemberException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+            throw new NotReviewOwnerException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
 
