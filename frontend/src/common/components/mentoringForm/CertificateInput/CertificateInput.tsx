@@ -12,7 +12,8 @@ interface CertificateInputProps {
   onDeleteButtonClick: () => void;
   onCertificateChange: (id: string, changed: Partial<CertificateItem>) => void;
   onCertificateImageFileChange: (file: File) => void;
-  initialCertificate?: CertificateItem;
+  initialCertificateImgUrl?: string;
+  certificateInfo: CertificateItem;
 }
 
 function CertificateInput({
@@ -20,10 +21,10 @@ function CertificateInput({
   onDeleteButtonClick,
   onCertificateChange,
   onCertificateImageFileChange,
-  initialCertificate,
+  certificateInfo,
 }: CertificateInputProps) {
   const { previewUrl, handleImageChange } = usePreviewImage(
-    initialCertificate?.imageUrl,
+    certificateInfo.imageUrl,
   );
 
   const handleCertificateIdChange = (
@@ -50,6 +51,7 @@ function CertificateInput({
         <p>유형</p>
         <StyledSelect
           defaultValue="LICENSE"
+          value={certificateInfo.type ?? 'LICENSE'}
           name="certificateType"
           onChange={handleCertificateIdChange}
         >
@@ -66,7 +68,7 @@ function CertificateInput({
           placeholder="생활체육지도자 자격증 1급"
           onChange={handleCertificateTitleChange}
           required
-          value={initialCertificate.title}
+          value={certificateInfo.title ?? ''}
         />
       </StyledContentWrapper>
 
