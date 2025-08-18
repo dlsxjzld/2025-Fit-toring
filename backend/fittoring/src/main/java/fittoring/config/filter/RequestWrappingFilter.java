@@ -12,6 +12,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Component
 public class RequestWrappingFilter implements Filter {
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
