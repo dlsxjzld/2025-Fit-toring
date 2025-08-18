@@ -96,8 +96,6 @@ public class AuthService {
 
     @Transactional
     public void logout(Long memberId) {
-        RefreshToken refreshToken = refreshTokenRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new InvalidTokenException(BusinessErrorMessage.NOT_FOUND_TOKEN.getMessage()));
-        refreshTokenRepository.delete(refreshToken);
+        refreshTokenRepository.deleteAllByMemberId(memberId);
     }
 }

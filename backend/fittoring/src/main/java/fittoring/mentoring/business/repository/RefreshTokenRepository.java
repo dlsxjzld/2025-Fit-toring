@@ -10,5 +10,5 @@ public interface RefreshTokenRepository extends ListCrudRepository<RefreshToken,
 
     Optional<RefreshToken> findByTokenValue(String token);
 
-    Optional<RefreshToken> findByMemberId(Long memberId);
+    void deleteAllByMemberId(Long memberId);
 }
