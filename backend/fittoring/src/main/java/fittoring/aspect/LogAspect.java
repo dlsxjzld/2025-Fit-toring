@@ -26,6 +26,8 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 @Component
 public class LogAspect {
 
+    private static final String START_TIME_NS = "LOG_START_TIME_NS";
+
     private final ObjectMapper objectMapper;
     private final JsonUtil jsonUtil;
 
@@ -37,11 +39,13 @@ public class LogAspect {
     public void logBeforeApiCall() {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
+        if (attributes != null) {
+            attributes.getRequest().setAttribute(START_TIME_NS, System.nanoTime());
+        }
         if (logHttpInfoWithRequestBody(attributes)) {
             return;
         }
-        logHttpInfo(attributes, "REQUEST", null);
+        logHttpInfo(attributes, "REQUEST", null, null);
     }
 
     private boolean logHttpInfoWithRequestBody(ServletRequestAttributes attributes) {
@@ -60,7 +64,7 @@ public class LogAspect {
 
                 if (content.length > 0) {
                     String body = new String(content, StandardCharsets.UTF_8);
-                    logHttpInfo(attributes, "REQUEST", body);
+                    logHttpInfo(attributes, "REQUEST", body, null);
                     return true;
                 }
             }
@@ -68,7 +72,12 @@ public class LogAspect {
         return false;
     }
 
-    private void logHttpInfo(ServletRequestAttributes attributes, String prefix, String body) {
+    private void logHttpInfo(
+            ServletRequestAttributes attributes,
+            String prefix,
+            String body,
+            Long durationMs
+    ) {
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
             String httpMethod = request.getMethod();
@@ -79,8 +88,9 @@ public class LogAspect {
             String userAgent = request.getHeader("User-Agent");
 
             log.info(
-                    "{}:[{} {} Query={} Body={}] client=[{}:{}]",
+                    "{} [durationMs={}] [{} {} Query={} Body={}] client=[{}:{}]",
                     prefix,
+                    durationMs,
                     httpMethod,
                     requestUri,
                     queryString,
@@ -104,12 +114,22 @@ public class LogAspect {
         ServletRequestAttributes attributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         try {
+            Long durationMs = null;
+            if (attributes != null) {
+                HttpServletRequest req = attributes.getRequest();
+
+                Object startedAt = req.getAttribute(START_TIME_NS);
+                if (startedAt instanceof Long startNs) {
+                    durationMs = (System.nanoTime() - startNs) / 1_000_000L;
+                }
+            }
             logHttpInfo(
                     attributes,
                     "RESPONSE",
                     jsonUtil.extractBodyPretty(
                             objectMapper.writeValueAsString(result)
-                    )
+                    ),
+                    durationMs
             );
         } catch (Exception e) {
             log.error("RESPONSE JSON 포매팅 실패: {}", result, e);
@@ -118,8 +138,25 @@ public class LogAspect {
 
     @AfterThrowing(pointcut = "controller()", throwing = "e")
     public void afterThrowingController(JoinPoint joinPoint, Throwable e) {
+        ServletRequestAttributes attributes =
+                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        Long durationMs = null;
+        if (attributes != null) {
+            HttpServletRequest req = attributes.getRequest();
+            Object startedAt = req.getAttribute(START_TIME_NS);
+            if (startedAt instanceof Long startNs) {
+                durationMs = (System.nanoTime() - startNs) / 1_000_000L;
+            }
+        }
         Method method = getMethod(joinPoint);
-        log.warn("[{}], [{}], [{}], [{}]", e.getClass(), e.getMessage(), method.getName(), e.getStackTrace());
+        log.warn(
+                "[{}], [{}], [{}], [durationMs={}], [{}]",
+                e.getClass(),
+                e.getMessage(),
+                method.getName(),
+                durationMs,
+                e.getStackTrace()
+        );
     }
 
     private Method getMethod(JoinPoint joinPoint) {
