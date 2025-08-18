@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const usePreviewImage = (initialCertificate?: string) => {
+const usePreviewImage = (initialCertificate?: string | null) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     initialCertificate ?? null,
   );
