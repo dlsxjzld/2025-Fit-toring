@@ -8,6 +8,7 @@ public record ErrorLog(
         String uri,
         String errorType,
         String message,
-        String stack
+        String stack,
+        String normalizedUri
 ) {
 }

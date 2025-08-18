@@ -9,6 +9,7 @@ public record ResponseLog(
         String method,
         String uri,
         Integer statusCode,
-        JsonNode body
+        JsonNode body,
+        String normalizedUri
 ) {
 }

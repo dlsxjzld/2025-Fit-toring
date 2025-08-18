@@ -21,6 +21,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @RequiredArgsConstructor
@@ -32,7 +33,8 @@ public class LogAspect {
     private static final String START_TIME_NS = "LOG_START_TIME_NS";
     private static final String TRACE_ID = "traceId";
     private static final String METHOD = "method";
-    private static final String URI = "uri"; // 필요 시 채우기
+    private static final String URI = "uri";
+    private static final String NORMALIZED_URI = "normalizedUri";
 
     private final ObjectMapper objectMapper;
     private final JsonUtil jsonUtil;
@@ -53,6 +55,11 @@ public class LogAspect {
         MDC.put(TRACE_ID, UUID.randomUUID().toString());
         MDC.put(METHOD, req.getMethod());
         MDC.put(URI, req.getRequestURI());
+        String bestPattern = (String) req.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+        if (bestPattern == null || bestPattern.isBlank()) {
+            bestPattern = req.getRequestURI();
+        }
+        MDC.put(NORMALIZED_URI, bestPattern);
         req.setAttribute(START_TIME_NS, System.nanoTime());
 
         if (!logRequestWithBody(attrs)) {
@@ -131,7 +138,8 @@ public class LogAspect {
                     method,
                     uri,
                     statusCodeValue,
-                    maskedNode
+                    maskedNode,
+                    MDC.get(NORMALIZED_URI)
             );
             writeJson(logDto);
         } catch (Exception e) {
@@ -140,6 +148,7 @@ public class LogAspect {
             MDC.remove(TRACE_ID);
             MDC.remove(METHOD);
             MDC.remove(URI);
+            MDC.remove(NORMALIZED_URI);
         }
     }
 
@@ -157,12 +166,14 @@ public class LogAspect {
                 MDC.get(URI),
                 e.getClass().getName(),
                 e.getMessage(),
-                stackToOneLine(e)
+                stackToOneLine(e),
+                MDC.get(NORMALIZED_URI)
         );
         writeJson(logDto);
         MDC.remove(TRACE_ID);
         MDC.remove(METHOD);
         MDC.remove(URI);
+        MDC.remove(NORMALIZED_URI);
     }
 
     private void writeJson(Object dto) {
