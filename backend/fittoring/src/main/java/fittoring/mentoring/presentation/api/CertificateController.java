@@ -29,16 +29,4 @@ public class CertificateController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .build();
     }
-
-//    @AuthRequired
-//    @DeleteMapping("reviews/{reviewId}")
-//    public ResponseEntity<Void> deleteReview(
-//            @Login LoginInfo loginInfo,
-//            @PathVariable("reviewId") Long reviewId
-//    ) {
-//        ReviewDeleteDto reviewDeleteDto = new ReviewDeleteDto(loginInfo.memberId(), reviewId);
-//        reviewService.deleteReview(reviewDeleteDto);
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-//                .build();
-//    }
 }
