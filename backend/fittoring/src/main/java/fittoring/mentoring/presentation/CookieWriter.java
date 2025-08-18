@@ -18,7 +18,7 @@ public class CookieWriter {
         response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
     }
 
-    public static void write(HttpServletResponse response) {
+    public static void clearCookies(HttpServletResponse response) {
         ResponseCookie accessToken = CookieProvider.clearCookie("accessToken");
         ResponseCookie refreshToken = CookieProvider.clearCookie("refreshToken");
 

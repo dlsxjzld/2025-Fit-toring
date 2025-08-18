@@ -51,7 +51,7 @@ public class AuthController {
     @GetMapping("/logout")
     public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
         authService.logout(loginInfo.memberId());
-        CookieWriter.write(httpResponse);
+        CookieWriter.clearCookies(httpResponse);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
