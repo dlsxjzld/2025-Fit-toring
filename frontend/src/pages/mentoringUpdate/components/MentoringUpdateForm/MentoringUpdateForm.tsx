@@ -60,6 +60,10 @@ function MentoringUpdateForm() {
   const { mentoringId } = useParams();
 
   const submitMentoringForm = async () => {
+    if (!mentoringId) {
+      return;
+    }
+
     const addedCertifications = mentoringData.certificateInfos.filter(
       (e) => !initialCertificatesIdRef.current.includes(e.id),
     );
@@ -76,7 +80,7 @@ function MentoringUpdateForm() {
         },
         profileImageFile,
         certificateImageFiles,
-        mentoringId: mentoringId!,
+        mentoringId: mentoringId,
       });
       navigate(PAGE_URL.HOME);
       if (response.status === 200) {
