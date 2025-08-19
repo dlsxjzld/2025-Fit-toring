@@ -2,18 +2,18 @@ package fittoring.aspect;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import fittoring.aspect.dto.ErrorLog;
 import fittoring.aspect.dto.RequestLog;
 import fittoring.aspect.dto.ResponseLog;
 import fittoring.util.JsonUtil;
+import fittoring.util.ResponseDurationCalculator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -30,7 +30,6 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 @Component
 public class LogAspect {
 
-    private static final String START_TIME_NS = "LOG_START_TIME_NS";
     private static final String TRACE_ID = "traceId";
     private static final String METHOD = "method";
     private static final String URI = "uri";
@@ -50,7 +49,6 @@ public class LogAspect {
         if (attrs == null) {
             return;
         }
-
         HttpServletRequest req = attrs.getRequest();
         MDC.put(TRACE_ID, UUID.randomUUID().toString());
         MDC.put(METHOD, req.getMethod());
@@ -60,7 +58,7 @@ public class LogAspect {
             bestPattern = req.getRequestURI();
         }
         MDC.put(NORMALIZED_URI, bestPattern);
-        req.setAttribute(START_TIME_NS, System.nanoTime());
+        req.setAttribute(ResponseDurationCalculator.START_TIME_NS, System.nanoTime());
 
         if (!logRequestWithBody(attrs)) {
             logRequest(attrs, null);
@@ -95,14 +93,14 @@ public class LogAspect {
 
         RequestLog logDto = new RequestLog(
                 "REQUEST",
-                MDC.get(TRACE_ID),
-                null,
                 req.getMethod(),
                 req.getRequestURI(),
                 req.getQueryString(),
                 getClientIp(req),
                 req.getHeader("User-Agent"),
-                maskedNode
+                maskedNode,
+                LocalDateTime.now(),
+                MDC.get(TRACE_ID)
         );
         writeJson(logDto);
     }
@@ -111,7 +109,7 @@ public class LogAspect {
     public void logAfterApiCall(Object result) {
         ServletRequestAttributes attrs =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        Long durationMs = calcDuration(attrs);
+        Long durationMs = ResponseDurationCalculator.calculate(attrs);
         String method = MDC.get(METHOD);
         String uri = MDC.get(URI);
         String trace = MDC.get(TRACE_ID);
@@ -133,13 +131,14 @@ public class LogAspect {
 
             ResponseLog logDto = new ResponseLog(
                     "RESPONSE",
-                    trace,
-                    durationMs,
                     method,
                     uri,
+                    durationMs,
                     statusCodeValue,
                     maskedNode,
-                    MDC.get(NORMALIZED_URI)
+                    MDC.get(NORMALIZED_URI),
+                    LocalDateTime.now(),
+                    trace
             );
             writeJson(logDto);
         } catch (Exception e) {
@@ -152,30 +151,6 @@ public class LogAspect {
         }
     }
 
-    @AfterThrowing(pointcut = "controller()", throwing = "e")
-    public void afterThrowingController(Throwable e) {
-        ServletRequestAttributes attrs =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        Long durationMs = calcDuration(attrs);
-
-        ErrorLog logDto = new ErrorLog(
-                "ERROR",
-                MDC.get(TRACE_ID),
-                durationMs,
-                MDC.get(METHOD),
-                MDC.get(URI),
-                e.getClass().getName(),
-                e.getMessage(),
-                stackToOneLine(e),
-                MDC.get(NORMALIZED_URI)
-        );
-        writeJson(logDto);
-        MDC.remove(TRACE_ID);
-        MDC.remove(METHOD);
-        MDC.remove(URI);
-        MDC.remove(NORMALIZED_URI);
-    }
-
     private void writeJson(Object dto) {
         try {
             log.info(objectMapper
@@ -186,30 +161,11 @@ public class LogAspect {
         }
     }
 
-    private Long calcDuration(ServletRequestAttributes attrs) {
-        if (attrs == null) {
-            return null;
-        }
-        Object startedAt = attrs.getRequest().getAttribute(START_TIME_NS);
-        if (startedAt instanceof Long startNs) {
-            return (System.nanoTime() - startNs) / 1_000_000L;
-        }
-        return null;
-    }
-
     private String getClientIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip != null && !ip.isBlank() && !"unknown".equalsIgnoreCase(ip)) {
             return ip.split(",")[0].trim();
         }
         return request.getRemoteAddr();
-    }
-
-    private String stackToOneLine(Throwable e) {
-        StringBuilder sb = new StringBuilder();
-        for (StackTraceElement el : e.getStackTrace()) {
-            sb.append(el).append(" | ");
-        }
-        return sb.toString();
     }
 }

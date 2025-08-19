@@ -24,7 +24,8 @@ import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -115,23 +116,13 @@ public class MentoringService {
     public MentoringResponse getMentoringWithRelations(final Long mentoringId) {
         Mentoring mentoring = getMentoringById(mentoringId);
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
-        RatingStatsDto ratingStatsDto = reviewRepository.findRatingStatsByMentoringId(mentoring.getId());
+        RatingStatsDto ratingStatsDto = getRatingStatsDto(mentoring.getId());
         List<Certificate> certificates = certificateRepository.findByMentoringIdAndVerificationStatus(
                 mentoringId,
                 Status.APPROVED
         );
         List<CertificateSpecAndImageResponse> certificateDetails = getApprovedCertificates(certificates);
-        Image image = imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
-                .orElse(null);
-        if (image == null) {
-            return MentoringResponse.of(
-                    mentoring,
-                    categoryTitles,
-                    certificateDetails,
-                    ratingStatsDto.average(),
-                    ratingStatsDto.count()
-            );
-        }
+        Image image = getImageOrNull(mentoring);
         return MentoringResponse.of(
                 mentoring,
                 categoryTitles,
@@ -140,23 +131,6 @@ public class MentoringService {
                 ratingStatsDto.average(),
                 ratingStatsDto.count()
         );
-    }
-
-    private List<CertificateSpecAndImageResponse> getApprovedCertificates(List<Certificate> certificates) {
-        return certificates.stream()
-                .filter(certificate -> imageService.findByImageTypeAndRelationId(
-                                ImageType.CERTIFICATE,
-                                certificate.getId()
-                        )
-                        .isPresent())
-                .map(certificate -> {
-                    Image certificateImage = imageService.findByImageTypeAndRelationId(
-                            ImageType.CERTIFICATE,
-                            certificate.getId()
-                    ).get();
-                    return CertificateSpecAndImageResponse.of(certificate, certificateImage.getUrl());
-                })
-                .toList();
     }
 
     private Mentoring getMentoringById(Long mentoringId) {
@@ -171,23 +145,46 @@ public class MentoringService {
         return getCategoryTitlesByMentoring(categoryMappingsByMentoring);
     }
 
+    private RatingStatsDto getRatingStatsDto(Long mentoringId) {
+        return reviewRepository.findRatingStatsByMentoringId(mentoringId)
+                .orElseGet(() -> RatingStatsDto.defaultOf(mentoringId));
+    }
+
+    private Image getImageOrNull(Mentoring mentoring) {
+        return imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
+                .orElse(null);
+    }
+
+    private List<String> getCategoryTitlesByMentoring(List<CategoryMentoring> categoryMappingsByMentoring) {
+        return categoryMappingsByMentoring.stream()
+                .map(CategoryMentoring::getCategoryTitle)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<MentoringSummaryResponse> findMentoringSummaries(
             String categoryTitle1,
             String categoryTitle2,
             String categoryTitle3
     ) {
         List<Mentoring> mentorings = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
+        List<Long> mentoringIds = createMentoringIdsByMentoring(mentorings);
+
+        List<RatingStatsDto> ratingStatsDtos = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
+        Map<Long, RatingStatsDto> ratingStatsDtoMap = createReviewStatsMap(ratingStatsDtos);
         return mentorings.stream()
                 .map(mentoring -> {
-                    Optional<Image> profileImage = imageService.findByImageTypeAndRelationId(
-                            ImageType.MENTORING_PROFILE,
-                            mentoring.getId()
-                    );
-                    List<String> categoryTitles = categoryMentoringRepository.findTitlesByMentoringId(
-                            mentoring.getId());
-                    return profileImage.map(image -> MentoringSummaryResponse.of(mentoring, categoryTitles, image))
-                            .orElseGet(() -> MentoringSummaryResponse.of(mentoring, categoryTitles));
-                })
+                            Image profileImage = getProfileImageOrNull(mentoring.getId());
+                            List<String> categoryTitles = getCategoryMentoringTitlesByMentoringId(mentoring);
+                            RatingStatsDto ratingStatsDto = getReviewStats(mentoring, ratingStatsDtoMap);
+                            return MentoringSummaryResponse.of(
+                                    mentoring,
+                                    categoryTitles,
+                                    profileImage,
+                                    ratingStatsDto
+                            );
+                        }
+                )
                 .toList();
     }
 
@@ -207,10 +204,21 @@ public class MentoringService {
         );
     }
 
+    private List<Long> createMentoringIdsByMentoring(List<Mentoring> mentorings) {
+        return mentorings.stream()
+                .map(Mentoring::getId)
+                .toList();
+    }
+
+    private Map<Long, RatingStatsDto> createReviewStatsMap(List<RatingStatsDto> ratingStatsDto) {
+        return ratingStatsDto.stream()
+                .collect(Collectors.toMap(RatingStatsDto::mentoringId, Function.identity()));
+    }
+
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-                && categoryTitle2 == null
-                && categoryTitle3 == null;
+               && categoryTitle2 == null
+               && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -225,10 +233,40 @@ public class MentoringService {
         }
     }
 
-    private List<String> getCategoryTitlesByMentoring(List<CategoryMentoring> categoryMappingsByMentoring) {
-        return categoryMappingsByMentoring.stream()
-                .map(CategoryMentoring::getCategoryTitle)
-                .collect(Collectors.toList());
+    private Image getProfileImageOrNull(Long mentoringId) {
+        return imageService.findByImageTypeAndRelationId(
+                ImageType.MENTORING_PROFILE,
+                mentoringId
+        ).orElse(null);
+    }
+
+    private List<String> getCategoryMentoringTitlesByMentoringId(Mentoring mentoring) {
+        return categoryMentoringRepository.findTitlesByMentoringId(
+                mentoring.getId());
+    }
+
+    private RatingStatsDto getReviewStats(Mentoring mentoring, Map<Long, RatingStatsDto> longRatingStatsDtoMap) {
+        return longRatingStatsDtoMap.getOrDefault(
+                mentoring.getId(),
+                RatingStatsDto.defaultOf(mentoring.getId())
+        );
+    }
+
+    private List<CertificateSpecAndImageResponse> getApprovedCertificates(List<Certificate> certificates) {
+        return certificates.stream()
+                .filter(certificate -> imageService.findByImageTypeAndRelationId(
+                                ImageType.CERTIFICATE,
+                                certificate.getId()
+                        )
+                        .isPresent())
+                .map(certificate -> {
+                    Image certificateImage = imageService.findByImageTypeAndRelationId(
+                            ImageType.CERTIFICATE,
+                            certificate.getId()
+                    ).get();
+                    return CertificateSpecAndImageResponse.of(certificate, certificateImage.getUrl());
+                })
+                .toList();
     }
 
     @Transactional

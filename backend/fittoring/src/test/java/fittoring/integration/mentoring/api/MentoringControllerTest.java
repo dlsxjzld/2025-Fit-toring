@@ -28,6 +28,7 @@ import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
 import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
+import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
@@ -148,6 +149,30 @@ class MentoringControllerTest {
                     new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId())
             );
 
+            //예약 생성
+            Reservation savedReservation = reservationRepository.save(
+                    new Reservation("content", Status.COMPLETE, savedMentoring, mentee));
+
+            Reservation savedReservation2 = reservationRepository.save(
+                    new Reservation("content", Status.COMPLETE, savedMentoring2, mentee));
+
+            //리뷰 생성
+            Review review = new Review(
+                    5,
+                    "최고의 멘토링이었습니다.",
+                    savedReservation,
+                    mentee
+            );
+            reviewRepository.save(review);
+
+            Review review2 = new Review(
+                    2,
+                    "별로의 멘토링이었습니다.",
+                    savedReservation2,
+                    mentee
+            );
+            reviewRepository.save(review2);
+
             //when
             List<MentoringSummaryResponse> response = RestAssured
                     .given()
@@ -162,6 +187,9 @@ class MentoringControllerTest {
                     });
 
             //then
+            RatingStatsDto ratingStatsDto = new RatingStatsDto(savedMentoring.getId(), 5.0, 1);
+            RatingStatsDto ratingStatsDto2 = new RatingStatsDto(savedMentoring.getId(), 2.0, 1);
+
             MentoringSummaryResponse expected = new MentoringSummaryResponse(
                     savedMentoring.getId(),
                     savedMentoring.getMentorName(),
@@ -169,7 +197,9 @@ class MentoringControllerTest {
                     savedMentoring.getPrice(),
                     savedMentoring.getCareer(),
                     savedImage.getUrl(),
-                    savedMentoring.getIntroduction()
+                    savedMentoring.getIntroduction(),
+                    String.format("%.1f", ratingStatsDto.average()),
+                    ratingStatsDto.count()
             );
 
             MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
@@ -179,12 +209,12 @@ class MentoringControllerTest {
                     savedMentoring2.getPrice(),
                     savedMentoring2.getCareer(),
                     savedImage2.getUrl(),
-                    savedMentoring2.getIntroduction()
+                    savedMentoring2.getIntroduction(),
+                    String.format("%.1f", ratingStatsDto2.average()),
+                    ratingStatsDto2.count()
             );
 
-            assertThat(response)
-                    .isNotNull()
-                    .containsExactlyInAnyOrder(expected, expected2);
+            assertThat(response).containsExactlyInAnyOrder(expected, expected2);
         }
 
         @DisplayName("조회할 멘토링 목록이 없을 때, 200 OK 상태코드와 멘토링 목록을 반환한다.")
@@ -318,7 +348,9 @@ class MentoringControllerTest {
                     savedMentoring.getPrice(),
                     savedMentoring.getCareer(),
                     savedImage.getUrl(),
-                    savedMentoring.getIntroduction()
+                    savedMentoring.getIntroduction(),
+                    String.format("%.1f", 0.0),
+                    0
             );
 
             MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
@@ -331,7 +363,9 @@ class MentoringControllerTest {
                     savedMentoring2.getPrice(),
                     savedMentoring2.getCareer(),
                     savedImage2.getUrl(),
-                    savedMentoring2.getIntroduction()
+                    savedMentoring2.getIntroduction(),
+                    String.format("%.1f", 0.0),
+                    0
             );
 
             MentoringSummaryResponse expected3 = new MentoringSummaryResponse(
@@ -345,7 +379,9 @@ class MentoringControllerTest {
                     savedMentoring3.getPrice(),
                     savedMentoring3.getCareer(),
                     savedImage3.getUrl(),
-                    savedMentoring3.getIntroduction()
+                    savedMentoring3.getIntroduction(),
+                    String.format("%.1f", 0.0),
+                    0
             );
 
             List<MentoringSummaryResponse> expectedList = List.of(expected, expected2, expected3);

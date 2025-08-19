@@ -21,28 +21,6 @@ public record MentoringResponse(
     public static MentoringResponse of(
             Mentoring mentoring,
             List<String> categoryTitles,
-            List<CertificateSpecAndImageResponse> certificates,
-            double ratingAverage,
-            long ratingCount
-    ) {
-        return new MentoringResponse(
-                mentoring.getId(),
-                mentoring.getMentorName(),
-                categoryTitles,
-                mentoring.getPrice(),
-                mentoring.getCareer(),
-                null,
-                mentoring.getIntroduction(),
-                mentoring.getContent(),
-                certificates,
-                String.format("%.1f", ratingAverage),
-                ratingCount
-        );
-    }
-
-    public static MentoringResponse of(
-            Mentoring mentoring,
-            List<String> categoryTitles,
             Image image,
             List<CertificateSpecAndImageResponse> certificates,
             double ratingAverage,
@@ -58,6 +36,28 @@ public record MentoringResponse(
                 mentoring.getPrice(),
                 mentoring.getCareer(),
                 image.getUrl(),
+                mentoring.getIntroduction(),
+                mentoring.getContent(),
+                certificates,
+                String.format("%.1f", ratingAverage),
+                ratingCount
+        );
+    }
+
+    private static MentoringResponse of(
+            Mentoring mentoring,
+            List<String> categoryTitles,
+            List<CertificateSpecAndImageResponse> certificates,
+            double ratingAverage,
+            long ratingCount
+    ) {
+        return new MentoringResponse(
+                mentoring.getId(),
+                mentoring.getMentorName(),
+                categoryTitles,
+                mentoring.getPrice(),
+                mentoring.getCareer(),
+                null,
                 mentoring.getIntroduction(),
                 mentoring.getContent(),
                 certificates,

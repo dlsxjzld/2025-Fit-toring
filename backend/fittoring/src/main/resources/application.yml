@@ -46,8 +46,8 @@ logging:
     root: INFO
     fittoring.mentoring: DEBUG
   pattern:
-    file: "%d{yyyy-MM-dd HH:mm:ss,Asia/Seoul} %-5level %msg [%thread]%n"
-    console: "%d{yyyy-MM-dd HH:mm:ss,Asia/Seoul} %-5level %msg [%thread]%n"
+    file: "%msg%n"
+    console: "%msg%n"
   logback:
     rollingpolicy:
       file-name-pattern: logs/application.%d{yyyy-MM}.%i.log
