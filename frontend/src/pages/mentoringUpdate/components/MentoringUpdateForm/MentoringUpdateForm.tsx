@@ -69,7 +69,7 @@ function MentoringUpdateForm() {
   const { mentoringId } = useParams();
 
   const submitMentoringForm = async () => {
-    const unchangedCertificates = mentoringData.certificateInfos.filter(
+    const addedCertifications = mentoringData.certificateInfos.filter(
       (e) => !initialCertificatesIdRef.current.includes(e.id),
     );
 
@@ -77,12 +77,10 @@ function MentoringUpdateForm() {
       const response = await putMentoring({
         mentoringData: {
           ...mentoringData,
-          certificateInfos: unchangedCertificates.map(
-            (unchangedCertificate) => ({
-              title: unchangedCertificate.title,
-              type: unchangedCertificate.type,
-            }),
-          ),
+          certificateInfos: addedCertifications.map((addedCertification) => ({
+            title: addedCertification.title,
+            type: addedCertification.type,
+          })),
           profileImageUrl: mentoringData.profileImageUrl,
         },
         profileImageFile,
