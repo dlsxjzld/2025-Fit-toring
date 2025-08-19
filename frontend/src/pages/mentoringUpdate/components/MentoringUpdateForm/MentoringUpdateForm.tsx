@@ -89,6 +89,7 @@ function MentoringUpdateForm() {
         certificateImageFiles,
         mentoringId: mentoringId!,
       });
+      navigate(PAGE_URL.HOME);
       if (response.status === 200) {
         alert('멘토링 수정 성공');
       }
@@ -115,7 +116,6 @@ function MentoringUpdateForm() {
       return;
     }
     await submitMentoringForm();
-    navigate(PAGE_URL.HOME, { state: { refetch: true } });
   };
 
   const handleCancelButtonClick = () => {
