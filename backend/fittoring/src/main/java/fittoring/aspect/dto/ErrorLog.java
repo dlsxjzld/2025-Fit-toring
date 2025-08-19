@@ -1,5 +1,8 @@
 package fittoring.aspect.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.LocalDateTime;
+
 public record ErrorLog(
         String event,
         String traceId,
@@ -9,6 +12,9 @@ public record ErrorLog(
         String errorType,
         String message,
         String stack,
-        String normalizedUri
+        String normalizedUri,
+        Integer statusCode,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+        LocalDateTime timestamp
 ) {
 }

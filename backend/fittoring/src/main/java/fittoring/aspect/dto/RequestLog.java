@@ -1,6 +1,8 @@
 package fittoring.aspect.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.time.LocalDateTime;
 
 public record RequestLog(
         String event,
@@ -11,6 +13,8 @@ public record RequestLog(
         String queryString,
         String clientIp,
         String userAgent,
-        JsonNode body
+        JsonNode body,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+        LocalDateTime timestamp
 ) {
 }
