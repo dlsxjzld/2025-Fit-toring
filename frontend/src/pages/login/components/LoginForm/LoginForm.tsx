@@ -26,14 +26,14 @@ function LoginForm() {
 
   const navigate = useNavigate();
 
-  const { setAuthenticated } = useAuth();
+  const { login } = useAuth();
   const fetchLogin = async () => {
     try {
       const response = await postLogin(userId, password);
       if (response.status === 200) {
         alert('로그인에 성공했습니다.');
         navigate(PAGE_URL.HOME);
-        setAuthenticated(true);
+        login();
       }
     } catch (error) {
       console.error('로그인 실패', error);

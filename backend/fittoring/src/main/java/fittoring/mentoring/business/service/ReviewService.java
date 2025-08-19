@@ -1,7 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotCompletedException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
@@ -17,7 +17,6 @@ import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
-import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import java.util.ArrayList;
@@ -76,34 +75,27 @@ public class ReviewService {
     public List<MemberReviewGetResponse> findMemberReviews(Long memberId) {
         List<Review> reviews = reviewRepository.findAllByMentee_Id(memberId);
         return reviews.stream()
-            .map(review -> new MemberReviewGetResponse(
-                review.getId(),
-                review.getCreatedAt().toLocalDate(),
-                review.getRating(),
-                review.getContent()
-            ))
-            .toList();
+                .map(review -> new MemberReviewGetResponse(
+                        review.getId(),
+                        review.getCreatedAt().toLocalDate(),
+                        review.getRating(),
+                        review.getContent()
+                ))
+                .toList();
     }
 
     @Transactional
-    public MentoringReviewGetResponse findMentoringReviews(Long mentoringId) {
+    public List<ReviewGetResponse> findMentoringReviews(Long mentoringId) {
         List<Review> reviews = findReviewsByMentoringId(mentoringId);
-        int ratingCount = reviews.size();
-        double ratingAverage = calculateRatingAverage(reviews);
-        List<ReviewGetResponse> reviewGetResponses = reviews.stream()
-            .map(review -> new ReviewGetResponse(
-                review.getId(),
-                review.getMenteeName(),
-                review.getCreatedAt().toLocalDate(),
-                review.getRating(),
-                review.getContent()
-            ))
-            .toList();
-        return new MentoringReviewGetResponse(
-            ratingCount,
-            String.format("%.1f", ratingAverage),
-            reviewGetResponses
-        );
+        return reviews.stream()
+                .map(review -> new ReviewGetResponse(
+                        review.getId(),
+                        review.getMenteeName(),
+                        review.getCreatedAt().toLocalDate(),
+                        review.getRating(),
+                        review.getContent()
+                ))
+                .toList();
     }
 
     private List<Review> findReviewsByMentoringId(Long mentoringId) {
@@ -116,33 +108,26 @@ public class ReviewService {
         return reviews;
     }
 
-    private double calculateRatingAverage(List<Review> reviews) {
-        return reviews.stream()
-            .mapToInt(Review::getRating)
-            .average()
-            .orElse(0);
-    }
-
     @Transactional
     public void modifyReview(ReviewModifyDto reviewModifyDto) {
         Review review = reviewRepository.findById(reviewModifyDto.reviewId())
             .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateMenteeMatches(review, reviewModifyDto.menteeId());
+        validateReviewOwner(review, reviewModifyDto.menteeId());
         review.modify(reviewModifyDto.rating(), reviewModifyDto.content());
     }
 
-    private void validateMenteeMatches(Review review, Long menteeId) {
+    private void validateReviewOwner(Review review, Long menteeId) {
         if (review.getMenteeId().equals(menteeId)) {
             return;
         }
-        throw new ForbiddenMemberException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+        throw new ForbiddenException(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @Transactional
     public void deleteReview(ReviewDeleteDto reviewDeleteDto) {
         Review review = reviewRepository.findById((reviewDeleteDto.reviewId()))
             .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateMenteeMatches(review, reviewDeleteDto.menteeId());
+        validateReviewOwner(review, reviewDeleteDto.menteeId());
         reviewRepository.delete(review);
     }
 }

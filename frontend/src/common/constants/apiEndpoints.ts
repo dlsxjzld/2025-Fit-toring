@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   AUTH_CODE_VERIFY: '/auth-code/verify',
   MEMBERS_ME: '/members/me',
   LOGIN: '/login',
+  LOGOUT: '/logout',
   CREATED_MENTORING: '/mentorings/mine/reservations',
   PARTICIPATED_MENTORING: '/reservations/participated',
   MEMBERS: '/members/summary',

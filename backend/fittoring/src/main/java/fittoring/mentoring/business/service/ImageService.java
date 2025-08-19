@@ -27,6 +27,7 @@ public class ImageService {
         try {
             String s3Url = s3Uploader.upload(imageFile, dir);
             Image image = new Image(s3Url, type, id);
+            deleteByImageTypeAndRelationId(type, id);
             return saveImage(image);
         } catch (IOException e) {
             throw new S3UploadException(InfraErrorMessage.S3_UPLOAD_ERROR.getMessage());

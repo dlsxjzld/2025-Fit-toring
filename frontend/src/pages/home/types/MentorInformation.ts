@@ -6,4 +6,6 @@ export type MentorInformation = {
   career: number;
   profileImageUrl: string | null;
   introduction: string;
+  ratingAverage: number;
+  ratingCount: number;
 };

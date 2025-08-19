@@ -1,5 +1,8 @@
 package fittoring.mentoring.presentation.api;
 
+import fittoring.config.auth.AuthRequired;
+import fittoring.config.auth.Login;
+import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.AuthService;
 import fittoring.mentoring.business.service.PhoneVerificationFacadeService;
 import fittoring.mentoring.business.service.PhoneVerificationService;
@@ -41,6 +44,14 @@ public class AuthController {
         AuthTokenResponse response = authService.login(request.loginId(), request.password());
         CookieWriter.write(httpResponse, response);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @AuthRequired
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@Login LoginInfo loginInfo, HttpServletResponse httpResponse) {
+        authService.logout(loginInfo.memberId());
+        CookieWriter.clearCookies(httpResponse);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/reissue")

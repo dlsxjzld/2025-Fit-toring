@@ -13,13 +13,17 @@ public record MentoringResponse(
         String profileImageUrl,
         String introduction,
         String content,
-        List<CertificateSpecAndImageResponse> certificates
+        List<CertificateSpecAndImageResponse> certificates,
+        String ratingAverage,
+        long ratingCount
 ) {
 
     public static MentoringResponse of(
             Mentoring mentoring,
             List<String> categoryTitles,
-            List<CertificateSpecAndImageResponse> certificates
+            List<CertificateSpecAndImageResponse> certificates,
+            double ratingAverage,
+            long ratingCount
     ) {
         return new MentoringResponse(
                 mentoring.getId(),
@@ -30,7 +34,9 @@ public record MentoringResponse(
                 null,
                 mentoring.getIntroduction(),
                 mentoring.getContent(),
-                certificates
+                certificates,
+                String.format("%.1f", ratingAverage),
+                ratingCount
         );
     }
 
@@ -38,10 +44,12 @@ public record MentoringResponse(
             Mentoring mentoring,
             List<String> categoryTitles,
             Image image,
-            List<CertificateSpecAndImageResponse> certificates
+            List<CertificateSpecAndImageResponse> certificates,
+            double ratingAverage,
+            long ratingCount
     ) {
         if (image == null) {
-            return of(mentoring, categoryTitles, certificates);
+            return of(mentoring, categoryTitles, certificates, ratingAverage, ratingCount);
         }
         return new MentoringResponse(
                 mentoring.getId(),
@@ -52,7 +60,9 @@ public record MentoringResponse(
                 image.getUrl(),
                 mentoring.getIntroduction(),
                 mentoring.getContent(),
-                certificates
+                certificates,
+                String.format("%.1f", ratingAverage),
+                ratingCount
         );
     }
 }

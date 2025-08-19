@@ -17,6 +17,8 @@ export const DefaultProfile: Story = {
     profileImg: 'https://example.com/profile.png',
     mentorName: '김트레이너',
     categories: ['식단관리', '체력 증진', '근력 운동'],
+    ratingAverage: 3.7,
+    ratingCount: 10,
   },
   parameters: {
     docs: {

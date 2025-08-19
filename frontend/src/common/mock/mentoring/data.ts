@@ -10,6 +10,8 @@ export const MENTORINGS: MentorInformation[] = [
     imageUrl: '',
     introduction:
       '5년차 전문 트레이너로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
+    reviewAverage: 4.5,
+    reviewCount: 127,
   },
   {
     id: 2,
@@ -20,7 +22,10 @@ export const MENTORINGS: MentorInformation[] = [
     imageUrl: '',
     introduction:
       '3년차 전문 영양사로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
+    reviewAverage: 4.2,
+    reviewCount: 237,
   },
+
   {
     id: 3,
     mentorName: '이영양사',
@@ -30,5 +35,7 @@ export const MENTORINGS: MentorInformation[] = [
     imageUrl: null,
     introduction:
       '3년차 전문 영양사로 개인 맞춤 운동 및 식단 코칭을 제공합니다.',
+    reviewAverage: 4.8,
+    reviewCount: 122,
   },
 ] as const;

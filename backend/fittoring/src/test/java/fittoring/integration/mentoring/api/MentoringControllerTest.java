@@ -14,6 +14,9 @@ import fittoring.mentoring.business.model.ImageType;
 import fittoring.mentoring.business.model.Member;
 import fittoring.mentoring.business.model.Mentoring;
 import fittoring.mentoring.business.model.Phone;
+import fittoring.mentoring.business.model.Reservation;
+import fittoring.mentoring.business.model.Review;
+import fittoring.mentoring.business.model.Status;
 import fittoring.mentoring.business.model.password.Password;
 import fittoring.mentoring.business.repository.CategoryMentoringRepository;
 import fittoring.mentoring.business.repository.CategoryRepository;
@@ -21,8 +24,10 @@ import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.ImageRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReservationRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.presentation.dto.MentoringRequest;
+import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
@@ -78,6 +83,10 @@ class MentoringControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+    @Autowired
+    private ReservationRepository reservationRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @BeforeEach
     void setUp() {
@@ -532,6 +541,14 @@ class MentoringControllerTest {
             imageRepository.save(new Image("image1.jpg", ImageType.MENTORING_PROFILE, savedMentoring.getId()));
             imageRepository.save(new Image("image2.jpg", ImageType.MENTORING_PROFILE, savedMentoring2.getId()));
 
+            Reservation savedReservation1 = reservationRepository.save(
+                    new Reservation("예약 코멘트1", Status.COMPLETE, savedMentoring, mentee));
+            Reservation savedReservation2 = reservationRepository.save(
+                    new Reservation("예약 코멘트2", Status.COMPLETE, savedMentoring, mentee));
+
+            reviewRepository.save(new Review(4, "리뷰 코멘트", savedReservation1, mentee));
+            reviewRepository.save(new Review(5, "리뷰 코멘트", savedReservation2, mentee));
+
             Long mentoringId = savedMentoring.getId();
 
             //when
@@ -558,7 +575,9 @@ class MentoringControllerTest {
                     "image1.jpg",
                     savedMentoring.getIntroduction(),
                     savedMentoring.getContent(),
-                    new ArrayList<>()
+                    new ArrayList<>(),
+                    String.format("%.1f", 4.5),
+                    2
             );
             assertThat(response).isNotNull().isEqualTo(expected);
         }
@@ -728,37 +747,37 @@ class MentoringControllerTest {
     void modifyMentoring() throws IOException {
         //given
         Member mentor = memberRepository.save(new Member(
-            "id1",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1234-9048"),
-            Password.from("pw")
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
         ));
 
         Category category1 = categoryRepository.save(new Category("category1"));
         categoryRepository.save(new Category("category2"));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            3,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                3,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         imageRepository.save(new Image(
-            "originalProfileImage",
-            ImageType.MENTORING_PROFILE,
-            mentoring.getId()
+                "originalProfileImage",
+                ImageType.MENTORING_PROFILE,
+                mentoring.getId()
         ));
         categoryMentoringRepository.save(new CategoryMentoring(category1, mentoring));
         Certificate certificate = certificateRepository.save(new Certificate(
-            CertificateType.LICENSE,
-            "운전면허증",
-            mentoring
+                CertificateType.LICENSE,
+                "운전면허증",
+                mentoring
         ));
         imageRepository.save(new Image(
-            "originalCertificateImage",
-            ImageType.CERTIFICATE,
-            certificate.getId()
+                "originalCertificateImage",
+                ImageType.CERTIFICATE,
+                certificate.getId()
         ));
 
         int newPrice = 1000;
@@ -766,7 +785,7 @@ class MentoringControllerTest {
         String newIntroduction = "수정된 긴 글 소개";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        MentoringRequest requestBody = new MentoringRequest(
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
             newPrice,
             List.of(newCategory),
             newIntroduction,
@@ -779,15 +798,15 @@ class MentoringControllerTest {
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .contentType(ContentType.MULTIPART)
-            .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-            .when()
-            .put("/mentorings/" + mentoring.getId())
-            .then().log().all()
-            .statusCode(200);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("존재하지 않는 멘토링을 수정하려고 하면 404 Not Found를 반환한다")
@@ -795,11 +814,11 @@ class MentoringControllerTest {
     void modifyMentoringFail1() throws IOException {
         // given
         Member mentor = memberRepository.save(new Member(
-            "id1",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1234-9048"),
-            Password.from("pw")
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
         ));
 
         int newPrice = 1000;
@@ -807,7 +826,7 @@ class MentoringControllerTest {
         String newIntroduction = "수정된 긴 글 소개";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        MentoringRequest requestBody = new MentoringRequest(
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
             newPrice,
             List.of(newCategory),
             newIntroduction,
@@ -820,15 +839,15 @@ class MentoringControllerTest {
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .contentType(ContentType.MULTIPART)
-            .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-            .when()
-            .put("/mentorings/999")
-            .then().log().all()
-            .statusCode(404);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/999")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @DisplayName("본인이 개설하지 않은 멘토링을 수정하려고 하면 403 Forbidden를 반환한다")
@@ -836,26 +855,26 @@ class MentoringControllerTest {
     void modifyMentoringFail2() throws IOException {
         // given
         Member mentor = memberRepository.save(new Member(
-            "id1",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1234-9048"),
-            Password.from("pw")
+                "id1",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1234-9048"),
+                Password.from("pw")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            3,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                3,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
 
         Member invalidMember = memberRepository.save(new Member(
-            "id2",
-            "MALE",
-            "박트레이너",
-            new Phone("010-1234-9021"),
-            Password.from("pw")
+                "id2",
+                "MALE",
+                "박트레이너",
+                new Phone("010-1234-9021"),
+                Password.from("pw")
         ));
 
         int newPrice = 1000;
@@ -863,7 +882,7 @@ class MentoringControllerTest {
         String newIntroduction = "수정된 긴 글 소개";
         int newCareer = 5;
         String newContent = "수정된 한 줄 소개";
-        MentoringRequest requestBody = new MentoringRequest(
+        MentoringRegisterRequest requestBody = new MentoringRegisterRequest(
             newPrice,
             List.of(newCategory),
             newIntroduction,
@@ -876,15 +895,15 @@ class MentoringControllerTest {
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .contentType(ContentType.MULTIPART)
-            .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
-            .when()
-            .put("/mentorings/" + mentoring.getId())
-            .then().log().all()
-            .statusCode(403);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .contentType(ContentType.MULTIPART)
+                .multiPart("data", objectMapper.writeValueAsString(requestBody), "application/json")
+                .when()
+                .put("/mentorings/" + mentoring.getId())
+                .then().log().all()
+                .statusCode(403);
     }
 }
 

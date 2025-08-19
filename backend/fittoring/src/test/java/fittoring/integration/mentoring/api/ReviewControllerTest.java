@@ -15,13 +15,11 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import fittoring.util.DbCleaner;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -311,54 +309,54 @@ class ReviewControllerTest {
         // given
         Password password = Password.from("password");
         Member mentor = memberRepository.save(new Member(
-            "mentor",
-            "MALE",
-            "김트레이너",
-            new Phone("010-2222-3333"),
-            password
+                "mentor",
+                "MALE",
+                "김트레이너",
+                new Phone("010-2222-3333"),
+                password
         ));
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            password
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                password
         ));
         String accessToken = jwtProvider.createAccessToken(mentee.getId());
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(
-            new Reservation(
-                "예약 신청합니다.",
-                Status.PENDING,
-                mentoring,
-                mentee
-            )
+                new Reservation(
+                        "예약 신청합니다.",
+                        Status.PENDING,
+                        mentoring,
+                        mentee
+                )
         );
         int rating = 4;
         String content = "전반적으로 좋았습니다.";
         ReviewCreateRequest requestBody = new ReviewCreateRequest(
-            reservation.getId(),
-            rating,
-            content
+                reservation.getId(),
+                rating,
+                content
         );
 
         // when
         // then
         RestAssured
-            .given()
-            .log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .body(requestBody)
-            .when()
-            .post("/reviews")
-            .then().log().all()
-            .statusCode(400);
+                .given()
+                .log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .body(requestBody)
+                .when()
+                .post("/reviews")
+                .then().log().all()
+                .statusCode(400);
     }
 
     @DisplayName("특정 멤버의 리뷰를 모두 조회 성공 시 200 OK를 반환한다")
@@ -366,76 +364,76 @@ class ReviewControllerTest {
     void findMemberReviews() {
         // given
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Member mentor1 = memberRepository.save(new Member(
-            "mentor1Id",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentor1Id",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Member mentor2 = memberRepository.save(new Member(
-            "mentor2Id",
-            "MALE",
-            "박멘토",
-            new Phone("010-2222-3333"),
-            Password.from("password")
+                "mentor2Id",
+                "MALE",
+                "박멘토",
+                new Phone("010-2222-3333"),
+                Password.from("password")
         ));
         Mentoring mentoring1 = mentoringRepository.save(new Mentoring(
-            mentor1,
-            5000,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor1,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         Mentoring mentoring2 = mentoringRepository.save(new Mentoring(
-            mentor2,
-            5000,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor2,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring1,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring1,
+                mentee
         ));
         Reservation reservation2 = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring2,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring2,
+                mentee
         ));
         reviewRepository.save(new Review(
-            4,
-            "전반적으로 좋았습니다.",
-            reservation1,
-            mentee
+                4,
+                "전반적으로 좋았습니다.",
+                reservation1,
+                mentee
         ));
         reviewRepository.save(new Review(
-            4,
-            "전반적으로 좋았습니다.",
-            reservation2,
-            mentee
+                4,
+                "전반적으로 좋았습니다.",
+                reservation2,
+                mentee
         ));
         String accessToken = jwtProvider.createAccessToken(mentee.getId());
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .when()
-            .get("/reviews/mine")
-            .then().log().all()
-            .statusCode(200)
-            .body("", hasSize(2));
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/reviews/mine")
+                .then().log().all()
+                .statusCode(200)
+                .body("", hasSize(2));
     }
 
     @DisplayName("특정 멘토링에 달린 리뷰 조회 성공 시 200 OK를 반환한다")
@@ -443,72 +441,69 @@ class ReviewControllerTest {
     void findMentoringReviews() {
         // given
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         Member mentee1 = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Member mentee2 = memberRepository.save(new Member(
-            "loginId2",
-            "MALE",
-            "name",
-            new Phone("010-1234-5670"),
-            Password.from("password")
+                "loginId2",
+                "MALE",
+                "name",
+                new Phone("010-1234-5670"),
+                Password.from("password")
         ));
         Reservation reservation1 = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee1
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee1
         ));
         Reservation reservation2 = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee2
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee2
         ));
         reviewRepository.save(new Review(
-            5,
-            "전반적으로 좋았습니다.",
-            reservation1,
-            mentee1
+                5,
+                "전반적으로 좋았습니다.",
+                reservation1,
+                mentee1
         ));
         reviewRepository.save(new Review(
-            2,
-            "전반적으로 좋았습니다.",
-            reservation2,
-            mentee2
+                2,
+                "전반적으로 좋았습니다.",
+                reservation2,
+                mentee2
         ));
         String accessToken = jwtProvider.createAccessToken(mentee1.getId());
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", accessToken)
-            .when()
-            .get("/mentorings/" + mentoring.getId() + "/reviews")
-            .then().log().all()
-            .statusCode(200)
-            .body("ratingAverage", equalTo("3.5"),
-                "ratingCount", equalTo(2),
-                "reviews", hasSize(2)
-            );
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", accessToken)
+                .when()
+                .get("/mentorings/" + mentoring.getId() + "/reviews")
+                .then().log().all()
+                .statusCode(200)
+                .body("", hasSize(2));
     }
 
     @DisplayName("본인이 남긴 리뷰의 별점을 수정 완료하면 200 OK를 반환한다")
@@ -516,56 +511,56 @@ class ReviewControllerTest {
     void modifyReview1() {
         // given
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "한 줄 소개",
-            "길 글 소개"
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "길 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
         Review review = reviewRepository.save(new Review(
-            originalRating,
-            originalContent,
-            reservation,
-            mentee
+                originalRating,
+                originalContent,
+                reservation,
+                mentee
         ));
         int newRating = 2;
         ReviewModifyRequest requestBody = new ReviewModifyRequest(
-            newRating,
-            null
+                newRating,
+                null
         );
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
-            .body(requestBody)
-            .when()
-            .patch("/reviews/" + review.getId())
-            .then().log().all()
-            .statusCode(200);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .body(requestBody)
+                .when()
+                .patch("/reviews/" + review.getId())
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("본인이 남긴 리뷰의 내용을 수정 완료하면 200 OK를 반환한다")
@@ -573,56 +568,56 @@ class ReviewControllerTest {
     void modifyReview2() {
         // given
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "한 줄 소개",
-            "길 글 소개"
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "길 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
         Review review = reviewRepository.save(new Review(
-            originalRating,
-            originalContent,
-            reservation,
-            mentee
+                originalRating,
+                originalContent,
+                reservation,
+                mentee
         ));
         String newContent = "생각해 보니 비용이 너무 비쌌던 것 같아요";
         ReviewModifyRequest requestBody = new ReviewModifyRequest(
-            null,
-            newContent
+                null,
+                newContent
         );
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
-            .body(requestBody)
-            .when()
-            .patch("/reviews/" + review.getId())
-            .then().log().all()
-            .statusCode(200);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .body(requestBody)
+                .when()
+                .patch("/reviews/" + review.getId())
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("본인이 남긴 리뷰의 별점과 내용을 수정 완료하면 200 OK를 반환한다")
@@ -630,57 +625,57 @@ class ReviewControllerTest {
     void modifyReview() {
         // given
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "한 줄 소개",
-            "길 글 소개"
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "길 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         int originalRating = 5;
         String originalContent = "최고의 멘토링이었습니다.";
         Review review = reviewRepository.save(new Review(
-            originalRating,
-            originalContent,
-            reservation,
-            mentee
+                originalRating,
+                originalContent,
+                reservation,
+                mentee
         ));
         int newRating = 2;
         String newContent = "생각해 보니 비용이 너무 비쌌던 것 같아요";
         ReviewModifyRequest requestBody = new ReviewModifyRequest(
-            newRating,
-            newContent
+                newRating,
+                newContent
         );
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
-            .body(requestBody)
-            .when()
-            .patch("/reviews/" + review.getId())
-            .then().log().all()
-            .statusCode(200);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .body(requestBody)
+                .when()
+                .patch("/reviews/" + review.getId())
+                .then().log().all()
+                .statusCode(200);
     }
 
     @DisplayName("본인이 작성하지 않은 리뷰를 수정하려고 하면 403 Forbidden를 반환한다")
@@ -688,60 +683,60 @@ class ReviewControllerTest {
     void modifyReviewFail2() {
         // given
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "content",
-            "introduction"
+                mentor,
+                5000,
+                5,
+                "content",
+                "introduction"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         Review review = reviewRepository.save(new Review(
-            4,
-            "전반적으로 좋았습니다.",
-            reservation,
-            mentee
+                4,
+                "전반적으로 좋았습니다.",
+                reservation,
+                mentee
         ));
         Member invalidMember = memberRepository.save(new Member(
-            "loginId2",
-            "MALE",
-            "name2",
-            new Phone("010-1234-5679"),
-            Password.from("password")
+                "loginId2",
+                "MALE",
+                "name2",
+                new Phone("010-1234-5679"),
+                Password.from("password")
         ));
         ReviewModifyRequest requestBody = new ReviewModifyRequest(
-            2,
-            "생각해 보니 비용이 너무 비쌌던 것 같아요"
+                2,
+                "생각해 보니 비용이 너무 비쌌던 것 같아요"
         );
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
-            .body(requestBody)
-            .when()
-            .patch("/reviews/" + review.getId())
-            .then().log().all()
-            .statusCode(403);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .body(requestBody)
+                .when()
+                .patch("/reviews/" + review.getId())
+                .then().log().all()
+                .statusCode(403);
     }
 
     @DisplayName("리뷰 삭제에 성공하면 204 NO CONTENT를 반환한다")
@@ -749,48 +744,48 @@ class ReviewControllerTest {
     void deleteReview() {
         // given
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "남",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "남",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         Review review = reviewRepository.save(new Review(
-            4,
-            "전반적으로 좋았습니다.",
-            reservation,
-            mentee
+                4,
+                "전반적으로 좋았습니다.",
+                reservation,
+                mentee
         ));
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
-            .when()
-            .delete("/reviews/" + review.getId())
-            .then().log().all()
-            .statusCode(204);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .when()
+                .delete("/reviews/" + review.getId())
+                .then().log().all()
+                .statusCode(204);
     }
 
     @DisplayName("존재하지 않는 리뷰 삭제 요청 시 404 NOT FOUND를 반환한다")
@@ -798,22 +793,22 @@ class ReviewControllerTest {
     void deleteReviewFail1() {
         // given
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
-            .when()
-            .delete("/reviews/999")
-            .then().log().all()
-            .statusCode(404);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(mentee.getId()))
+                .when()
+                .delete("/reviews/999")
+                .then().log().all()
+                .statusCode(404);
     }
 
     @DisplayName("본인이 작성하지 않은 리뷰를 삭제하려고 하면 403 Forbidden를 반환한다")
@@ -821,54 +816,54 @@ class ReviewControllerTest {
     void deleteReviewFail2() {
         // given
         Member mentee = memberRepository.save(new Member(
-            "loginId",
-            "MALE",
-            "name",
-            new Phone("010-1234-5678"),
-            Password.from("password")
+                "loginId",
+                "MALE",
+                "name",
+                new Phone("010-1234-5678"),
+                Password.from("password")
         ));
         Member mentor = memberRepository.save(new Member(
-            "mentorId",
-            "MALE",
-            "김트레이너",
-            new Phone("010-1111-2222"),
-            Password.from("password")
+                "mentorId",
+                "MALE",
+                "김트레이너",
+                new Phone("010-1111-2222"),
+                Password.from("password")
         ));
         Mentoring mentoring = mentoringRepository.save(new Mentoring(
-            mentor,
-            5000,
-            5,
-            "한 줄 소개",
-            "긴 글 소개"
+                mentor,
+                5000,
+                5,
+                "한 줄 소개",
+                "긴 글 소개"
         ));
         Reservation reservation = reservationRepository.save(new Reservation(
-            "예약합니다.",
-            Status.COMPLETE,
-            mentoring,
-            mentee
+                "예약합니다.",
+                Status.COMPLETE,
+                mentoring,
+                mentee
         ));
         Review review = reviewRepository.save(new Review(
-            4,
-            "전반적으로 좋았습니다.",
-            reservation,
-            mentee
+                4,
+                "전반적으로 좋았습니다.",
+                reservation,
+                mentee
         ));
         Member invalidMember = memberRepository.save(new Member(
-            "loginId2",
-            "MALE",
-            "name2",
-            new Phone("010-1234-5679"),
-            Password.from("password")
+                "loginId2",
+                "MALE",
+                "name2",
+                new Phone("010-1234-5679"),
+                Password.from("password")
         ));
 
         // when
         // then
         RestAssured
-            .given().log().all().contentType(ContentType.JSON)
-            .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
-            .when()
-            .delete("/reviews/" + review.getId())
-            .then().log().all()
-            .statusCode(403);
+                .given().log().all().contentType(ContentType.JSON)
+                .cookie("accessToken", jwtProvider.createAccessToken(invalidMember.getId()))
+                .when()
+                .delete("/reviews/" + review.getId())
+                .then().log().all()
+                .statusCode(403);
     }
 }

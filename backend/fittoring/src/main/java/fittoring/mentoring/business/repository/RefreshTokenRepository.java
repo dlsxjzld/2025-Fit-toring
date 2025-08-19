@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface RefreshTokenRepository extends ListCrudRepository<RefreshToken, Long> {
 
     Optional<RefreshToken> findByTokenValue(String token);
+
+    void deleteAllByMemberId(Long memberId);
 }

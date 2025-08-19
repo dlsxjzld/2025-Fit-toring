@@ -2,7 +2,7 @@ package fittoring.mentoring.presentation.dto;
 
 import java.util.List;
 
-public record MentoringRequest(
+public record MentoringRegisterRequest(
         int price,
         List<String> category,
         String introduction,
