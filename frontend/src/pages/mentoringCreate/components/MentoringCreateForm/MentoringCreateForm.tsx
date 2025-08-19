@@ -55,9 +55,15 @@ function MentoringCreateForm() {
   };
 
   const submitMentoringForm = async () => {
+    const filteredCertificateInfos = mentoringData.certificateInfos.map(
+      (certificateInfo) => ({
+        type: certificateInfo.type,
+        title: certificateInfo.title,
+      }),
+    );
     try {
       const response = await postMentoringCreate(
-        mentoringData,
+        { ...mentoringData, certificateInfos: filteredCertificateInfos },
         profileImageFile,
         certificateImageFiles,
       );
