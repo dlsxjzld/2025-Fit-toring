@@ -8,14 +8,12 @@ import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
-import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateRequest;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
+import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewModifyRequest;
 import jakarta.validation.Valid;
-
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,10 +57,10 @@ public class ReviewController {
     }
 
     @GetMapping("/mentorings/{mentoringId}/reviews")
-    public ResponseEntity<MentoringReviewGetResponse> findMentoringReviews(
+    public ResponseEntity<List<ReviewGetResponse>> findMentoringReviews(
             @PathVariable("mentoringId") Long mentoringId
     ) {
-        MentoringReviewGetResponse responseBody = reviewService.findMentoringReviews(mentoringId);
+        List<ReviewGetResponse> responseBody = reviewService.findMentoringReviews(mentoringId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(responseBody);
     }

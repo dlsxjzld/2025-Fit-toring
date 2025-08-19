@@ -212,6 +212,54 @@ class AuthControllerTest {
         );
     }
 
+    @DisplayName("로그인중인 사용자는 로그아웃을 하면 쿠키에 존재하던 accessToken과 refreshToken이 사라지고 빈 값으로 채워진다.")
+    @Test
+    void logout() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        );
+        Member savedMember = memberRepository.save(member);
+
+        String accessToken = jwtProvider.createAccessToken(savedMember.getId());
+        String refreshToken = jwtProvider.createRefreshToken();
+        refreshTokenRepository.save(new RefreshToken(savedMember.getId(), refreshToken, LocalDateTime.now()));
+
+        //when
+        Response response = RestAssured
+                .given()
+                .cookie("accessToken", accessToken)
+                .cookie("refreshToken", refreshToken)
+                .log().all().contentType(ContentType.JSON)
+                .when()
+                .post("/logout");
+
+        // then
+        List<String> cookies = response.getHeaders().getValues("Set-Cookie");
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(response.statusCode()).isEqualTo(204);
+            softly.assertThat(cookies).anyMatch(cookie ->
+                    cookie.startsWith("accessToken=;")
+                    && cookie.contains("Max-Age=0")
+                    && cookie.contains("Path=/")
+                    && cookie.contains("SameSite=None")
+                    && cookie.contains("HttpOnly")
+                    && cookie.contains("Secure"));
+            softly.assertThat(cookies).anyMatch(cookie ->
+                    cookie.startsWith("refreshToken=;")
+                    && cookie.contains("Max-Age=0")
+                    && cookie.contains("Path=/")
+                    && cookie.contains("SameSite=None")
+                    && cookie.contains("HttpOnly")
+                    && cookie.contains("Secure"));
+        });
+    }
+
     @DisplayName("토큰을 재발급 하면 상태코드 200을 응답하고, 새로운 accessToken과 refreshToken을 쿠키에 저장한다.")
     @Test
     void reissue() {

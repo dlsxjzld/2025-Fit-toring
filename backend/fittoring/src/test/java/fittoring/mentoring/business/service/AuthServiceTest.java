@@ -220,4 +220,44 @@ class AuthServiceTest {
                 }
         );
     }
+
+    @DisplayName("로그아웃이 성공하면 해당 사용자의 refreshToken이 db에서 제거된다.")
+    @Test
+    void logout() {
+        //given
+        Member member = new Member(
+                "loginId",
+                "이름",
+                "남",
+                new Phone("010-1234-5678"),
+                Password.from("password")
+        );
+        Member savedMember = em.persist(member);
+
+        String refreshToken = jwtProvider.createRefreshToken();
+        RefreshToken savedRefreshToken = em.persist(
+                new RefreshToken(savedMember.getId(), refreshToken, LocalDateTime.now())
+        );
+
+        //when
+        authService.logout(savedMember.getId());
+        em.flush();
+        em.clear();
+
+        //then
+        RefreshToken refreshToken1 = em.find(RefreshToken.class, savedRefreshToken.getId());
+        assertThat(refreshToken1).isNull();
+    }
+
+    @DisplayName("refreshToken이 존재하지 않아도 로그아웃은 멱등하게 처리된다(예외 없음).")
+    @Test
+    void logout2() {
+        // given
+        Long memberId = 123L; // 토큰이 존재하지 않는 임의의 회원 ID
+
+        // when
+        // then
+        assertThatCode(() -> authService.logout(memberId))
+                .doesNotThrowAnyException();
+    }
 }

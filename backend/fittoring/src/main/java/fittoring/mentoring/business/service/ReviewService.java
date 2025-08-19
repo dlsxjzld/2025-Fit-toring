@@ -17,7 +17,6 @@ import fittoring.mentoring.business.service.dto.ReviewCreateDto;
 import fittoring.mentoring.business.service.dto.ReviewDeleteDto;
 import fittoring.mentoring.business.service.dto.ReviewModifyDto;
 import fittoring.mentoring.presentation.dto.MemberReviewGetResponse;
-import fittoring.mentoring.presentation.dto.MentoringReviewGetResponse;
 import fittoring.mentoring.presentation.dto.ReviewCreateResponse;
 import fittoring.mentoring.presentation.dto.ReviewGetResponse;
 import java.util.ArrayList;
@@ -76,34 +75,27 @@ public class ReviewService {
     public List<MemberReviewGetResponse> findMemberReviews(Long memberId) {
         List<Review> reviews = reviewRepository.findAllByMentee_Id(memberId);
         return reviews.stream()
-            .map(review -> new MemberReviewGetResponse(
-                review.getId(),
-                review.getCreatedAt().toLocalDate(),
-                review.getRating(),
-                review.getContent()
-            ))
-            .toList();
+                .map(review -> new MemberReviewGetResponse(
+                        review.getId(),
+                        review.getCreatedAt().toLocalDate(),
+                        review.getRating(),
+                        review.getContent()
+                ))
+                .toList();
     }
 
     @Transactional
-    public MentoringReviewGetResponse findMentoringReviews(Long mentoringId) {
+    public List<ReviewGetResponse> findMentoringReviews(Long mentoringId) {
         List<Review> reviews = findReviewsByMentoringId(mentoringId);
-        int ratingCount = reviews.size();
-        double ratingAverage = calculateRatingAverage(reviews);
-        List<ReviewGetResponse> reviewGetResponses = reviews.stream()
-            .map(review -> new ReviewGetResponse(
-                review.getId(),
-                review.getMenteeName(),
-                review.getCreatedAt().toLocalDate(),
-                review.getRating(),
-                review.getContent()
-            ))
-            .toList();
-        return new MentoringReviewGetResponse(
-            ratingCount,
-            String.format("%.1f", ratingAverage),
-            reviewGetResponses
-        );
+        return reviews.stream()
+                .map(review -> new ReviewGetResponse(
+                        review.getId(),
+                        review.getMenteeName(),
+                        review.getCreatedAt().toLocalDate(),
+                        review.getRating(),
+                        review.getContent()
+                ))
+                .toList();
     }
 
     private List<Review> findReviewsByMentoringId(Long mentoringId) {
@@ -114,13 +106,6 @@ public class ReviewService {
             review.ifPresent(reviews::add);
         }
         return reviews;
-    }
-
-    private double calculateRatingAverage(List<Review> reviews) {
-        return reviews.stream()
-            .mapToInt(Review::getRating)
-            .average()
-            .orElse(0);
     }
 
     @Transactional

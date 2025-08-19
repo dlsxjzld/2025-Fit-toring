@@ -20,10 +20,17 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
-                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
+                                  NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
         HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
         String requestAttributeName = "memberId";
         Object memberId = request.getAttribute(requestAttributeName);
+        validateNull(memberId);
         return new LoginInfo((Long) memberId);
+    }
+
+    private void validateNull(Object memberId) {
+        if (memberId == null) {
+            throw new NullPointerException();
+        }
     }
 }

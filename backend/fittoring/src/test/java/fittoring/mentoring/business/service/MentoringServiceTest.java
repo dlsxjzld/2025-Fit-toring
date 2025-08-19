@@ -329,14 +329,18 @@ class MentoringServiceTest {
     @Nested
     @DisplayName("멘토링 정보 조회")
     class FindMentoring {
+
         @DisplayName("멘토링 id로 멘토링을 조회한다.")
         @Test
         void getMentoring() {
             //given
-            Member member1 = new Member("id1", "MALE", "김트레이너", new Phone("010-3378-9048"), Password.from("pw"));
-            em.persist(member1);
+            Member mentor = new Member("id1", "MALE", "김트레이너", new Phone("010-3378-9048"), Password.from("pw"));
+            em.persist(mentor);
 
-            Mentoring mentoring1 = new Mentoring(member1, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
+            Member mentee = new Member("id2", "MALE", "이멘티", new Phone("010-1234-5678"), Password.from("pw"));
+            em.persist(mentee);
+
+            Mentoring mentoring1 = new Mentoring(mentor, 5000, 3, "컨텐츠컨텐츠", "자기소개자기소개");
             em.persist(mentoring1);
 
             Category category1 = new Category("카테고리1");
@@ -348,11 +352,23 @@ class MentoringServiceTest {
             Image image1 = new Image("멘토링이미지1url", ImageType.MENTORING_PROFILE, mentoring1.getId());
             em.persist(image1);
 
+            Reservation reservation1 = new Reservation("예약 코멘트1", Status.COMPLETE, mentoring1, mentee);
+            em.persist(reservation1);
+            Reservation reservation2 = new Reservation("예약 코멘트2", Status.COMPLETE, mentoring1, mentee);
+            em.persist(reservation2);
+
+            Review review1 = new Review(4, "리뷰 코멘트", reservation1, mentee);
+            em.persist(review1);
+            Review review2 = new Review(5, "리뷰 코멘트", reservation2, mentee);
+            em.persist(review2);
+
             MentoringResponse expected = MentoringResponse.of(
                     mentoring1,
                     List.of(category1.getTitle()),
                     image1,
-                    List.of()
+                    List.of(),
+                    4.5,
+                    2
             );
 
             //when

@@ -93,4 +93,9 @@ public class AuthService {
                 Password.from(request.password())
         );
     }
+
+    @Transactional
+    public void logout(Long memberId) {
+        refreshTokenRepository.deleteAllByMemberId(memberId);
+    }
 }

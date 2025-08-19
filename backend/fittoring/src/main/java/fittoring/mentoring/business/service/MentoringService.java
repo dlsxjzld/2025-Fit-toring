@@ -21,7 +21,9 @@ import fittoring.mentoring.business.repository.CategoryRepository;
 import fittoring.mentoring.business.repository.CertificateRepository;
 import fittoring.mentoring.business.repository.MemberRepository;
 import fittoring.mentoring.business.repository.MentoringRepository;
+import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
+import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
@@ -46,6 +48,7 @@ public class MentoringService {
     private final CategoryMentoringRepository categoryMentoringRepository;
     private final MemberRepository memberRepository;
     private final CertificateRepository certificateRepository;
+    private final ReviewRepository reviewRepository;
 
     @Transactional
     public void registerMentoring(RegisterMentoringDto dto) {
@@ -117,6 +120,7 @@ public class MentoringService {
     public MentoringResponse getMentoringWithRelations(final Long mentoringId) {
         Mentoring mentoring = getMentoringById(mentoringId);
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
+        RatingStatsDto ratingStatsDto = reviewRepository.findRatingStatsByMentoringId(mentoring.getId());
         List<Certificate> certificates = certificateRepository.findByMentoringIdAndVerificationStatus(
                 mentoringId,
                 Status.APPROVED
@@ -125,9 +129,22 @@ public class MentoringService {
         Image image = imageService.findByImageTypeAndRelationId(ImageType.MENTORING_PROFILE, mentoring.getId())
                 .orElse(null);
         if (image == null) {
-            return MentoringResponse.of(mentoring, categoryTitles, certificateDetails);
+            return MentoringResponse.of(
+                    mentoring,
+                    categoryTitles,
+                    certificateDetails,
+                    ratingStatsDto.average(),
+                    ratingStatsDto.count()
+            );
         }
-        return MentoringResponse.of(mentoring, categoryTitles, image, certificateDetails);
+        return MentoringResponse.of(
+                mentoring,
+                categoryTitles,
+                image,
+                certificateDetails,
+                ratingStatsDto.average(),
+                ratingStatsDto.count()
+        );
     }
 
     private List<CertificateSpecAndImageResponse> getApprovedCertificates(List<Certificate> certificates) {
@@ -197,8 +214,8 @@ public class MentoringService {
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
         return categoryTitle1 == null
-               && categoryTitle2 == null
-               && categoryTitle3 == null;
+                && categoryTitle2 == null
+                && categoryTitle3 == null;
     }
 
     private void validateAllCategoryTitle(String categoryTitle1, String categoryTitle2, String categoryTitle3) {

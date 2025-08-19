@@ -17,6 +17,14 @@ public class CookieWriter {
         response.addHeader(HttpHeaders.SET_COOKIE, accessToken.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
     }
+
+    public static void clearCookies(HttpServletResponse response) {
+        ResponseCookie accessToken = CookieProvider.clearCookie("accessToken");
+        ResponseCookie refreshToken = CookieProvider.clearCookie("refreshToken");
+
+        response.addHeader(HttpHeaders.SET_COOKIE, accessToken.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
+    }
 }
 
 
