@@ -248,7 +248,10 @@ function MentoringUpdateForm() {
             onDetailIntroduceChange={handleMentoringDataChange}
           />
           <StyledSeparator />
-          <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
+          <ButtonSection
+            submitButtonName="update"
+            onCancelButtonClick={handleCancelButtonClick}
+          />
         </>
       ) : (
         <div>로딩중</div>
