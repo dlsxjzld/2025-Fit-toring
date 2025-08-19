@@ -32,7 +32,6 @@ const useUserIdDuplicateCheck = ({
 
       if (response.status === 200) {
         confirmUserId();
-        alert('사용 가능한 아이디입니다.');
         setDuplicateChecked(true);
       }
     } catch (error) {
