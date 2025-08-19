@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import fittoring.config.JpaConfiguration;
 import fittoring.config.S3Configuration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MentorAndMenteeIsSameException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
@@ -366,7 +366,7 @@ class ReservationServiceTest {
                 mentoring2
         ));
         Member mentee = entityManager.persist(new Member(
-                "menteeId",
+                "mentorId",
                 "남",
                 "김멘티",
                 new Phone("010-5678-1234"),
@@ -569,7 +569,7 @@ class ReservationServiceTest {
         // that
         assertThatThrownBy(() -> reservationService.findMentoringReservationsWithAdminAuthorization(
             mentoringReservationGetDto))
-            .isInstanceOf(ForbiddenMemberException.class)
+            .isInstanceOf(ForbiddenException.class)
             .hasMessage(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
     }
 

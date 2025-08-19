@@ -6,7 +6,8 @@ import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.service.MentoringService;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.presentation.dto.MentoringRequest;
+import fittoring.mentoring.presentation.dto.MentoringModifyRequest;
+import fittoring.mentoring.presentation.dto.MentoringRegisterRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
 import java.util.List;
@@ -32,7 +33,7 @@ public class MentoringController {
     @PostMapping("/mentorings")
     public ResponseEntity<Void> registerMentoring(
             @Login LoginInfo loginInfo,
-            @RequestPart("data") MentoringRequest request,
+            @RequestPart("data") MentoringRegisterRequest request,
             @RequestPart(value = "image", required = false) MultipartFile profileImage,
             @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
     ) {
@@ -73,7 +74,7 @@ public class MentoringController {
     public ResponseEntity<Void> modifyMentoring(
             @PathVariable("mentoringId") Long mentoringId,
             @Login LoginInfo loginInfo,
-            @RequestPart("data") MentoringRequest requestBody,
+            @RequestPart("data") MentoringModifyRequest requestBody,
             @RequestPart(value = "image", required = false) MultipartFile profileImage,
             @RequestPart(value = "certificateImages", required = false) List<MultipartFile> certificateImages
     ) {

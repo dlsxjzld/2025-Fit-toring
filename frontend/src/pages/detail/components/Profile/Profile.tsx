@@ -1,6 +1,5 @@
 import styled from '@emotion/styled';
 
-import locationIcon from '../../../../common/assets/images/locationIcon.svg';
 import defaultProfileImg from '../../../../common/assets/images/profileImg.svg';
 import starIcon from '../../../../common/assets/images/starIcon.svg';
 import CategoryTags from '../../../../common/components/CategoryTags/CategoryTags';
@@ -10,9 +9,17 @@ interface ProfileProps {
   profileImg: string | null;
   mentorName: string;
   categories: string[];
+  ratingAverage: number;
+  ratingCount: number;
 }
 
-function Profile({ profileImg, mentorName, categories }: ProfileProps) {
+function Profile({
+  profileImg,
+  mentorName,
+  categories,
+  ratingAverage,
+  ratingCount,
+}: ProfileProps) {
   return (
     <StyledContainer>
       <StyledProfileImg
@@ -25,11 +32,10 @@ function Profile({ profileImg, mentorName, categories }: ProfileProps) {
       <StyledInfoWrapper>
         <StyledTitle>{mentorName}</StyledTitle>
         <TextWithIcon
-          text="4.9 (127개 리뷰)"
+          text={`${ratingAverage} (${ratingCount}개 리뷰)`}
           iconSrc={starIcon}
           iconName="별점"
         />
-        <TextWithIcon text="강남구" iconSrc={locationIcon} iconName="위치" />
         <CategoryTags tagNames={categories} />
       </StyledInfoWrapper>
     </StyledContainer>

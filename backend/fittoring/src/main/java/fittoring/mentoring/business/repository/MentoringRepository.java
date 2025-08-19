@@ -12,8 +12,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MentoringRepository extends ListCrudRepository<Mentoring, Long> {
 
-    Optional<Mentoring> findByMentor(Member mentor);
-
     @Query("""
             SELECT m
               FROM CategoryMentoring cm
@@ -34,6 +32,8 @@ public interface MentoringRepository extends ListCrudRepository<Mentoring, Long>
             @Param("title2") String categoryTitle2,
             @Param("title3") String categoryTitle3
     );
+
+    Optional<Mentoring> findByMentor(Member mentor);
 
     List<Mentoring> findAllByMentorId(Long mentorId);
 

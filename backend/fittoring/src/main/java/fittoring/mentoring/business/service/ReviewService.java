@@ -1,7 +1,7 @@
 package fittoring.mentoring.business.service;
 
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotCompletedException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
@@ -112,22 +112,22 @@ public class ReviewService {
     public void modifyReview(ReviewModifyDto reviewModifyDto) {
         Review review = reviewRepository.findById(reviewModifyDto.reviewId())
             .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateMenteeMatches(review, reviewModifyDto.menteeId());
+        validateReviewOwner(review, reviewModifyDto.menteeId());
         review.modify(reviewModifyDto.rating(), reviewModifyDto.content());
     }
 
-    private void validateMenteeMatches(Review review, Long menteeId) {
+    private void validateReviewOwner(Review review, Long menteeId) {
         if (review.getMenteeId().equals(menteeId)) {
             return;
         }
-        throw new ForbiddenMemberException(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+        throw new ForbiddenException(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @Transactional
     public void deleteReview(ReviewDeleteDto reviewDeleteDto) {
         Review review = reviewRepository.findById((reviewDeleteDto.reviewId()))
             .orElseThrow(() -> new ReviewNotFoundException(BusinessErrorMessage.REVIEW_NOT_FOUND.getMessage()));
-        validateMenteeMatches(review, reviewDeleteDto.menteeId());
+        validateReviewOwner(review, reviewDeleteDto.menteeId());
         reviewRepository.delete(review);
     }
 }

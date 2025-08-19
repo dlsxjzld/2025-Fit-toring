@@ -16,11 +16,12 @@ export default CategoryTag;
 
 const StyledContainer = styled.div`
   width: fit-content;
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 0.6rem;
   border: ${({ theme }) => theme.SYSTEM.MAIN400} 0.1rem solid;
   border-radius: 0.675rem;
 `;
 
 const StyledTagName = styled.span`
   color: ${({ theme }) => theme.SYSTEM.MAIN600};
+  ${({ theme }) => theme.TYPOGRAPHY.C2_R}
 `;

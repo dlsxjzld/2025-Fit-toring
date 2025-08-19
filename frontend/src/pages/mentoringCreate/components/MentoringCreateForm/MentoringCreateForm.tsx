@@ -88,7 +88,7 @@ function MentoringCreateForm() {
       return;
     }
     await submitMentoringForm();
-    navigate(PAGE_URL.HOME, { state: { refetch: true } });
+    navigate(PAGE_URL.HOME);
   };
 
   const handleCancelButtonClick = () => {

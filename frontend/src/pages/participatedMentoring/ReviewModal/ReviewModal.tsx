@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
+
+import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import Modal from '../../../common/components/Modal/Modal';
-import StarRating from '../StarRating/StarRating';
 import Button from '../../../common/components/Button/Button';
-import { css } from '@emotion/react';
+import Modal from '../../../common/components/Modal/Modal';
 import { postReview } from '../apis/postReview';
 import { MAX_RATING_COUNT } from '../constants/starRating';
+import StarRating from '../StarRating/StarRating';
 
 interface ReviewModalProps {
   reservationId: number;
@@ -107,8 +108,8 @@ const StyledContainer = styled.form`
   flex-direction: column;
   gap: 2.4rem;
 
-  width: 30rem;
-  height: 40rem;
+  width: 100%;
+  height: 100%;
 `;
 
 const StyledTitle = styled.p`

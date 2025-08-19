@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import fittoring.config.JpaConfiguration;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MemberNotFoundException;
 import fittoring.mentoring.business.exception.ReservationNotCompletedException;
 import fittoring.mentoring.business.exception.ReservationNotFoundException;
@@ -803,8 +803,8 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.modifyReview(reviewModifyDto))
-                .isInstanceOf(ForbiddenMemberException.class)
-                .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+            .isInstanceOf(ForbiddenException.class)
+            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 
     @DisplayName("존재하지 않는 리뷰 삭제 요청 시 예외가 발생한다")
@@ -879,7 +879,7 @@ class ReviewServiceTest {
         // when
         // then
         assertThatThrownBy(() -> reviewService.deleteReview(reviewDeleteDto))
-                .isInstanceOf(ForbiddenMemberException.class)
-                .hasMessage(BusinessErrorMessage.REVIEWER_NOT_SAME.getMessage());
+            .isInstanceOf(ForbiddenException.class)
+            .hasMessage(BusinessErrorMessage.NOT_REVIEW_OWNER.getMessage());
     }
 }

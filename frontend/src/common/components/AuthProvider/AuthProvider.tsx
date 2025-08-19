@@ -5,7 +5,8 @@ import { postReissue } from '../../apis/postReissue';
 
 interface AuthContextValue {
   authenticated: boolean;
-  setAuthenticated: (value: boolean) => void;
+  login: () => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -27,8 +28,16 @@ function AuthProvider({ children }: PropsWithChildren) {
     checkAuth();
   }, []);
 
+  const login = () => {
+    setAuthenticated(true);
+  };
+
+  const logout = () => {
+    setAuthenticated(false);
+  };
+
   return (
-    <AuthContext.Provider value={{ authenticated, setAuthenticated }}>
+    <AuthContext.Provider value={{ authenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
