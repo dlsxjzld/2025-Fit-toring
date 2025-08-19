@@ -128,7 +128,10 @@ function MentoringCreateForm() {
         onDetailIntroduceChange={handleMentoringDataChange}
       />
       <StyledSeparator />
-      <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
+      <ButtonSection
+        onCancelButtonClick={handleCancelButtonClick}
+        submitButtonName="register"
+      />
     </StyledContainer>
   );
 }
