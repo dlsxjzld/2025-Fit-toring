@@ -17,6 +17,26 @@ export const DefaultMentorSummary: Story = {
     introduction:
       '안녕하세요 김트레이너 입니다. 여러분의 건강과 체력을 책임지겠습니다.',
     career: 5,
+    certificates: [
+      {
+        certificateId: '1',
+        title: '스포츠안마 자격증',
+        type: 'LICENSE',
+        imageUrl: '',
+      },
+      {
+        certificateId: '2',
+        title: '한국대학교 졸업증명서',
+        type: 'EDUCATION',
+        imageUrl: '',
+      },
+      {
+        certificateId: '3',
+        title: '헬스 트레이너 자격증',
+        type: 'LICENSE',
+        imageUrl: '',
+      },
+    ],
   },
   parameters: {
     docs: {
