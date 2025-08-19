@@ -3,6 +3,8 @@ import type { CertificateResponse } from './CertificatesResponse';
 export interface MentoringResponse {
   id: number;
   mentorName: string;
+  ratingAverage: number;
+  ratingCount: number;
   categories: string[];
   price: number;
   career: number;

@@ -273,7 +273,7 @@ public class MentoringService {
         if (mentoring.isCreatedByMember(mentorId)) {
             return;
         }
-        throw new ForbiddenMemberException(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
+        throw new ForbiddenException(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
     }
 
     @Transactional
@@ -286,7 +286,7 @@ public class MentoringService {
     private void checkAdminAuthority(Long memberId) {
         Member member = getMemberById(memberId);
         if (MemberRole.isNotAdmin(member.getRole())) {
-            throw new ForbiddenMemberException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
+            throw new ForbiddenException(BusinessErrorMessage.FORBIDDEN_MEMBER.getMessage());
         }
     }
 }

@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import fittoring.config.auth.LoginInfo;
 import fittoring.mentoring.business.exception.BusinessErrorMessage;
 import fittoring.mentoring.business.exception.CategoryNotFoundException;
-import fittoring.mentoring.business.exception.ForbiddenMemberException;
+import fittoring.mentoring.business.exception.ForbiddenException;
 import fittoring.mentoring.business.exception.MentoringNotFoundException;
 import fittoring.mentoring.business.model.Category;
 import fittoring.mentoring.business.model.CategoryMentoring;
@@ -778,7 +778,7 @@ class MentoringServiceTest {
             // when
             // then
             assertThatThrownBy(() -> mentoringService.modifyMentoring(modifyMentoringDto))
-                    .isInstanceOf(ForbiddenMemberException.class)
+                    .isInstanceOf(ForbiddenException.class)
                     .hasMessage(BusinessErrorMessage.MENTOR_NOT_SAME.getMessage());
         }
     }

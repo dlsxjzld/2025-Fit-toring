@@ -85,8 +85,8 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
     }
 
-    @ExceptionHandler(ForbiddenMemberException.class)
-    public ResponseEntity<ErrorResponse> handle(ForbiddenMemberException e) {
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ErrorResponse> handle(ForbiddenException e) {
         return ErrorResponse.of(HttpStatus.FORBIDDEN, e.getMessage()).toResponseEntity();
     }
 
@@ -150,6 +150,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ReservationNotCompletedException.class)
     public ResponseEntity<ErrorResponse> handle(ReservationNotCompletedException e) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()).toResponseEntity();
+    }
+
+    @ExceptionHandler(CertificateNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(CertificateNotFoundException e) {
+        return ErrorResponse.of(HttpStatus.NOT_FOUND, e.getMessage()).toResponseEntity();
     }
 
     @ExceptionHandler(ForbiddenUrlException.class)

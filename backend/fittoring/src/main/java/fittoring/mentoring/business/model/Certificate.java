@@ -13,7 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -71,6 +73,10 @@ public class Certificate {
             throw new AlreadyProcessedCertificateException(
                     BusinessErrorMessage.ALREADY_PROCESSED_CERTIFICATE.getMessage());
         }
+    }
+
+    public Long getMentorId() {
+        return this.mentoring.getMentor().getId();
     }
 
     public String getMentorName() {

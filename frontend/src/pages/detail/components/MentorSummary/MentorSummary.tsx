@@ -1,19 +1,27 @@
-import React from 'react';
-
 import styled from '@emotion/styled';
+
+import type { CertificateResponse } from '../../types/CertificatesResponse';
 
 interface MentorSummaryProps {
   introduction: string;
   career: number;
+  certificates: CertificateResponse[];
 }
 
-function MentorSummary({ introduction, career }: MentorSummaryProps) {
+function MentorSummary({
+  introduction,
+  career,
+  certificates,
+}: MentorSummaryProps) {
   return (
     <StyledContainer>
       <StyledSelfIntroduction>{introduction}</StyledSelfIntroduction>
       <StyledCertifications>
-        <p>경력: 전문 트레이너 {career}년 </p>
-        <p>자격증: 생활스포츠지도사, 운동처방사</p>
+        <p>경력: {career}년 </p>
+        <p>
+          자격증:{' '}
+          {certificates.map((certificate) => certificate.title).join(', ')}
+        </p>
       </StyledCertifications>
       <StyledHr />
     </StyledContainer>
@@ -26,11 +34,12 @@ const StyledContainer = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.2rem;
 
   width: 100%;
   padding: 0;
 `;
+
 const StyledSelfIntroduction = styled.p`
   ${({ theme }) => theme.TYPOGRAPHY.B2_B}
   color: ${({ theme }) => theme.FONT.B03}
@@ -42,7 +51,13 @@ const StyledCertifications = styled.div`
   align-items: center;
   gap: 1.1rem;
 
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
+  width: 100%;
+
+  > p {
+    width: 100%;
+  }
+
+  ${({ theme }) => theme.TYPOGRAPHY.B2_R}
   color: ${({ theme }) => theme.FONT.B02}
 `;
 
