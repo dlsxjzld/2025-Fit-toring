@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "refresh_token")
@@ -22,15 +23,12 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Getter
     @Column(nullable = false)
     private Long memberId;
 
-    @Getter
     @Column(nullable = false)
     private String tokenValue;
 
-    @Getter
     @Column(nullable = false)
     private LocalDateTime createAt;
 
