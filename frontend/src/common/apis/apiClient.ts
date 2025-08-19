@@ -11,7 +11,7 @@ interface ApiClientGetType {
 
 interface ApiClientPostType {
   endpoint: string;
-  body: Record<string, string | number> | FormData;
+  body?: Record<string, string | number> | FormData;
   withCredentials?: boolean;
 }
 

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
-import { getLogout } from '../../../../common/apis/getLogout';
+import { postLogout } from '../../../../common/apis/postLogout';
 import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
@@ -43,7 +43,7 @@ function MenuDropDown() {
 
   const handleLogout = async (url: string) => {
     try {
-      await getLogout();
+      await postLogout();
       logout();
       navigate(url);
     } catch (error) {
