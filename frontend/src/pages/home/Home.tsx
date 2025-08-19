@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 import ReactGA from 'react-ga4';
-import { useLocation } from 'react-router-dom';
 
 import Footer from '../../common/components/Footer/Footer';
 
@@ -61,8 +60,6 @@ function Home() {
 
   const [mentorList, setMentorList] = useState<MentorInformation[]>([]);
 
-  const location = useLocation();
-
   const fetchMentorData = useCallback(async () => {
     try {
       const data = await getMentorList({
@@ -76,13 +73,7 @@ function Home() {
 
   useEffect(() => {
     fetchMentorData();
-  }, [fetchMentorData, selectedSpecialties]);
-
-  useEffect(() => {
-    if (location.state?.refetch) {
-      fetchMentorData();
-    }
-  }, [fetchMentorData, location.state]);
+  }, [fetchMentorData]);
 
   return (
     <StyledContainer>
