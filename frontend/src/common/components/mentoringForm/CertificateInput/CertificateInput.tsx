@@ -49,6 +49,10 @@ function CertificateInput({
           <img src={deleteIcon} alt="삭제 아이콘" />
         </button>
       </StyledCertificateHeader>
+      <StyledCertificateInfoText>
+        자격증 정보는 인증 절차가 필요한 항목으로, 수정은 불가하고 삭제만
+        가능합니다.
+      </StyledCertificateInfoText>
       <StyledContentWrapper>
         <p>유형</p>
         <StyledSelect
@@ -150,6 +154,11 @@ const StyledCertificateHeader = styled.div`
     width: 1.6rem;
     height: 1.6rem;
   }
+`;
+
+const StyledCertificateInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  color: ${({ theme }) => theme.FONT.B01};
 `;
 
 const StyledContentWrapper = styled.div`
