@@ -25,7 +25,6 @@ import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
 import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.business.service.dto.ReviewStats;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
 import fittoring.mentoring.presentation.dto.MentoringSummaryResponse;
@@ -191,18 +190,22 @@ public class MentoringService {
             String categoryTitle3
     ) {
         List<Mentoring> mentorings = findMentorings(categoryTitle1, categoryTitle2, categoryTitle3);
-        List<ReviewStats> reviewStats = reviewRepository.findReviewStats();
-        Map<Long, ReviewStats> reviewStatsMap = createReviewStatsMap(reviewStats);
+        List<Long> mentoringIds = mentorings.stream()
+                .map(Mentoring::getId)
+                .toList();
+
+        List<RatingStatsDto> reviewStats = reviewRepository.findReviewStatsByMentoringIds(mentoringIds);
+        Map<Long, RatingStatsDto> reviewStatsMap = createReviewStatsMap(reviewStats);
         return mentorings.stream()
                 .map(mentoring -> {
                             Image profileImage = getProfileImageOrNull(mentoring.getId());
                             List<String> categoryTitles = getCategoryMentoringTitlesByMentoringId(mentoring);
-                            ReviewStats reviewStat = getReviewStats(mentoring, reviewStatsMap);
+                            RatingStatsDto ratingStatsDto = getReviewStats(mentoring, reviewStatsMap);
                             return MentoringSummaryResponse.of(
                                     mentoring,
                                     categoryTitles,
                                     profileImage,
-                                    reviewStat
+                                    ratingStatsDto
                             );
                         }
                 )
@@ -225,9 +228,9 @@ public class MentoringService {
         );
     }
 
-    private Map<Long, ReviewStats> createReviewStatsMap(List<ReviewStats> reviewStats) {
-        return reviewStats.stream()
-                .collect(Collectors.toMap(ReviewStats::mentoringId, Function.identity()));
+    private Map<Long, RatingStatsDto> createReviewStatsMap(List<RatingStatsDto> ratingStatsDto) {
+        return ratingStatsDto.stream()
+                .collect(Collectors.toMap(RatingStatsDto::mentoringId, Function.identity()));
     }
 
     private boolean isNoCategoryFilter(String categoryTitle1, String categoryTitle2, String categoryTitle3) {
@@ -260,10 +263,10 @@ public class MentoringService {
                 mentoring.getId());
     }
 
-    private ReviewStats getReviewStats(Mentoring mentoring, Map<Long, ReviewStats> reviewStatsMap) {
-        return reviewStatsMap.getOrDefault(
+    private RatingStatsDto getReviewStats(Mentoring mentoring, Map<Long, RatingStatsDto> longRatingStatsDtoMap) {
+        return longRatingStatsDtoMap.getOrDefault(
                 mentoring.getId(),
-                ReviewStats.defaultOf(mentoring.getId())
+                RatingStatsDto.defaultOf(mentoring.getId())
         );
     }
 

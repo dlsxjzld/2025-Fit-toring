@@ -16,11 +16,12 @@ public interface ReviewRepository extends ListCrudRepository<Review, Long> {
 
     @Query("""
             SELECT new fittoring.mentoring.business.service.dto.RatingStatsDto(
-                COUNT(rv), COALESCE(AVG(rv.rating), 0.0)
+                res.mentoring.id, COUNT(rv), COALESCE(AVG(rv.rating), 0.0)
             )
             FROM Review rv
             JOIN rv.reservation res
             WHERE res.mentoring.id = :mentoringId
+            GROUP BY res.mentoring.id
             """)
     RatingStatsDto findRatingStatsByMentoringId(@Param("mentoringId") Long mentoringId);
 

@@ -2,7 +2,7 @@ package fittoring.mentoring.presentation.dto;
 
 import fittoring.mentoring.business.model.Image;
 import fittoring.mentoring.business.model.Mentoring;
-import fittoring.mentoring.business.service.dto.ReviewStats;
+import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import java.util.List;
 
 public record MentoringSummaryResponse(
@@ -18,9 +18,9 @@ public record MentoringSummaryResponse(
 ) {
 
     public static MentoringSummaryResponse of(Mentoring mentoring, List<String> categories, Image image,
-                                              ReviewStats reviewStats) {
+                                              RatingStatsDto ratingStatsDto) {
         if (image == null) {
-            return MentoringSummaryResponse.of(mentoring, categories, reviewStats);
+            return MentoringSummaryResponse.of(mentoring, categories, ratingStatsDto);
         }
         return new MentoringSummaryResponse(
                 mentoring.getId(),
@@ -30,13 +30,13 @@ public record MentoringSummaryResponse(
                 mentoring.getCareer(),
                 image.getUrl(),
                 mentoring.getIntroduction(),
-                reviewStats.reviewAverage(),
-                reviewStats.reviewCount()
+                ratingStatsDto.average(),
+                ratingStatsDto.count()
         );
     }
 
     private static MentoringSummaryResponse of(Mentoring mentoring, List<String> categories,
-                                               ReviewStats reviewStats) {
+                                               RatingStatsDto ratingStatsDto) {
         return new MentoringSummaryResponse(
                 mentoring.getId(),
                 mentoring.getMentorName(),
@@ -45,8 +45,8 @@ public record MentoringSummaryResponse(
                 mentoring.getCareer(),
                 null,
                 mentoring.getIntroduction(),
-                reviewStats.reviewAverage(),
-                reviewStats.reviewCount()
+                ratingStatsDto.average(),
+                ratingStatsDto.count()
         );
     }
 }
