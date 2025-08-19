@@ -121,7 +121,7 @@ public class MentoringService {
     public MentoringResponse getMentoringWithRelations(final Long mentoringId) {
         Mentoring mentoring = getMentoringById(mentoringId);
         List<String> categoryTitles = getCategoryTitlesByMentoringId(mentoring.getId());
-        RatingStatsDto ratingStatsDto = reviewRepository.findRatingStatsByMentoringId(mentoring.getId());
+        RatingStatsDto ratingStatsDto = getRatingStatsDto(mentoring.getId());
         List<Certificate> certificates = certificateRepository.findByMentoringIdAndVerificationStatus(
                 mentoringId,
                 Status.APPROVED
