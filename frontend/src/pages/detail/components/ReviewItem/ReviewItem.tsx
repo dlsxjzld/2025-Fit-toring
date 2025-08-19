@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import filledStar from '../../../../common/assets/images/starIcon.svg';
 import emptyStar from '../../../../common/assets/images/emptyStarIcon.svg';
-import { ReviewItemType } from '../../types/ReviewResponse';
+import { ReviewResponse } from '../../types/ReviewResponse';
 
-function ReviewItem({ review }: { review: ReviewItemType }) {
+function ReviewItem({ review }: { review: ReviewResponse }) {
   const { reviewerName, createdAt, rating, content } = review;
   const [year, month, day] = createdAt.split('-');
 
