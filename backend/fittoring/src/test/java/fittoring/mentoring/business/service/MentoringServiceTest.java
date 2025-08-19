@@ -45,11 +45,9 @@ import fittoring.util.DbCleaner;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -624,6 +622,10 @@ class MentoringServiceTest {
         Review review = new Review(1, "리뷰내용", reservation, mentee);
         reviewRepository.save(review);
 
+        //자격증 등록
+        Certificate certificate = new Certificate(CertificateType.LICENSE, "자격증1", mentoring);
+        certificateRepository.save(certificate);
+
         // when
         mentoringService.deleteMentoringByAdmin(adminLoginId, mentoringId);
 
@@ -637,6 +639,7 @@ class MentoringServiceTest {
                     assertThat(categoryRepository.existsByTitle("카테고리2")).isEqualTo(true);  // 카테고리 유지
                     assertThat(reservationRepository.findAll()).isEmpty();  // 멘토링의 예약 삭제됨
                     assertThat(reviewRepository.findAll()).isEmpty();   // 예약의 리뷰 삭제됨
+                    assertThat(certificateRepository.existsById(certificate.getId())).isEqualTo(false); //자격증 삭제됨
                 }
         );
     }
