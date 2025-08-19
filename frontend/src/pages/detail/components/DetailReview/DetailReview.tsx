@@ -7,12 +7,18 @@ import { ReviewResponse } from '../../types/ReviewResponse';
 
 interface DetailReviewProps {
   mentoringId: number;
+  ratingAverage: string;
+  ratingCount: number;
 }
 
-function DetailReview({ mentoringId }: DetailReviewProps) {
-  const [totalReviewInfo, setTotalReviewInfo] = useState<ReviewResponse | null>(
-    null,
-  );
+function DetailReview({
+  mentoringId,
+  ratingAverage,
+  ratingCount,
+}: DetailReviewProps) {
+  const [totalReviewInfo, setTotalReviewInfo] = useState<
+    ReviewResponse[] | null
+  >(null);
 
   const fetchReview = async () => {
     try {
@@ -33,11 +39,11 @@ function DetailReview({ mentoringId }: DetailReviewProps) {
     <StyledContainer>
       <StyledTotalWrapper>
         <img src={filledStar} />
-        <strong>{totalReviewInfo.ratingAverage}</strong>
-        <p>({totalReviewInfo.ratingCount}개 리뷰)</p>
+        <strong>{ratingAverage}</strong>
+        <p>({ratingCount}개 리뷰)</p>
       </StyledTotalWrapper>
       <StyledReviewList>
-        {totalReviewInfo.reviews.map((review) => (
+        {totalReviewInfo.map((review) => (
           <ReviewItem key={review.id} review={review} />
         ))}
       </StyledReviewList>

@@ -3,4 +3,5 @@ export interface CertificateItem {
   title: string | null;
   type: string | null;
   file?: File | null;
+  imageUrl?: string | null;
 }

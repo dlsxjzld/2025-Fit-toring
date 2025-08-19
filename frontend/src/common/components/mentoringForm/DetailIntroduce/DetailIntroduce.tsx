@@ -1,17 +1,21 @@
 import styled from '@emotion/styled';
 
-import FormField from '../../../../common/components/FormField/FormField';
+import FormField from '../../FormField/FormField';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 
 interface DetailIntroduceProps {
   onDetailIntroduceChange: (
     newData: Pick<mentoringCreateFormData, 'content'>,
   ) => void;
+  detailIntroduce: string;
 }
 
-function DetailIntroduce({ onDetailIntroduceChange }: DetailIntroduceProps) {
+function DetailIntroduce({
+  onDetailIntroduceChange,
+  detailIntroduce,
+}: DetailIntroduceProps) {
   return (
     <section>
       <TitleSeparator>상세 소개</TitleSeparator>
@@ -23,6 +27,7 @@ function DetailIntroduce({ onDetailIntroduceChange }: DetailIntroduceProps) {
             onChange={(e) =>
               onDetailIntroduceChange({ content: e.target.value })
             }
+            value={detailIntroduce}
             required
           />
         </FormField>

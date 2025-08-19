@@ -8,6 +8,7 @@ import Detail from './pages/detail/Detail';
 import Home from './pages/home/Home';
 import Login from './pages/login/Login';
 import MentoringCreate from './pages/mentoringCreate/MentoringCreate';
+import MentoringUpdate from './pages/mentoringUpdate/MentoringUpdate';
 import MyPage from './pages/myPage/MyPage';
 import ParticipatedMentoring from './pages/participatedMentoring/ParticipatedMentoring';
 import Signup from './pages/signup/Signup';
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   { path: `${PAGE_URL.BOOKING}/:mentoringId`, element: <Booking /> },
   { path: PAGE_URL.SIGNUP, element: <Signup /> },
   { path: PAGE_URL.MENTORING_CREATE, element: <MentoringCreate /> },
+  {
+    path: `${PAGE_URL.MENTORING_UPDATE}/:mentoringId`,
+    element: <MentoringUpdate />,
+  },
   { path: PAGE_URL.LOGIN, element: <Login /> },
   {
     path: `${PAGE_URL.MY_PAGE}`,

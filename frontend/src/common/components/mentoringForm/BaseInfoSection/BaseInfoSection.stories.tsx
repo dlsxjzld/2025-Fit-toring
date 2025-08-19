@@ -1,4 +1,4 @@
-import { PRICE_ERROR_MESSAGE } from '../../constants/price';
+import { PRICE_ERROR_MESSAGE } from '../../../constants/price';
 
 import BaseInfoSection from './BaseInfoSection';
 

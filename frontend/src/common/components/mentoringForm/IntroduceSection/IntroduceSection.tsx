@@ -1,10 +1,10 @@
 import styled from '@emotion/styled';
 
-import FormField from '../../../../common/components/FormField/FormField';
-import Input from '../../../../common/components/Input/Input';
+import FormField from '../../FormField/FormField';
+import Input from '../../Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
 
 interface IntroduceSectionProps {
   onIntroduceChange: (
@@ -12,12 +12,16 @@ interface IntroduceSectionProps {
   ) => void;
   introduceErrorMessage: string;
   careerErrorMessage: string;
+  introduce: string;
+  career: number;
 }
 
 function IntroduceSection({
   onIntroduceChange,
   introduceErrorMessage,
   careerErrorMessage,
+  introduce,
+  career,
 }: IntroduceSectionProps) {
   return (
     <section>
@@ -30,6 +34,7 @@ function IntroduceSection({
             onChange={(e) =>
               onIntroduceChange({ introduction: e.target.value })
             }
+            value={introduce}
             errored={introduceErrorMessage !== ''}
           />
         </FormField>
@@ -41,6 +46,7 @@ function IntroduceSection({
             onChange={(e) =>
               onIntroduceChange({ career: Number(e.target.value) })
             }
+            value={career}
             errored={careerErrorMessage !== ''}
           />
         </FormField>

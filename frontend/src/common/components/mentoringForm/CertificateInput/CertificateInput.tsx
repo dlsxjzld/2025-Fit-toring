@@ -3,15 +3,16 @@ import styled from '@emotion/styled';
 import certificateUploadIcon from '../../../../common/assets/images/certificateUploadIcon.svg';
 import deleteIcon from '../../../../common/assets/images/deleteIcon.svg';
 import downIcon from '../../../../common/assets/images/downIcon.svg';
-import usePreviewImage from '../../../../common/hooks/usePreviewImage';
+import usePreviewImage from '../../../hooks/usePreviewImage';
 
-import type { CertificateItem } from '../types/certificateItem';
+import type { CertificateItem } from '../../../types/certificateItem';
 
 interface CertificateInputProps {
   id: string;
   onDeleteButtonClick: () => void;
   onCertificateChange: (id: string, changed: Partial<CertificateItem>) => void;
   onCertificateImageFileChange: (file: File) => void;
+  certificateInfo: CertificateItem;
 }
 
 function CertificateInput({
@@ -19,8 +20,11 @@ function CertificateInput({
   onDeleteButtonClick,
   onCertificateChange,
   onCertificateImageFileChange,
+  certificateInfo,
 }: CertificateInputProps) {
-  const { previewUrl, handleImageChange } = usePreviewImage();
+  const { previewUrl, handleImageChange } = usePreviewImage(
+    certificateInfo.imageUrl,
+  );
 
   const handleCertificateIdChange = (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -34,6 +38,8 @@ function CertificateInput({
     onCertificateChange(id, { title: e.target.value });
   };
 
+  const disabled = certificateInfo.imageUrl !== undefined;
+
   return (
     <StyledContainer>
       <StyledCertificateHeader>
@@ -42,12 +48,18 @@ function CertificateInput({
           <img src={deleteIcon} alt="삭제 아이콘" />
         </button>
       </StyledCertificateHeader>
+      <StyledCertificateInfoText>
+        자격증 정보는 인증 절차가 필요한 항목으로, 수정은 불가하고 삭제만
+        가능합니다.
+      </StyledCertificateInfoText>
       <StyledContentWrapper>
         <p>유형</p>
         <StyledSelect
           defaultValue="LICENSE"
+          value={certificateInfo.type ?? 'LICENSE'}
           name="certificateType"
           onChange={handleCertificateIdChange}
+          disabled={disabled}
         >
           <option value="LICENSE">자격증</option>
           <option value="EDUCATION">학력</option>
@@ -57,15 +69,17 @@ function CertificateInput({
       </StyledContentWrapper>
       <StyledContentWrapper>
         <p>이름 *</p>
-        <input
+        <StyledNameInput
           type="text"
           placeholder="생활체육지도자 자격증 1급"
           onChange={handleCertificateTitleChange}
           required
+          value={certificateInfo.title ?? ''}
+          disabled={disabled}
         />
       </StyledContentWrapper>
 
-      <StyledImageInputLabel>
+      <StyledImageInputLabel disabled={disabled}>
         <StyledHiddenInput
           type="file"
           accept="image/*"
@@ -78,7 +92,8 @@ function CertificateInput({
               onCertificateImageFileChange(file);
             }
           }}
-          required
+          required={!previewUrl}
+          disabled={disabled}
         />
         {previewUrl ? (
           <StyledPreviewImage src={previewUrl} alt="자격증 사진 미리보기" />
@@ -86,6 +101,7 @@ function CertificateInput({
           <StyledUploadDescription>
             <img src={certificateUploadIcon} alt="업로드 아이콘" />
             <p>증명서/사진 업로드 [필수]</p>
+            <p>(최대 30MB)</p>
           </StyledUploadDescription>
         )}
       </StyledImageInputLabel>
@@ -138,6 +154,11 @@ const StyledCertificateHeader = styled.div`
     width: 1.6rem;
     height: 1.6rem;
   }
+`;
+
+const StyledCertificateInfoText = styled.p`
+  ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  color: ${({ theme }) => theme.FONT.B01};
 `;
 
 const StyledContentWrapper = styled.div`
@@ -197,6 +218,10 @@ const StyledSelect = styled.select`
   background-position: right 10px center;
   background-size: 1.2rem;
 
+  & > option {
+    ${({ theme }) => theme.TYPOGRAPHY.B4_R};
+  }
+
   &:hover {
     border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
@@ -206,9 +231,55 @@ const StyledSelect = styled.select`
     box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
     border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
   }
+
+  &:disabled {
+    opacity: 1;
+
+    background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
+  }
+
+  &:disabled:hover {
+    border-color: ${({ theme }) => theme.OUTLINE.REGULAR};
+    cursor: not-allowed;
+  }
 `;
 
-const StyledImageInputLabel = styled.label`
+const StyledNameInput = styled.input<{ disabled: boolean }>`
+  width: 100%;
+  padding: 1.6rem;
+  border: 1px solid ${({ theme }) => theme.OUTLINE.REGULAR};
+  border-radius: 12px;
+
+  background-color: ${({ theme }) => theme.BG.WHITE};
+
+  ${({ theme }) => theme.TYPOGRAPHY.B3_R};
+  color: ${({ theme }) => theme.FONT.B01};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 1px ${({ theme }) => theme.SYSTEM.MAIN500};
+    border-color: ${({ theme }) => theme.SYSTEM.MAIN500};
+  }
+
+  ::placeholder {
+    color: ${({ theme }) => theme.SYSTEM.GRAY200};
+  }
+
+  &:disabled {
+    background-color: ${({ theme }) => theme.SYSTEM.GRAY50};
+  }
+
+  &:disabled:hover {
+    border-color: ${({ theme }) => theme.OUTLINE.REGULAR};
+    cursor: not-allowed;
+  }
+`;
+
+const StyledImageInputLabel = styled.label<{ disabled: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -222,15 +293,15 @@ const StyledImageInputLabel = styled.label`
   border-radius: 16px;
 
   background: ${({ theme }) => theme.BG.LIGHT};
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
-const StyledHiddenInput = styled.input`
+const StyledHiddenInput = styled.input<{ disabled: boolean }>`
   opacity: 0;
 
   width: 100%;
   height: 100%;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
 `;
 
 const StyledUploadDescription = styled.div`

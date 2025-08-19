@@ -1,10 +1,15 @@
+import { useEffect, useState } from 'react';
+
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { getMineMentoring } from '../../../../common/apis/getMineMentoring';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
+
+import type { MentoringResponse } from '../../types/MentoringResponse';
 
 interface ApplySectionProps {
   price: number;
@@ -16,13 +21,38 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
 
   const { authenticated } = useAuth();
 
+  const [mineMentoring, setMineMentoring] = useState<MentoringResponse | null>(
+    null,
+  );
+
+  const createdByMe = mineMentoring?.id === Number(mentoringId);
+
   const handleMoveToBookingPage = () => {
+    if (createdByMe) {
+      navigate(`${PAGE_URL.MENTORING_UPDATE}/${mentoringId}`);
+      return;
+    }
+
     if (authenticated) {
       navigate(`${PAGE_URL.BOOKING}/${mentoringId}`);
     } else {
       navigate(PAGE_URL.LOGIN);
     }
   };
+
+  useEffect(() => {
+    const fetchMentoring = async () => {
+      try {
+        const mentoring = await getMineMentoring();
+        setMineMentoring(mentoring);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchMentoring();
+  }, []);
+
   return (
     <StyledContainer>
       <StyledWrapper>
@@ -36,7 +66,7 @@ function ApplySection({ price, mentoringId }: ApplySectionProps) {
         `}
         onClick={handleMoveToBookingPage}
       >
-        신청하기
+        {createdByMe ? '수정하기' : '신청하기'}
       </Button>
     </StyledContainer>
   );

@@ -1,5 +1,5 @@
-import { CAREER_ERROR_MESSAGE } from '../../constants/career';
-import { INTRODUCE_ERROR_MESSAGE } from '../../constants/introduce';
+import { CAREER_ERROR_MESSAGE } from '../../../constants/career';
+import { INTRODUCE_ERROR_MESSAGE } from '../../../constants/introduce';
 
 import IntroduceSection from './IntroduceSection';
 

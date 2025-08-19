@@ -2,22 +2,24 @@ import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
-import FormField from '../../../../common/components/FormField/FormField';
-import Input from '../../../../common/components/Input/Input';
-import { getUserInfo } from '../../apis/getUserInfo';
+import { getUserInfoSummary } from '../../../apis/getUserInfoSummary';
+import FormField from '../../FormField/FormField';
+import Input from '../../Input/Input';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
-import type { UserInfoResponse } from '../types/userInfoResponse';
+import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
+import type { UserInfoResponse } from '../../../types/userInfoResponse';
 
 interface BaseInfoSectionProps {
   priceErrorMessage: string;
   onPriceChange: (newData: Pick<mentoringCreateFormData, 'price'>) => void;
+  price: number;
 }
 
 function BaseInfoSection({
   onPriceChange,
   priceErrorMessage,
+  price,
 }: BaseInfoSectionProps) {
   const [userInfo, setUserInfo] = useState<UserInfoResponse>({
     name: '',
@@ -27,7 +29,7 @@ function BaseInfoSection({
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await getUserInfo();
+        const response = await getUserInfoSummary();
         setUserInfo(response);
       } catch (error) {
         console.error('사용자 정보 조회 실패:', error);
@@ -55,6 +57,7 @@ function BaseInfoSection({
             required
             onChange={handlePriceChange}
             errored={priceErrorMessage !== ''}
+            value={price}
           />
         </FormField>
         <FormField label="전화번호 *">

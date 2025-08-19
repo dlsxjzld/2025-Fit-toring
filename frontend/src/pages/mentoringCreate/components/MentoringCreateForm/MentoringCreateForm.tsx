@@ -4,20 +4,20 @@ import styled from '@emotion/styled';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 
+import BaseInfoSection from '../../../../common/components/mentoringForm/BaseInfoSection/BaseInfoSection';
+import ButtonSection from '../../../../common/components/mentoringForm/ButtonSection/ButtonSection';
+import CertificateSection from '../../../../common/components/mentoringForm/CertificateSection/CertificateSection';
+import DetailIntroduce from '../../../../common/components/mentoringForm/DetailIntroduce/DetailIntroduce';
+import IntroduceSection from '../../../../common/components/mentoringForm/IntroduceSection/IntroduceSection';
+import ProfileSection from '../../../../common/components/mentoringForm/ProfileSection/ProfileSection';
+import SpecialtySection from '../../../../common/components/mentoringForm/SpecialtySection/SpecialtySection';
 import { PAGE_URL } from '../../../../common/constants/url';
+import { careerValidator } from '../../../../common/utils/careerValidator';
+import { introduceValidator } from '../../../../common/utils/introduceValidator';
+import { priceValidator } from '../../../../common/utils/priceValidator';
 import { postMentoringCreate } from '../../apis/postMentoringCreate';
-import { careerValidator } from '../../utils/careerValidator';
-import { introduceValidator } from '../../utils/introduceValidator';
-import { priceValidator } from '../../utils/priceValidator';
-import BaseInfoSection from '../BaseInfoSection/BaseInfoSection';
-import ButtonSection from '../ButtonSection/ButtonSection';
-import CertificateSection from '../CertificateSection/CertificateSection';
-import DetailIntroduce from '../DetailIntroduce/DetailIntroduce';
-import IntroduceSection from '../IntroduceSection/IntroduceSection';
-import ProfileSection from '../ProfileSection/ProfileSection';
-import SpecialtySection from '../SpecialtySection/SpecialtySection';
 
-import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+import type { mentoringCreateFormData } from '../../../../common/types/mentoringCreateFormData';
 
 function MentoringCreateForm() {
   const [mentoringData, setMentoringData] = useState<mentoringCreateFormData>({
@@ -55,9 +55,15 @@ function MentoringCreateForm() {
   };
 
   const submitMentoringForm = async () => {
+    const filteredCertificateInfos = mentoringData.certificateInfos.map(
+      (certificateInfo) => ({
+        type: certificateInfo.type,
+        title: certificateInfo.title,
+      }),
+    );
     try {
       const response = await postMentoringCreate(
-        mentoringData,
+        { ...mentoringData, certificateInfos: filteredCertificateInfos },
         profileImageFile,
         certificateImageFiles,
       );
@@ -102,10 +108,13 @@ function MentoringCreateForm() {
       <BaseInfoSection
         onPriceChange={handleMentoringDataChange}
         priceErrorMessage={priceErrorMessage}
+        price={mentoringData.price}
       />
       <ProfileSection onProfileImageChange={handleProfileImageChange} />
       <SpecialtySection onSpecialtyChange={handleMentoringDataChange} />
       <IntroduceSection
+        introduce={mentoringData.introduction}
+        career={mentoringData.career}
         onIntroduceChange={handleMentoringDataChange}
         introduceErrorMessage={introduceErrorMessage}
         careerErrorMessage={careerErrorMessage}
@@ -114,7 +123,10 @@ function MentoringCreateForm() {
         onCertificateChange={handleMentoringDataChange}
         handleCertificateImageFilesChange={handleCertificateImageFilesChange}
       />
-      <DetailIntroduce onDetailIntroduceChange={handleMentoringDataChange} />
+      <DetailIntroduce
+        detailIntroduce={mentoringData.content}
+        onDetailIntroduceChange={handleMentoringDataChange}
+      />
       <StyledSeparator />
       <ButtonSection onCancelButtonClick={handleCancelButtonClick} />
     </StyledContainer>

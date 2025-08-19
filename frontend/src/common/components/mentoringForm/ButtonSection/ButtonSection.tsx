@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
-import Button from '../../../../common/components/Button/Button';
+import Button from '../../Button/Button';
 
 interface ButtonSectionProps {
   onCancelButtonClick: () => void;

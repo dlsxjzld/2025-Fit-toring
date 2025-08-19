@@ -11,6 +11,7 @@ export const API_ENDPOINTS = {
   LOGIN: '/login',
   LOGOUT: '/logout',
   CREATED_MENTORING: '/mentorings/mine/reservations',
+  MINE_MENTORING: '/mentorings/mine',
   PARTICIPATED_MENTORING: '/reservations/participated',
   MEMBERS: '/members/summary',
   REISSUE: '/reissue',

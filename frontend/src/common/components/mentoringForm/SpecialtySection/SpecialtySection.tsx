@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
 
-import { getSpecialties } from '../../../../common/apis/getSpecialties';
+import { getSpecialties } from '../../../apis/getSpecialties';
 import SpecialtyTag from '../SpecialtyTag/SpecialtyTag';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-import type { Specialty } from '../../../../common/types/Specialty';
-import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+import type { mentoringCreateFormData } from '../../../types/mentoringCreateFormData';
+import type { Specialty } from '../../../types/Specialty';
 
 const MAX_SPECIALTIES = 3;
 
@@ -15,11 +15,17 @@ interface SpecialtySectionProps {
   onSpecialtyChange: (
     newData: Pick<mentoringCreateFormData, 'category'>,
   ) => void;
+  initialSelectedSpecialties?: string[];
 }
 
-function SpecialtySection({ onSpecialtyChange }: SpecialtySectionProps) {
+function SpecialtySection({
+  initialSelectedSpecialties,
+  onSpecialtyChange,
+}: SpecialtySectionProps) {
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>(
+    initialSelectedSpecialties ?? [],
+  );
 
   const handleToggleSpecialtyTagChange = (title: string) => {
     setSelectedSpecialties((prev) => {

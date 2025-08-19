@@ -5,21 +5,24 @@ import styled from '@emotion/styled';
 import CertificateInput from '../CertificateInput/CertificateInput';
 import TitleSeparator from '../TitleSeparator/TitleSeparator';
 
-import type { CertificateItem } from '../types/certificateItem';
-import type { mentoringCreateFormData } from '../types/mentoringCreateFormData';
+import type { MentoringUpdateFormData } from '../../../../pages/mentoringUpdate/types/mentoringUpdateForm';
+import type { CertificateItem } from '../../../types/certificateItem';
 
 interface CertificateSectionProps {
   onCertificateChange: (
-    newData: Pick<mentoringCreateFormData, 'certificateInfos'>,
+    newData: Pick<MentoringUpdateFormData, 'certificateInfos'>,
   ) => void;
   handleCertificateImageFilesChange: (files: File[]) => void;
+  initialCertificates?: CertificateItem[];
 }
 
 function CertificateSection({
   onCertificateChange,
   handleCertificateImageFilesChange,
+  initialCertificates = [],
 }: CertificateSectionProps) {
-  const [certificates, setCertificates] = useState<CertificateItem[]>([]);
+  const [certificates, setCertificates] =
+    useState<CertificateItem[]>(initialCertificates);
 
   const handleAddButtonClick = () => {
     setCertificates((prev) => [
@@ -38,9 +41,11 @@ function CertificateSection({
 
     setCertificates(updated);
 
-    const finalCertificates = updated.map(({ title, type }) => ({
+    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
+      id,
       title,
       type,
+      imageUrl,
     }));
     onCertificateChange({ certificateInfos: finalCertificates });
 
@@ -59,9 +64,11 @@ function CertificateSection({
     );
     setCertificates(updated);
 
-    const finalCertificates = updated.map(({ title, type }) => ({
+    const finalCertificates = updated.map(({ title, type, id, imageUrl }) => ({
+      id,
       title,
       type,
+      imageUrl,
     }));
     onCertificateChange({ certificateInfos: finalCertificates });
 
@@ -90,8 +97,12 @@ function CertificateSection({
           onDeleteButtonClick={() => handleDeleteButtonClick(item.id)}
           onCertificateChange={handleCertificateChangeById}
           onCertificateImageFileChange={(file) =>
-            handleCertificateChangeById(item.id, { file })
+            handleCertificateChangeById(item.id, {
+              file,
+              imageUrl: item.imageUrl,
+            })
           }
+          certificateInfo={item}
         />
       ))}
 

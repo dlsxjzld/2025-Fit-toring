@@ -3,7 +3,7 @@ import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 import { ReviewResponse } from '../types/ReviewResponse';
 
 export const getReviews = async (mentoringId: number) => {
-  return await apiClient.get<ReviewResponse>({
+  return await apiClient.get<ReviewResponse[]>({
     endpoint: `${API_ENDPOINTS.MENTORINGS}/${mentoringId}${API_ENDPOINTS.REVIEWS}`,
     searchParams: { mentoringId: mentoringId.toString() },
     withCredentials: true,

@@ -9,7 +9,7 @@ interface ProfileProps {
   profileImg: string | null;
   mentorName: string;
   categories: string[];
-  ratingAverage: number;
+  ratingAverage: string;
   ratingCount: number;
 }
 

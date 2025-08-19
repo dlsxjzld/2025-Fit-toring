@@ -1,7 +1,7 @@
 import { apiClient } from '../../../common/apis/apiClient';
 import { API_ENDPOINTS } from '../../../common/constants/apiEndpoints';
 
-import type { mentoringCreateFormData } from '../components/types/mentoringCreateFormData';
+import type { mentoringCreateFormData } from '../../../common/types/mentoringCreateFormData';
 
 export const postMentoringCreate = async (
   mentoringData: mentoringCreateFormData,
