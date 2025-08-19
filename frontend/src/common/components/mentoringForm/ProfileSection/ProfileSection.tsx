@@ -63,7 +63,7 @@ function ProfileSection({
                 <StyledUploadIcon src={uploadIcon} alt="업로드 아이콘" />
                 {/* TODO: 드래그를 통한 업로드 기능 추가 */}
                 <StyledGuideText>
-                  <strong>클릭하여 업로드</strong> 또는 파일을 드래그 하세요
+                  <strong>클릭하여 업로드</strong>
                 </StyledGuideText>{' '}
                 <StyledFileTypeText>
                   JPG,PNG 파일만 가능(최대 5MB)
