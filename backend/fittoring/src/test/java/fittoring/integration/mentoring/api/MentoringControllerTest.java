@@ -27,7 +27,7 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.JwtProvider;
-import fittoring.mentoring.business.service.dto.ReviewStats;
+import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.presentation.dto.CertificateSpecAndImageResponse;
 import fittoring.mentoring.presentation.dto.MentoringRequest;
 import fittoring.mentoring.presentation.dto.MentoringResponse;
@@ -189,8 +189,8 @@ class MentoringControllerTest {
                     });
 
             //then
-            ReviewStats reviewStats = new ReviewStats(savedMentoring.getId(), 5.0, 1);
-            ReviewStats reviewStats2 = new ReviewStats(savedMentoring.getId(), 2.0, 1);
+            RatingStatsDto ratingStatsDto = new RatingStatsDto(savedMentoring.getId(), 5.0, 1);
+            RatingStatsDto ratingStatsDto2 = new RatingStatsDto(savedMentoring.getId(), 2.0, 1);
 
             MentoringSummaryResponse expected = new MentoringSummaryResponse(
                     savedMentoring.getId(),
@@ -200,8 +200,8 @@ class MentoringControllerTest {
                     savedMentoring.getCareer(),
                     savedImage.getUrl(),
                     savedMentoring.getIntroduction(),
-                    reviewStats.reviewAverage(),
-                    reviewStats.reviewCount()
+                    ratingStatsDto.average(),
+                    ratingStatsDto.count()
             );
 
             MentoringSummaryResponse expected2 = new MentoringSummaryResponse(
@@ -212,8 +212,8 @@ class MentoringControllerTest {
                     savedMentoring2.getCareer(),
                     savedImage2.getUrl(),
                     savedMentoring2.getIntroduction(),
-                    reviewStats2.reviewAverage(),
-                    reviewStats2.reviewCount()
+                    ratingStatsDto2.average(),
+                    ratingStatsDto2.count()
             );
 
             assertThat(response).containsExactlyInAnyOrder(expected, expected2);

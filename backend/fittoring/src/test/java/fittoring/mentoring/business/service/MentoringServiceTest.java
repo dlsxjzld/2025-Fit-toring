@@ -34,8 +34,8 @@ import fittoring.mentoring.business.repository.MentoringRepository;
 import fittoring.mentoring.business.repository.ReservationRepository;
 import fittoring.mentoring.business.repository.ReviewRepository;
 import fittoring.mentoring.business.service.dto.ModifyMentoringDto;
+import fittoring.mentoring.business.service.dto.RatingStatsDto;
 import fittoring.mentoring.business.service.dto.RegisterMentoringDto;
-import fittoring.mentoring.business.service.dto.ReviewStats;
 import fittoring.mentoring.infra.S3Uploader;
 import fittoring.mentoring.presentation.dto.CertificateInfo;
 import fittoring.mentoring.presentation.dto.MentoringRequest;
@@ -178,20 +178,20 @@ class MentoringServiceTest {
             );
             em.persist(review3);
 
-            ReviewStats reviewStats = new ReviewStats(mentoring1.getId(), 3.5, 2);
+            RatingStatsDto ratingStatsDto = new RatingStatsDto(mentoring1.getId(), 3.5, 2);
             MentoringSummaryResponse expected = MentoringSummaryResponse.of(
                     mentoring1,
                     List.of(categoryMentoring1_1.getCategoryTitle()),
                     image1,
-                    reviewStats
+                    ratingStatsDto
             );
 
-            ReviewStats reviewStats2 = new ReviewStats(mentoring1.getId(), 4.0, 1);
+            RatingStatsDto ratingStatsDto2 = new RatingStatsDto(mentoring1.getId(), 4.0, 1);
             MentoringSummaryResponse expected2 = MentoringSummaryResponse.of(
                     mentoring2,
                     List.of(categoryMentoring2_2.getCategoryTitle()),
                     null,
-                    reviewStats2
+                    ratingStatsDto2
             );
 
             // when
@@ -257,7 +257,7 @@ class MentoringServiceTest {
                     List.of(categoryMentoring1_1.getCategoryTitle(),
                             categoryMentoring2_1.getCategoryTitle()),
                     image1,
-                    new ReviewStats(mentoring1.getId(), 0.0, 0)
+                    new RatingStatsDto(mentoring1.getId(), 0.0, 0)
             );
 
             MentoringSummaryResponse expected2 = MentoringSummaryResponse.of(
@@ -267,7 +267,7 @@ class MentoringServiceTest {
                             categoryMentoring3_3.getCategoryTitle()
                     ),
                     image2,
-                    new ReviewStats(mentoring1.getId(), 0.0, 0)
+                    new RatingStatsDto(mentoring1.getId(), 0.0, 0)
             );
 
             // when
