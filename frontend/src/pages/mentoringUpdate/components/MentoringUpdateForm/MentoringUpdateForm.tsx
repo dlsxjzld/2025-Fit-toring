@@ -17,6 +17,7 @@ import { careerValidator } from '../../../../common/utils/careerValidator';
 import { introduceValidator } from '../../../../common/utils/introduceValidator';
 import { priceValidator } from '../../../../common/utils/priceValidator';
 import { getMentoringDetail } from '../../../detail/apis/getMentoringDetail';
+import { deleteCertificate } from '../../apis/deleteCertificate';
 import { putMentoring } from '../../apis/putMentoring';
 import {
   INITIAL_UPDATE_MENTORING_DATA,
@@ -71,6 +72,14 @@ function MentoringUpdateForm() {
     const addedCertifications = mentoringData.certificateInfos.filter(
       (e) => !initialCertificatesIdRef.current.includes(e.id),
     );
+
+    try {
+      await Promise.all(
+        deletedCertificateIds.map((id) => deleteCertificate(id)),
+      );
+    } catch (error) {
+      console.error('자격증 삭제 실패', error);
+    }
 
     try {
       const response = await putMentoring({
