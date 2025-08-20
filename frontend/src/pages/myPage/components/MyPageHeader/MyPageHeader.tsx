@@ -18,7 +18,7 @@ function MyPageHeader() {
       <StyledWrapper>
         <StyledButtonWrapper>
           <StyledBackButton onClick={handleBackButtonClick} type="button">
-            <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
+            <StyledBackIcon src={backIcon} alt="홈으로 가기" />
           </StyledBackButton>
         </StyledButtonWrapper>
         <StyledTitle>마이 페이지</StyledTitle>
