@@ -77,7 +77,7 @@ function Home() {
 
   return (
     <StyledContainer>
-      <StyledText>안녕</StyledText>
+      <div>안녕</div>
       <HomeHeader />
       <StyledContents>
         <Slogan mentoringIds={mentorList.map((mentor) => mentor.id)} />
@@ -120,11 +120,6 @@ const StyledContainer = styled.div`
   flex-direction: column;
 
   min-height: 100%;
-`;
-
-const StyledText = styled.p`
-  color: ${({ theme }) => theme.FONT.B02};
-  ${({ theme }) => theme.TYPOGRAPHY.B4_R}
 `;
 
 const StyledContents = styled.main`
