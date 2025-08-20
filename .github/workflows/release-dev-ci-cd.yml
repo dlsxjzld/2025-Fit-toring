@@ -2,10 +2,10 @@ name: Backend CI/CD
 
 on:
   pull_request:
-    branches: [ rel-dev ]
+    branches: [ release-dev ]
     paths: [ 'backend/**' ]
   push:
-    branches: [ rel-dev ]
+    branches: [ release-dev ]
     paths: [ 'backend/**' ]
   workflow_dispatch:
 
