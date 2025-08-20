@@ -14,10 +14,10 @@ export const captureSentryError = ({
   step,
 }: CaptureSentryErrorParams) => {
   Sentry.captureException(error, {
-    level: level,
+    level,
     tags: {
-      feature: feature,
-      step: step,
+      feature,
+      step,
     },
   });
 };
