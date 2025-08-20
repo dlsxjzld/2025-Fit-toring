@@ -8,11 +8,7 @@ import menuIcon from '../../../../common/assets/images/menuBar.svg';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import { PAGE_URL } from '../../../../common/constants/url';
 
-type MenuItemName =
-  | '개설한 멘토링'
-  | '참여한 멘토링'
-  | '회원 정보'
-  | '로그아웃';
+type MenuItemName = '개설한 멘토링' | '참여한 멘토링' | '로그아웃';
 
 interface MenuItem {
   name: MenuItemName;
