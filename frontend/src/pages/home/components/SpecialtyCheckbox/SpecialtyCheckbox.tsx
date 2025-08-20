@@ -20,7 +20,7 @@ function SpecialtyCheckbox({
         checked={checked}
         onChange={onChange}
         disabled={disabled}
-        alt="전문분야 체크박스"
+        alt="전문분야 체크박스 아이콘"
       />
       <StyledCheckboxLabel checked={checked} disabled={disabled}>
         {specialty}
