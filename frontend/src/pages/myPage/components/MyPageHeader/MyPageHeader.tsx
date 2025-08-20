@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
+import { PAGE_URL } from '../../../../common/constants/url';
 import MenuDropDown from '../MenuDropDown/MenuDropDown';
 
 function MyPageHeader() {
   const navigate = useNavigate();
 
   const handleBackButtonClick = () => {
-    navigate(-1);
+    navigate(PAGE_URL.HOME);
   };
 
   return (
