@@ -1,11 +1,39 @@
+import { useEffect, useState } from 'react';
+
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
 
+import { getMineMentoring } from '../../../../common/apis/getMineMentoring';
 import { useAuth } from '../../../../common/components/AuthProvider/AuthProvider';
 import Button from '../../../../common/components/Button/Button';
 import { PAGE_URL } from '../../../../common/constants/url';
 
-function Slogan() {
+import type { MentoringResponse } from '../../../detail/types/MentoringResponse';
+
+const useMineMentoring = () => {
+  const [mineMentoring, setMineMentoring] = useState<MentoringResponse | null>(
+    null,
+  );
+
+  useEffect(() => {
+    const fetchMentoring = async () => {
+      try {
+        const mentoring = await getMineMentoring();
+        setMineMentoring(mentoring);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchMentoring();
+  }, []);
+
+  return {
+    mineMentoring,
+  };
+};
+
+function Slogan({ mentoringIds }: { mentoringIds: number[] }) {
   const { authenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -17,6 +45,12 @@ function Slogan() {
     }
   };
 
+  const { mineMentoring } = useMineMentoring();
+
+  const createdByMe = mineMentoring
+    ? mentoringIds.includes(mineMentoring.id)
+    : false;
+
   return (
     <StyledContainer>
       <StyledTitle>
@@ -24,7 +58,9 @@ function Slogan() {
         편하게 물어봐요!
       </StyledTitle>
 
-      <Button onClick={handleMentoringCreation}>멘토링 개설하기</Button>
+      <Button onClick={handleMentoringCreation}>
+        {createdByMe ? '멘토링 수정하기' : '멘토링 개설하기'}
+      </Button>
     </StyledContainer>
   );
 }

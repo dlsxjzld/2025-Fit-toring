@@ -79,7 +79,7 @@ function Home() {
     <StyledContainer>
       <HomeHeader />
       <StyledContents>
-        <Slogan />
+        <Slogan mentoringIds={mentorList.map((mentor) => mentor.id)} />
         <MentorOverview mentorCount={mentorList.length} />
         <SpecialtyFilterModalButton handleOpenModal={handleOpenModal} />
         <SpecialtyFilterModal
