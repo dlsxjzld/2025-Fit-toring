@@ -33,7 +33,7 @@
     [
       "@semantic-release/changelog",
       {
-        "changelogFile": "CHANGELOG.md"
+        "changelogFile": "frontend/CHANGELOG.md"
       }
     ],
     "@semantic-release/github",
@@ -41,6 +41,7 @@
       "@semantic-release/git",
       {
         "assets": [
+          "frontend/package-lock.json",
           "frontend/package.json",
           "frontend/CHANGELOG.md"
         ],
