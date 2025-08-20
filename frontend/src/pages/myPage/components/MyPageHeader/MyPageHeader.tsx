@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 
 import backIcon from '../../../../common/assets/images/backIcon.svg';
 import Header from '../../../../common/components/Header/Header';
+import { PAGE_URL } from '../../../../common/constants/url';
 import MenuDropDown from '../MenuDropDown/MenuDropDown';
 
 function MyPageHeader() {
   const navigate = useNavigate();
 
   const handleBackButtonClick = () => {
-    navigate(-1);
+    navigate(PAGE_URL.HOME);
   };
 
   return (
@@ -17,7 +18,7 @@ function MyPageHeader() {
       <StyledWrapper>
         <StyledButtonWrapper>
           <StyledBackButton onClick={handleBackButtonClick} type="button">
-            <StyledBackIcon src={backIcon} alt="뒤로가기 아이콘" />
+            <StyledBackIcon src={backIcon} alt="홈으로 가기" />
           </StyledBackButton>
         </StyledButtonWrapper>
         <StyledTitle>마이 페이지</StyledTitle>
