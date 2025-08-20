@@ -142,7 +142,7 @@ jobs:
   deploy-dev:
     runs-on:
       - self-hosted
-      - fittoring-be
+      - dev
     env:
       IMAGE: fittoring/fittoring   
       TAG: ${{ needs.build-and-push.outputs.image_tag }}
