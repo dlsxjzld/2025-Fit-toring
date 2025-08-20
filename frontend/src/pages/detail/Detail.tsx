@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import styled from '@emotion/styled';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import { getMentoringDetail } from './apis/getMentoringDetail';
 import ApplySection from './components/ApplySection/ApplySection';
@@ -17,6 +17,9 @@ import type { MentoringResponse } from './types/MentoringResponse';
 type TapType = 'detail' | 'review';
 
 function Detail() {
+  const location = useLocation();
+  const state = location.state as { tab?: TapType };
+
   const { mentoringId } = useParams();
   const [data, setData] = useState<MentoringResponse | null>(null);
 
@@ -33,7 +36,7 @@ function Detail() {
     fetchData();
   }, [mentoringId]);
 
-  const [selected, setSelected] = useState<TapType>('detail');
+  const [selected, setSelected] = useState<TapType>(state?.tab ?? 'detail');
 
   const handleClick = (selectedType: TapType) => {
     setSelected(selectedType);
