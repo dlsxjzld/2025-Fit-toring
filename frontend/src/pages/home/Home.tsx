@@ -77,6 +77,7 @@ function Home() {
 
   return (
     <StyledContainer>
+      <div> 안녕 </div>
       <HomeHeader />
       <StyledContents>
         <Slogan mentoringIds={mentorList.map((mentor) => mentor.id)} />
