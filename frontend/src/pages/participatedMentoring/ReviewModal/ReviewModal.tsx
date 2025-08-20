@@ -38,13 +38,13 @@ function ReviewModal({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await postReview({
         reservationId,
         rating,
         content,
       });
       onReviewSubmitButtonClick(reservationId);
       onCloseClick();
+      alert('리뷰가 등록되었습니다.');
     } catch (error) {
       console.error('리뷰 등록 실패', error);
     }
