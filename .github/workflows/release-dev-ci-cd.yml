@@ -140,6 +140,7 @@ jobs:
             ${{ env.IMAGE }}:${{ steps.tags.outputs.sha_tag }}
 
   deploy-dev:
+    needs: build-and-push
     runs-on:
       - self-hosted
       - dev
