@@ -5,7 +5,6 @@ const DotenvWebpackPlugin = require('dotenv-webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  mode: 'development',
   entry: './src/main.tsx',
   output: {
     filename: 'bundle.[contenthash].js',
@@ -46,18 +45,6 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
-  },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'),
-    },
-    port: 3000,
-    open: true,
-    hot: true,
-    historyApiFallback: true,
-    client: {
-      overlay: true,
-    },
   },
   plugins: [
     new HtmlWebpackPlugin({
